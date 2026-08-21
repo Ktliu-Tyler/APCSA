@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 4 投影模式｜Objects &amp; References</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 4 投影模式：objects、references、new、constructor、primitive copy、reference copy、aliases、null 與 NullPointerException。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 4</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-4.html">文章版</a>
+        <a href="lesson-4-practice.html">課後練習</a>
+        <a href="lesson-3.html">上一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 4</p>
+          <h1>Objects &amp; References</h1>
+          <p class="slide-lead">
+            今天要把 <code>int x</code> 和 <code>Scanner input</code> 的差異說清楚：
+            primitive variable 直接存 value；reference variable 存的是找到 object 的 reference。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-4-practice.html">Lesson 4 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Opening Question</p>
+          <h2><code>int x</code> 和 <code>Scanner input</code> 真的都直接存資料嗎？</h2>
+          <div class="definition-grid">
+            <article><h3><code>int x = 10;</code></h3><p><code>x</code> 直接存 primitive value。</p></article>
+            <article><h3><code>Scanner input = ...</code></h3><p><code>input</code> 存的是 object reference。</p></article>
+            <article><h3>Today's idea</h3><p>變數和 object 不一定是同一件事。</p></article>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l4-r1">揭曉核心答案</button>
+          <div class="reveal-panel" id="l4-r1">
+            <p>答案是：不是。Primitive variable 直接存 value；reference variable 儲存可以找到 object 的 reference。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Primitive Review</p>
+          <h2>Primitive variable 直接存 value</h2>
+          <div class="type-grid operator-grid">
+            <div><strong><code>int</code></strong><span><code>10</code></span></div>
+            <div><strong><code>double</code></strong><span><code>3.14</code></span></div>
+            <div><strong><code>boolean</code></strong><span><code>true</code></span></div>
+            <div><strong><code>char</code></strong><span><code>'A'</code></span></div>
+            <div><strong>Copy</strong><span>assignment 複製 value</span></div>
+          </div>
+          <div class="deck-code">
+            <pre><code>int a = 10;
+int b = a;
+a = 30;</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l4-r2">最後 b 是多少</button>
+          <div class="reveal-panel" id="l4-r2">
+            <p><code>b</code> 還是 <code>10</code>。<code>int b = a;</code> 只在當下複製 value，不建立永久連結。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content split-slide">
+          <div>
+            <p class="slide-kicker">Class vs Object</p>
+            <h2>Class 是藍圖，object 是根據藍圖建立的個體</h2>
+            <p class="slide-text">
+              一個 class 可以建立很多 objects。AP 題目也常說 object 是
+              an <strong>instance</strong> of a class。
+            </p>
+          </div>
+          <div class="definition-grid">
+            <article><h3>Class</h3><p>設計規格、blueprint。</p></article>
+            <article><h3>Object</h3><p>真正建立出來、可以被操作的 instance。</p></article>
+            <article><h3>Example</h3><p><code>Scanner</code> class；某一個 Scanner object。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Object Creation</p>
+          <h2><code>new</code> 通常代表建立新的 object</h2>
+          <div class="deck-code">
+            <pre><code>new ClassName(arguments)</code></pre>
+          </div>
+          <div class="big-flow">
+            <span><code>new</code></span>
+            <span>Class name</span>
+            <span>Constructor call</span>
+            <span>New object</span>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l4-r3">套到 Scanner</button>
+          <div class="reveal-panel" id="l4-r3">
+            <p><code>new Scanner(System.in)</code> 建立新的 Scanner object，<code>Scanner(System.in)</code> 是 constructor call。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Scanner Breakdown</p>
+          <h2>拆解這一行</h2>
+          <div class="deck-code">
+            <pre><code>Scanner input = new Scanner(System.in);</code></pre>
+          </div>
+          <div class="type-grid">
+            <div><strong><code>Scanner</code></strong><span>reference type / class</span></div>
+            <div><strong><code>input</code></strong><span>reference variable</span></div>
+            <div><strong><code>new Scanner(...)</code></strong><span>object creation</span></div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l4-r4">完整流程</button>
+          <div class="reveal-panel" id="l4-r4">
+            <p>先建立 Scanner object，取得它的 reference，再把 reference 存進 <code>input</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Reference</p>
+          <h2>Reference 可以畫成「變數指向 object」</h2>
+          <div class="deck-code">
+            <pre><code>input
+  |
+  v
+Scanner object</code></pre>
+          </div>
+          <p class="slide-text">
+            <code>input</code> 不是 Scanner object 本身。<code>input</code> 是儲存 reference 的 variable。
+          </p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Big Comparison</p>
+          <h2>Primitive variable vs reference variable</h2>
+          <div class="definition-grid">
+            <article><h3>Primitive</h3><p><code>int x = 5;</code><br />變數直接存 <code>5</code>。</p></article>
+            <article><h3>Reference</h3><p><code>Scanner input = ...</code><br />變數存 object reference。</p></article>
+            <article><h3>Assignment</h3><p>primitive 複製 value；reference 複製 reference。</p></article>
+          </div>
+          <p class="slide-note">Reference assignment 不會複製 object。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Primitive Copy</p>
+          <h2>兩份獨立的 value</h2>
+          <div class="multiple-choice">
+            <pre><code>int a = 5;
+int b = a;
+
+a = 20;</code></pre>
+            <p>最後 <code>a</code> 和 <code>b</code> 是多少？</p>
+            <div class="choices">
+              <span>A. 20 and 20</span>
+              <span>B. 20 and 5</span>
+              <span>C. 5 and 20</span>
+              <span>D. Compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l4-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l4-r5">
+            <p>答案是 B。<code>b = a</code> 只複製當下的 primitive value <code>5</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Reference Copy</p>
+          <h2>複製 reference，不建立新 object</h2>
+          <div class="deck-code">
+            <pre><code>Scanner first = new Scanner(System.in);
+Scanner second = first;</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l4-r6">正確 diagram</button>
+          <div class="reveal-panel" id="l4-r6">
+            <pre><code>first  ----\
+           > Scanner object
+second ----/</code></pre>
+            <p><code>new Scanner(...)</code> 只出現一次，所以明確建立的是一個 Scanner object。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Aliases</p>
+          <h2>兩個 references 指向同一個 object，稱為 aliases</h2>
+          <p class="slide-text">
+            如果透過其中一個 reference 操作 object，另一個 reference 看到的是同一個 object 的狀態。
+          </p>
+          <div class="deck-code">
+            <pre><code>Scanner first = new Scanner(System.in);
+Scanner second = first;</code></pre>
+          </div>
+          <p class="slide-note"><code>first</code> 和 <code>second</code> 是同一個 Scanner object 的 aliases。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content split-slide">
+          <div>
+            <p class="slide-kicker">Object State</p>
+            <h2>Object 可以有 state 和 behavior</h2>
+            <p class="slide-text">
+              State 是 object 目前內部資料的狀態；behavior 是 object 能執行的操作，Java 通常用 methods 表現。
+            </p>
+          </div>
+          <div class="stack-list">
+            <div><strong>State</strong><span><code>speed = 50</code>、<code>battery = 80</code></span></div>
+            <div><strong>Behavior</strong><span><code>accelerate()</code>、<code>brake()</code></span></div>
+            <div><strong>Aliases</strong><span>多個 references 看到同一個 object state。</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Count Objects</p>
+          <h2>數 <code>new</code>，不要只數變數</h2>
+          <div class="multiple-choice">
+            <pre><code>Scanner a = new Scanner(System.in);
+Scanner b = a;
+Scanner c = b;</code></pre>
+            <p>建立了幾個 Scanner objects？有幾個 reference variables？</p>
+            <div class="choices">
+              <span>A. 1 object, 3 variables</span>
+              <span>B. 3 objects, 3 variables</span>
+              <span>C. 0 objects, 3 variables</span>
+              <span>D. 1 object, 1 variable</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l4-r7">揭曉答案</button>
+          <div class="reveal-panel" id="l4-r7">
+            <p>答案是 A。<code>new Scanner(...)</code> 只執行一次，因此一個 object；<code>a</code>、<code>b</code>、<code>c</code> 是三個 reference variables。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Reference Reassignment</p>
+          <h2><code>a = b;</code> 不會移動或複製 object</h2>
+          <div class="deck-code">
+            <pre><code>SomeClass a = new SomeClass();
+SomeClass b = new SomeClass();
+
+a = b;</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l4-r8">最後發生什麼</button>
+          <div class="reveal-panel" id="l4-r8">
+            <p><code>a</code> 取得 <code>b</code> 裡的 reference，所以 <code>a</code> 和 <code>b</code> 指向同一個 Object B。Object A 如果沒有其他 reference，就無法再被程式使用。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Math vs Scanner</p>
+          <h2><code>Math.sqrt</code> 和 <code>input.nextInt</code> 的呼叫角度不同</h2>
+          <div class="definition-grid">
+            <article><h3><code>Math.sqrt(25)</code></h3><p><code>Class.method(...)</code><br />static method，不需要 <code>new Math()</code>。</p></article>
+            <article><h3><code>input.nextInt()</code></h3><p><code>objectReference.method(...)</code><br />對 Scanner object 呼叫 method。</p></article>
+            <article><h3>Dot operator</h3><p>在 reference 上呼叫 method：<code>reference.method()</code>。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">null</p>
+          <h2><code>null</code> 表示沒有 reference 到任何 object</h2>
+          <div class="definition-grid">
+            <article><h3>合法</h3><p><code>Scanner input = null;</code></p></article>
+            <article><h3>合法</h3><p><code>String name = null;</code></p></article>
+            <article><h3>不合法</h3><p><code>int x = null;</code></p></article>
+          </div>
+          <p class="slide-note"><code>null</code> 不是 0，也不是空字串。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">null vs Empty String</p>
+          <h2><code>null</code>、<code>""</code>、<code>" "</code> 是三件不同的事</h2>
+          <div class="definition-grid">
+            <article><h3><code>null</code></h3><p>沒有 String object。</p></article>
+            <article><h3><code>""</code></h3><p>有 String object，長度是 0。</p></article>
+            <article><h3><code>" "</code></h3><p>有 String object，內容是一個空白字元。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">NullPointerException</p>
+          <h2>對 <code>null</code> 呼叫 method 會出事</h2>
+          <div class="multiple-choice">
+            <pre><code>String name = null;
+System.out.println(name.length());</code></pre>
+            <p>最接近的錯誤類型是什麼？</p>
+            <div class="choices">
+              <span>A. Compile-time error</span>
+              <span>B. Runtime error</span>
+              <span>C. Logic only</span>
+              <span>D. No error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l4-r9">揭曉答案</button>
+          <div class="reveal-panel" id="l4-r9">
+            <p>答案是 B，更具體是 <code>NullPointerException</code>。<code>name</code> 沒有指向 String object，所以不能呼叫 <code>length()</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Compile vs Runtime</p>
+          <h2>先分清楚錯在什麼時候被發現</h2>
+          <div class="definition-grid">
+            <article><h3>Compile-time</h3><p><code>int x = null;</code><br />primitive type 不能存 <code>null</code>。</p></article>
+            <article><h3>Runtime</h3><p><code>String s = null; s.length();</code><br />執行 method call 時才發現沒有 object。</p></article>
+            <article><h3>AP Trap</h3><p><code>SomeClass obj = null;</code> 本身通常合法。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">null Does Not Delete Object</p>
+          <h2>一個 reference 變 <code>null</code>，object 不一定消失</h2>
+          <div class="deck-code">
+            <pre><code>Scanner a = new Scanner(System.in);
+Scanner b = a;
+
+a = null;</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l4-r10">最後 diagram</button>
+          <div class="reveal-panel" id="l4-r10">
+            <pre><code>a -> null
+
+b -> Scanner object</code></pre>
+            <p>Scanner object 仍然存在，因為 <code>b</code> 還 reference 到它。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Diagram Strategy</p>
+          <h2>Object tracing 解題流程</h2>
+          <div class="big-flow">
+            <span>Find <code>new</code></span>
+            <span>Draw objects</span>
+            <span>Draw variables</span>
+            <span>Copy arrows</span>
+            <span>Handle <code>null</code></span>
+          </div>
+          <p class="slide-note">不要把 reference 題只放在腦中硬想，畫箭頭通常更快也更穩。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP-style Check</p>
+          <h2>快速檢核：最後 diagram 是什麼？</h2>
+          <div class="deck-code">
+            <pre><code>Scanner a = new Scanner(System.in);
+Scanner b = a;
+Scanner c = b;
+
+b = null;</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l4-r11">揭曉 diagram</button>
+          <div class="reveal-panel" id="l4-r11">
+            <pre><code>a ----\
+       > Scanner object
+c ----/
+
+b -> null</code></pre>
+            <p><code>b = null</code> 只改變 <code>b</code>。<code>a</code> 和 <code>c</code> 仍然指向原本的 object。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Misconceptions</p>
+          <h2>本課最容易被 AP 題目利用的迷思</h2>
+          <div class="stack-list">
+            <div><strong><code>a = b</code></strong><span>不複製整個 object，只複製 reference。</span></div>
+            <div><strong>Two variables</strong><span>不代表一定有 two objects。</span></div>
+            <div><strong><code>new</code></strong><span>建立 object，不是宣告 reference variable。</span></div>
+            <div><strong><code>null</code></strong><span>不是 object，也不是 empty string。</span></div>
+            <div><strong>Reference</strong><span>AP CSA 只需要能用箭頭追蹤，不需要操作記憶體位址。</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Final Challenge</p>
+          <h2>數 objects 並畫出最後狀態</h2>
+          <div class="deck-code">
+            <pre><code>Scanner a = new Scanner(System.in);
+Scanner b = a;
+
+a = new Scanner(System.in);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l4-r12">揭曉答案</button>
+          <div class="reveal-panel" id="l4-r12">
+            <p><code>new Scanner(...)</code> 執行兩次，所以建立兩個 Scanner objects。最後 <code>a</code> 指向第二個 object，<code>b</code> 仍指向第一個 object。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Practice</p>
+          <h2>今天可以完成的練習</h2>
+          <div class="exit-grid">
+            <div>Primitive trace：確認 value copy 不會永久連動。</div>
+            <div>Reference trace：畫箭頭判斷 aliases。</div>
+            <div>Object count：用 <code>new</code> 判斷建立幾個 objects。</div>
+            <div>null debugging：判斷 compile-time error 或 runtime error。</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-4-practice.html">開始 Lesson 4 課後練習</a>
+            <a class="button" href="lesson-4.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這六題</h2>
+          <div class="exit-grid">
+            <div>Class 和 object 有什麼不同？</div>
+            <div><code>Scanner input</code> 中，<code>input</code> 是 object 還是 reference variable？</div>
+            <div><code>int b = a</code> 和 <code>SomeClass b = a</code> 分別複製什麼？</div>
+            <div><code>new</code> 出現一次，通常代表什麼？</div>
+            <div><code>null</code> 和 <code>""</code> 有什麼不同？</div>
+            <div>對 <code>null</code> 呼叫 method 可能發生什麼？</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

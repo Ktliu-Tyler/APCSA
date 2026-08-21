@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 7 投影模式｜if / else 條件判斷</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 7 投影模式：if、else、else if、nested if、execution path tracing、range checking、case analysis、boundary 與 AP-style 條件判斷。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 7</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-7.html">文章版</a>
+        <a href="lesson-7-practice.html">課後練習</a>
+        <a href="lesson-6.html">上一課</a>
+        <a href="lesson-8.html">下一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 7</p>
+          <h1><code>if / else</code></h1>
+          <p class="slide-lead">
+            今天讓程式根據條件選路：single selection、two-way selection、multi-way selection、
+            nested if、range checking、boundary 與 AP-style execution path tracing。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-7-practice.html">Lesson 7 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">From Lesson 6</p>
+          <h2>Boolean expression 變成 execution path</h2>
+          <div class="big-flow">
+            <span><code>score &gt;= 60</code></span>
+            <span><code>true</code> / <code>false</code></span>
+            <span><code>if</code></span>
+            <span>choose branch</span>
+          </div>
+          <p class="slide-note">Lesson 6 產生條件結果；Lesson 7 根據結果決定執行哪段程式。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Single Selection</p>
+          <h2><code>if</code>：condition true 才執行 body</h2>
+          <div class="deck-code">
+            <pre><code>int temperature = 35;
+
+if (temperature &gt; 30)
+{
+    System.out.println("Hot");
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r1">揭曉 trace</button>
+          <div class="reveal-panel" id="l7-r1">
+            <p><code>35 &gt; 30</code> 是 <code>true</code>，所以 output 是 <code>Hot</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Boolean Condition</p>
+          <h2><code>if</code> 括號中必須是 <code>boolean</code></h2>
+          <div class="definition-grid">
+            <article><h3><code>if (x &gt; 5)</code></h3><p>合法</p></article>
+            <article><h3><code>if (name.equals("Tom"))</code></h3><p>合法</p></article>
+            <article><h3><code>if (isReady)</code></h3><p>合法</p></article>
+            <article><h3><code>if (x)</code></h3><p>若 <code>x</code> 是 <code>int</code>，不合法</p></article>
+          </div>
+          <p class="slide-note">Java 不把 <code>0</code> / 非 0 當 Boolean。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Trace</p>
+          <h2>condition false 只是跳過 body</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 3;
+
+if (x &gt; 10)
+{
+    System.out.println("Large");
+}
+
+System.out.println("Done");</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. Large</span>
+              <span>B. Done</span>
+              <span>C. Large / Done</span>
+              <span>D. 沒有輸出</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l7-r2">
+            <p>答案是 B。<code>x &gt; 10</code> false，所以跳過 <code>Large</code>，但繼續印 <code>Done</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Trace</p>
+          <h2>AP tracing 先寫出 execution path</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 8;
+
+System.out.println("A");
+
+if (x &gt; 5)
+{
+    System.out.println("B");
+}
+
+System.out.println("C");</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. A C</span>
+              <span>B. A B C</span>
+              <span>C. B C</span>
+              <span>D. A B</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l7-r3">
+            <p>答案是 B。<code>8 &gt; 5</code> true，所以三行都會印。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Two-way Selection</p>
+          <h2><code>if / else</code>：二選一</h2>
+          <div class="deck-code">
+            <pre><code>if (score &gt;= 60)
+{
+    System.out.println("Pass");
+}
+else
+{
+    System.out.println("Fail");
+}</code></pre>
+          </div>
+          <div class="big-flow">
+            <span>condition true</span>
+            <span>Pass</span>
+            <span>condition false</span>
+            <span>Fail</span>
+          </div>
+          <p class="slide-note">不可能同時執行 <code>if</code> branch 和對應的 <code>else</code> branch。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Execution Path</p>
+          <h2>Branch 中改變變數後，後面用新值</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 7;
+
+if (x &gt; 5)
+{
+    x += 2;
+}
+else
+{
+    x -= 2;
+}
+
+x *= 3;
+System.out.println(x);</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. 15</span>
+              <span>B. 21</span>
+              <span>C. 27</span>
+              <span>D. 9</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r4">揭曉 trace</button>
+          <div class="reveal-panel" id="l7-r4">
+            <p><code>7 &gt; 5</code> true，<code>x = 9</code>，最後 <code>9 * 3 = 27</code>。答案 C。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Multi-way Selection</p>
+          <h2><code>else if</code> 從上往下檢查</h2>
+          <div class="deck-code">
+            <pre><code>int score = 85;
+
+if (score &gt;= 90)
+{
+    System.out.println("A");
+}
+else if (score &gt;= 80)
+{
+    System.out.println("B");
+}
+else
+{
+    System.out.println("C");
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l7-r5">
+            <p><code>85 &gt;= 90</code> false；<code>85 &gt;= 80</code> true，所以 output 是 <code>B</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">First True Wins</p>
+          <h2>第一個 true 後，後面全部跳過</h2>
+          <div class="multiple-choice">
+            <pre><code>int score = 95;
+
+if (score &gt;= 90)
+{
+    System.out.println("A");
+}
+else if (score &gt;= 80)
+{
+    System.out.println("B");
+}
+else
+{
+    System.out.println("C");
+}</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. A</span>
+              <span>B. B</span>
+              <span>C. A B</span>
+              <span>D. C</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r6">揭曉答案</button>
+          <div class="reveal-panel" id="l7-r6">
+            <p>答案是 A。雖然 <code>95 &gt;= 80</code> 也 true，但不會再檢查。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Order Matters</p>
+          <h2>threshold 順序錯，結果就錯</h2>
+          <div class="multiple-choice">
+            <pre><code>int score = 95;
+
+if (score &gt;= 60)
+{
+    System.out.println("D");
+}
+else if (score &gt;= 90)
+{
+    System.out.println("A");
+}</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. A</span>
+              <span>B. D</span>
+              <span>C. A D</span>
+              <span>D. 沒有輸出</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r7">揭曉答案</button>
+          <div class="reveal-panel" id="l7-r7">
+            <p>答案是 B。<code>95 &gt;= 60</code> 已經 true，後面的 A branch 到不了。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Independent if</p>
+          <h2>兩個 <code>if</code> 是兩次獨立判斷</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 10;
+
+if (x &gt;= 5)
+{
+    System.out.print("A");
+}
+
+if (x &gt;= 10)
+{
+    System.out.print("B");
+}</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. A</span>
+              <span>B. B</span>
+              <span>C. AB</span>
+              <span>D. 沒有輸出</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r8">揭曉答案</button>
+          <div class="reveal-panel" id="l7-r8">
+            <p>答案是 C。兩個 <code>if</code> 都會各自檢查。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">if vs else if</p>
+          <h2>AP 超常考：結構不同，結果不同</h2>
+          <div class="definition-grid">
+            <article>
+              <h3>多個 <code>if</code></h3>
+              <p>每個都是獨立 decision，可能多個都執行。</p>
+            </article>
+            <article>
+              <h3><code>if / else if</code></h3>
+              <p>同一條 chain，最多只執行一個 branch。</p>
+            </article>
+            <article>
+              <h3>Trace rule</h3>
+              <p>先看 braces 和 <code>else</code> 到底接在哪個 <code>if</code>。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Nested if</p>
+          <h2>outer true 後，inner 才有機會判斷</h2>
+          <div class="deck-code">
+            <pre><code>int age = 20;
+boolean hasTicket = true;
+
+if (age &gt;= 18)
+{
+    if (hasTicket)
+    {
+        System.out.println("Enter");
+    }
+}</code></pre>
+          </div>
+          <div class="big-flow">
+            <span><code>age &gt;= 18</code></span>
+            <span><code>hasTicket</code></span>
+            <span>Enter</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Nested Trace</p>
+          <h2>先 outer，再 inner</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 4;
+
+if (x &gt; 0)
+{
+    System.out.print("A");
+
+    if (x &gt; 5)
+    {
+        System.out.print("B");
+    }
+    else
+    {
+        System.out.print("C");
+    }
+}
+
+System.out.print("D");</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. AD</span>
+              <span>B. ACD</span>
+              <span>C. CD</span>
+              <span>D. ABD</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r9">揭曉答案</button>
+          <div class="reveal-panel" id="l7-r9">
+            <p>答案是 B。外層 true 印 A，內層 false 走 else 印 C，最後印 D。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Dangling else</p>
+          <h2><code>else</code> 配最近尚未配對的 <code>if</code></h2>
+          <div class="deck-code">
+            <pre><code>if (x &gt; 0)
+    if (x &gt; 10)
+        System.out.println("A");
+    else
+        System.out.println("B");</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r10">揭曉配對</button>
+          <div class="reveal-panel" id="l7-r10">
+            <p><code>else</code> 配的是 <code>if (x &gt; 10)</code>。建議永遠使用 braces <code>{ }</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Range Checking</p>
+          <h2>常見英文與比較運算子</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead>
+                <tr>
+                  <th>English</th>
+                  <th>Java</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>at least 10</td><td><code>x &gt;= 10</code></td></tr>
+                <tr><td>at most 10</td><td><code>x &lt;= 10</code></td></tr>
+                <tr><td>greater than 10</td><td><code>x &gt; 10</code></td></tr>
+                <tr><td>less than 10</td><td><code>x &lt; 10</code></td></tr>
+                <tr><td>exactly 10</td><td><code>x == 10</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="slide-note">AP 題目常用英文測 boundary。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Boundary</p>
+          <h2><code>&gt;</code> 和 <code>&gt;=</code> 差一個邊界</h2>
+          <div class="multiple-choice">
+            <pre><code>int score = 80;
+
+if (score &gt; 90)
+{
+    System.out.println("A");
+}
+else if (score &gt; 80)
+{
+    System.out.println("B");
+}
+else if (score &gt; 70)
+{
+    System.out.println("C");
+}</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. A</span>
+              <span>B. B</span>
+              <span>C. C</span>
+              <span>D. 沒有輸出</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r11">揭曉答案</button>
+          <div class="reveal-panel" id="l7-r11">
+            <p>答案是 C。<code>80 &gt; 80</code> false，但 <code>80 &gt; 70</code> true。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Case Analysis</p>
+          <h2>好的分類要 cover all cases</h2>
+          <div class="deck-code">
+            <pre><code>if (x &gt; 0)
+{
+    System.out.println("Positive");
+}
+else if (x == 0)
+{
+    System.out.println("Zero");
+}
+else
+{
+    System.out.println("Negative");
+}</code></pre>
+          </div>
+          <p class="slide-note">最後的 <code>else</code> 不需要再寫 <code>x &lt; 0</code>，因為剩下唯一可能就是 negative。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Unreachable Branch</p>
+          <h2>找永遠到不了的 branch</h2>
+          <div class="multiple-choice">
+            <pre><code>if (x &gt;= 50)
+{
+    System.out.println("A");
+}
+else if (x &gt;= 70)
+{
+    System.out.println("B");
+}
+else
+{
+    System.out.println("C");
+}</code></pre>
+            <p>哪個 branch 永遠不會執行？</p>
+            <div class="choices">
+              <span>A branch</span>
+              <span>B branch</span>
+              <span>C branch</span>
+              <span>都可能</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r12">揭曉答案</button>
+          <div class="reveal-panel" id="l7-r12">
+            <p><code>B</code> 永遠到不了，因為 <code>x &gt;= 70</code> 一定也先符合 <code>x &gt;= 50</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Errors</p>
+          <h2>Lesson 7 常見錯誤</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead>
+                <tr>
+                  <th>錯誤</th>
+                  <th>正確觀念</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><code>if (x = 5)</code></td><td><code>=</code> assignment；比較用 <code>==</code></td></tr>
+                <tr><td><code>if (x)</code></td><td>condition 必須是 Boolean</td></tr>
+                <tr><td><code>str == "hi"</code></td><td>String contents 用 <code>equals()</code></td></tr>
+                <tr><td><code>if (x &gt; 5);</code></td><td>分號讓 if body 變成 empty statement</td></tr>
+                <tr><td>少寫 braces</td><td>Java 看 syntax，不看縮排</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP SOP</p>
+          <h2><code>if / else</code> tracing 固定流程</h2>
+          <div class="big-flow">
+            <span>Write values</span>
+            <span>Evaluate condition</span>
+            <span>Choose branch</span>
+            <span>Update variables</span>
+            <span>Next condition</span>
+            <span>Output</span>
+          </div>
+          <p class="slide-note">每遇到新的 condition，都要用目前最新的 variable values。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP-style Trace</p>
+          <h2>綜合追蹤</h2>
+          <div class="deck-code">
+            <pre><code>int x = 10;
+int y = 5;
+
+if (x &gt; y)
+{
+    x -= 5;
+
+    if (x == y)
+    {
+        y *= 2;
+    }
+}
+else
+{
+    x += 10;
+}
+
+System.out.println(x + " " + y);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l7-r13">揭曉結果</button>
+          <div class="reveal-panel" id="l7-r13">
+            <p>Output 是 <code>5 10</code>。外層 true，<code>x</code> 變 <code>5</code>；內層 true，<code>y</code> 變 <code>10</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的五個小程式</h2>
+          <div class="exit-grid">
+            <div>Odd / Even：<code>number % 2 == 0</code></div>
+            <div>Sign Classifier：positive / zero / negative</div>
+            <div>Age Classifier：Child / Teen / Adult</div>
+            <div>Ticket Price：依年齡決定價格</div>
+            <div>Grade + Invalid：特殊案例優先</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-7-practice.html">開始 Lesson 7 課後練習</a>
+            <a class="button" href="lesson-7.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十句</h2>
+          <div class="exit-grid">
+            <div><code>if</code> condition must be Boolean.</div>
+            <div><code>if / else</code> executes exactly one branch.</div>
+            <div><code>else if</code> checks from top to bottom.</div>
+            <div>The first true branch wins.</div>
+            <div>Separate <code>if</code> statements are independent.</div>
+            <div>Order matters in range classification.</div>
+            <div>Always test boundary values.</div>
+            <div>Nested inner condition runs only after outer branch is entered.</div>
+            <div><code>else</code> pairs with nearest unmatched <code>if</code>.</div>
+            <div>Branch variable updates affect later conditions.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

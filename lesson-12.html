@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 12｜Nested Loops</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 12：nested loops、outer/inner loop、row-column thinking、pattern output、pair algorithms、dependent bounds、runtime intuition 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 12</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第十二堂課導覽">
+        <a href="lesson-12-presentation.html">投影模式</a>
+        <a href="lesson-12-practice.html">課後練習</a>
+        <a href="lesson-11.html">上一課</a>
+        <a href="#execution">執行順序</a>
+        <a href="#patterns">Pattern</a>
+        <a href="#pairs">Pairs</a>
+        <a href="#runtime">Runtime</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 12</p>
+          <h1>Nested Loops：巢狀迴圈、Row / Column 思維與執行次數</h1>
+          <p class="lead">
+            Lesson 9 到 Lesson 11 學會了單層 loop 與 loop algorithms。這堂課把 loop 放進 loop：
+            外層控制大方向，內層完成每一次細節。你會用它印方格、三角形、乘法表、所有 pair，
+            並正確計算執行次數與 trace 變數。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-12-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-12-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-11.html">回 Lesson 11</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#structure">基本結構</a>
+          <a href="#execution">執行順序</a>
+          <a href="#row-column">Row / Column</a>
+          <a href="#counting">執行次數</a>
+          <a href="#patterns">Pattern Output</a>
+          <a href="#dependent">Dependent Bounds</a>
+          <a href="#table">乘法表</a>
+          <a href="#pairs">Pair Algorithms</a>
+          <a href="#trace">Nested Trace</a>
+          <a href="#scope">Accumulator Scope</a>
+          <a href="#runtime">Runtime</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>分辨 outer loop 與 inner loop 的角色。</div>
+              <div>知道 outer loop 每跑一次，inner loop 都會重新初始化並完整執行。</div>
+              <div>使用 row / column 思維設計方格、表格與 pattern。</div>
+              <div>正確判斷固定範圍 nested loop 的總執行次數。</div>
+              <div>判斷 dependent bounds，例如 <code>j &lt;= i</code> 造成三角形次數。</div>
+              <div>分辨 <code>print</code> 與 <code>println</code> 在 pattern output 中的位置。</div>
+              <div>列出所有 ordered pairs 與 unique pairs。</div>
+              <div>使用 <code>j = i + 1</code> 避免自己跟自己配對或重複配對。</div>
+              <div>trace 兩個 loop variable 與 accumulator。</div>
+              <div>分辨 row-level accumulator 與 total accumulator 的初始化位置。</div>
+              <div>理解 nested loops 的 runtime intuition：<code>O(n^2)</code>、<code>O(nm)</code>。</div>
+              <div>辨識 AP 題常見錯誤：wrong variable、off-by-one、infinite loop、scope bug。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson12-flow-0" /> <span><strong>Nested loop structure</strong>：outer loop 裡面放 inner loop。</span></label>
+              <label><input type="checkbox" data-progress="lesson12-flow-1" /> <span><strong>Execution order</strong>：inner loop 每次都從頭跑。</span></label>
+              <label><input type="checkbox" data-progress="lesson12-flow-2" /> <span><strong>Row / column thinking</strong>：outer 通常控制 row，inner 通常控制 column。</span></label>
+              <label><input type="checkbox" data-progress="lesson12-flow-3" /> <span><strong>Pattern output</strong>：用 <code>print</code> 留在同一行，用 <code>println</code> 換行。</span></label>
+              <label><input type="checkbox" data-progress="lesson12-flow-4" /> <span><strong>Pairs and tables</strong>：乘法表、所有 ordered pairs、unique pairs。</span></label>
+              <label><input type="checkbox" data-progress="lesson12-flow-5" /> <span><strong>Runtime and bugs</strong>：固定矩形、三角形次數、常見錯誤。</span></label>
+            </div>
+          </section>
+
+          <section id="structure" class="article-section">
+            <p class="eyebrow">Basic Structure</p>
+            <h2>Nested loop：一個 loop 的 body 裡面再放一個 loop</h2>
+            <p>
+              最典型的 nested loop 會用兩個變數：外層變數控制「第幾列」或「第幾輪」，
+              內層變數控制這一列裡面的每一格。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Outer / Inner Loop</h3>
+                <button class="copy-button" type="button" data-copy="l12-code-basic">Copy</button>
+              </div>
+              <pre><code id="l12-code-basic">for (int row = 0; row &lt; 3; row++)
+{
+    for (int col = 0; col &lt; 4; col++)
+    {
+        System.out.println(row + " " + col);
+    }
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>部分</th>
+                    <th>常見名稱</th>
+                    <th>通常負責</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>for (int row = 0; row &lt; 3; row++)</code></td>
+                    <td>Outer loop</td>
+                    <td>控制有幾列、幾組、幾個主要項目。</td>
+                  </tr>
+                  <tr>
+                    <td><code>for (int col = 0; col &lt; 4; col++)</code></td>
+                    <td>Inner loop</td>
+                    <td>控制每一列內有幾欄、幾次細部處理。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="execution" class="article-section">
+            <p class="eyebrow">Execution Rule</p>
+            <h2>最重要的一句：outer 每跑一次，inner 都重新完整跑一次</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Trace the Order</h3>
+                <button class="copy-button" type="button" data-copy="l12-code-order">Copy</button>
+              </div>
+              <pre><code id="l12-code-order">for (int i = 1; i &lt;= 3; i++)
+{
+    for (int j = 1; j &lt;= 2; j++)
+    {
+        System.out.println(i + " " + j);
+    }
+}</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>i = 1
+    j = 1
+    j = 2
+i = 2
+    j = 1
+    j = 2
+i = 3
+    j = 1
+    j = 2</code></pre>
+            </div>
+            <p>
+              所以輸出是 <code>1 1</code>、<code>1 2</code>、<code>2 1</code>、<code>2 2</code>、
+              <code>3 1</code>、<code>3 2</code>。注意：<code>j</code> 不會從上一輪的 3 繼續，
+              每次 outer 進入 body 都會重新建立 <code>j = 1</code>。
+            </p>
+            <div class="callout">
+              AP 題最常考的不是語法，而是你是否理解 inner loop 會重跑。遇到 nested trace，
+              先固定 outer 的一個值，再把 inner 完整走完。
+            </div>
+          </section>
+
+          <section id="row-column" class="article-section">
+            <p class="eyebrow">Row / Column Thinking</p>
+            <h2>把 nested loops 想成表格：outer 是 row，inner 是 column</h2>
+            <p>
+              很多 nested loop 題目都能翻譯成「有幾列？每列有幾欄？」。這種想法會讓 pattern、
+              乘法表、座標、pair 題更穩。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>問題</th>
+                    <th>Outer</th>
+                    <th>Inner</th>
+                    <th>總次數</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>印 3 列，每列 5 顆星</td>
+                    <td>3 rows</td>
+                    <td>5 columns</td>
+                    <td>15 顆星</td>
+                  </tr>
+                  <tr>
+                    <td>列出 4 個學生與 6 次測驗</td>
+                    <td>4 students</td>
+                    <td>6 quizzes</td>
+                    <td>24 個成績位置</td>
+                  </tr>
+                  <tr>
+                    <td>1 到 9 乘法表</td>
+                    <td>9 rows</td>
+                    <td>9 columns</td>
+                    <td>81 個乘積</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="counting" class="article-section">
+            <p class="eyebrow">Counting Iterations</p>
+            <h2>固定範圍：總次數通常是外層次數乘內層次數</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>3 × 4 = 12</h3>
+                <button class="copy-button" type="button" data-copy="l12-code-count">Copy</button>
+              </div>
+              <pre><code id="l12-code-count">int count = 0;
+
+for (int r = 0; r &lt; 3; r++)
+{
+    for (int c = 0; c &lt; 4; c++)
+    {
+        count++;
+    }
+}
+
+System.out.println(count);</code></pre>
+            </div>
+            <p>外層跑 3 次；每一次外層，內層跑 4 次。總共 <code>3 * 4 = 12</code>。</p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Outer 次數</th>
+                    <th>Inner 次數</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>r &lt; 5</code>, <code>c &lt; 2</code></td>
+                    <td>5</td>
+                    <td>2</td>
+                    <td>10</td>
+                  </tr>
+                  <tr>
+                    <td><code>r &lt;= 4</code>, <code>c &lt;= 4</code></td>
+                    <td>4</td>
+                    <td>4</td>
+                    <td>16</td>
+                  </tr>
+                  <tr>
+                    <td><code>i = 2; i &lt;= 6</code>, <code>j = 1; j &lt;= 3</code></td>
+                    <td>5</td>
+                    <td>3</td>
+                    <td>15</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="patterns" class="article-section">
+            <p class="eyebrow">Pattern Output</p>
+            <h2>Pattern 題核心：inner 負責同一列，outer 結束後換行</h2>
+            <p>
+              <code>System.out.print</code> 不換行，適合在同一列印很多個符號。
+              <code>System.out.println</code> 會換行，通常放在 inner loop 結束之後。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Rectangle Pattern</h3>
+                <button class="copy-button" type="button" data-copy="l12-code-rectangle">Copy</button>
+              </div>
+              <pre><code id="l12-code-rectangle">for (int row = 1; row &lt;= 3; row++)
+{
+    for (int col = 1; col &lt;= 5; col++)
+    {
+        System.out.print("*");
+    }
+    System.out.println();
+}</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>*****
+*****
+*****</code></pre>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Row and Column Numbers</h3>
+                <button class="copy-button" type="button" data-copy="l12-code-row-col">Copy</button>
+              </div>
+              <pre><code id="l12-code-row-col">for (int row = 1; row &lt;= 3; row++)
+{
+    for (int col = 1; col &lt;= 4; col++)
+    {
+        System.out.print(row + "," + col + " ");
+    }
+    System.out.println();
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="dependent" class="article-section">
+            <p class="eyebrow">Dependent Bounds</p>
+            <h2>當 inner bound 用到 outer variable，就不是矩形，而是三角形</h2>
+            <p>
+              如果 inner loop 的結束條件依賴 outer variable，例如 <code>col &lt;= row</code>，
+              每一列的長度會改變。這就是三角形 pattern 和 pair counting 的核心。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Increasing Triangle</h3>
+                <button class="copy-button" type="button" data-copy="l12-code-triangle-up">Copy</button>
+              </div>
+              <pre><code id="l12-code-triangle-up">for (int row = 1; row &lt;= 5; row++)
+{
+    for (int col = 1; col &lt;= row; col++)
+    {
+        System.out.print("*");
+    }
+    System.out.println();
+}</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>*
+**
+***
+****
+*****</code></pre>
+            </div>
+            <p>總星星數是 <code>1 + 2 + 3 + 4 + 5 = 15</code>，不是 <code>5 * 5</code>。</p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Decreasing Triangle</h3>
+                <button class="copy-button" type="button" data-copy="l12-code-triangle-down">Copy</button>
+              </div>
+              <pre><code id="l12-code-triangle-down">for (int row = 5; row &gt;= 1; row--)
+{
+    for (int col = 1; col &lt;= row; col++)
+    {
+        System.out.print("*");
+    }
+    System.out.println();
+}</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>*****
+****
+***
+**
+*</code></pre>
+            </div>
+          </section>
+
+          <section id="table" class="article-section">
+            <p class="eyebrow">Multiplication Table</p>
+            <h2>乘法表是 row / column 思維最直接的應用</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>1 to 9 Multiplication Table</h3>
+                <button class="copy-button" type="button" data-copy="l12-code-table">Copy</button>
+              </div>
+              <pre><code id="l12-code-table">for (int row = 1; row &lt;= 9; row++)
+{
+    for (int col = 1; col &lt;= 9; col++)
+    {
+        System.out.print(row * col + "\t");
+    }
+    System.out.println();
+}</code></pre>
+            </div>
+            <p>
+              外層決定第幾列，內層決定第幾欄。每一格的值就是 <code>row * col</code>。
+              這種結構之後會直接延伸到 2D arrays。
+            </p>
+          </section>
+
+          <section id="pairs" class="article-section">
+            <p class="eyebrow">Pair Algorithms</p>
+            <h2>Nested loops 很適合列出所有配對</h2>
+            <p>
+              如果每個 <code>i</code> 都要和每個 <code>j</code> 配對，就是 ordered pairs。
+              如果只想要不重複、不自己跟自己配對，inner loop 的起點就要改。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>All Ordered Pairs</h3>
+                <button class="copy-button" type="button" data-copy="l12-code-all-pairs">Copy</button>
+              </div>
+              <pre><code id="l12-code-all-pairs">for (int i = 1; i &lt;= 3; i++)
+{
+    for (int j = 1; j &lt;= 3; j++)
+    {
+        System.out.println(i + "," + j);
+    }
+}</code></pre>
+            </div>
+            <p>這會印出 9 組，包含 <code>1,1</code>、<code>2,2</code>、<code>3,3</code>，也包含方向不同的 <code>1,2</code> 與 <code>2,1</code>。</p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Unique Pairs</h3>
+                <button class="copy-button" type="button" data-copy="l12-code-unique-pairs">Copy</button>
+              </div>
+              <pre><code id="l12-code-unique-pairs">for (int i = 1; i &lt;= 4; i++)
+{
+    for (int j = i + 1; j &lt;= 4; j++)
+    {
+        System.out.println(i + "," + j);
+    }
+}</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>1,2
+1,3
+1,4
+2,3
+2,4
+3,4</code></pre>
+            </div>
+            <p>
+              <code>j = i + 1</code> 代表 <code>j</code> 永遠在 <code>i</code> 後面。
+              這會避免 self-pair，也避免 <code>1,2</code> 和 <code>2,1</code> 重複算。
+            </p>
+          </section>
+
+          <section id="trace" class="article-section">
+            <p class="eyebrow">Nested Trace</p>
+            <h2>Trace nested loops 時，要同時追蹤 outer、inner、state</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Trace Sum</h3>
+                <button class="copy-button" type="button" data-copy="l12-code-trace">Copy</button>
+              </div>
+              <pre><code id="l12-code-trace">int sum = 0;
+
+for (int i = 1; i &lt;= 3; i++)
+{
+    for (int j = 1; j &lt;= i; j++)
+    {
+        sum += i + j;
+    }
+}
+
+System.out.println(sum);</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th><code>i</code></th>
+                    <th><code>j</code> values</th>
+                    <th>加入的值</th>
+                    <th><code>sum</code></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>1, 2</td>
+                    <td>3, 4</td>
+                    <td>9</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>1, 2, 3</td>
+                    <td>4, 5, 6</td>
+                    <td>24</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="scope" class="article-section">
+            <p class="eyebrow">Accumulator Scope</p>
+            <h2>變數放在哪裡，決定它累積的是「每列」還是「全部」</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Row Sum vs Total</h3>
+                <button class="copy-button" type="button" data-copy="l12-code-scope">Copy</button>
+              </div>
+              <pre><code id="l12-code-scope">int total = 0;
+
+for (int row = 1; row &lt;= 3; row++)
+{
+    int rowSum = 0;
+
+    for (int col = 1; col &lt;= 4; col++)
+    {
+        rowSum += col;
+        total += col;
+    }
+
+    System.out.println("row sum: " + rowSum);
+}
+
+System.out.println("total: " + total);</code></pre>
+            </div>
+            <p>
+              <code>rowSum</code> 在 outer loop 裡面初始化，所以每一列重新歸零。
+              <code>total</code> 在 outer loop 外面初始化，所以一路累積全部。
+            </p>
+          </section>
+
+          <section id="runtime" class="article-section">
+            <p class="eyebrow">Runtime Intuition</p>
+            <h2>Nested loops 常讓演算法變慢：一層 n，兩層常是 n²</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Loop shape</th>
+                    <th>大概次數</th>
+                    <th>直覺</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>單層 <code>for (i = 0; i &lt; n; i++)</code></td>
+                    <td><code>n</code></td>
+                    <td><code>O(n)</code></td>
+                  </tr>
+                  <tr>
+                    <td>兩層都跑 <code>n</code> 次</td>
+                    <td><code>n * n</code></td>
+                    <td><code>O(n^2)</code></td>
+                  </tr>
+                  <tr>
+                    <td>外層 <code>n</code>，內層 <code>m</code></td>
+                    <td><code>n * m</code></td>
+                    <td><code>O(nm)</code></td>
+                  </tr>
+                  <tr>
+                    <td>內層跑 <code>1 + 2 + ... + n</code></td>
+                    <td>大約一半的 <code>n^2</code></td>
+                    <td>仍然是 <code>O(n^2)</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              AP CSA 不要求嚴格證明 Big-O，但你要有直覺：nested loops 會讓每個外層項目都做很多內層工作。
+            </p>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Errors</p>
+            <h2>Nested loop 常見錯誤</h2>
+            <div class="error-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>錯誤</th>
+                    <th>常見樣子</th>
+                    <th>修正想法</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>inner condition 用錯變數</td>
+                    <td><code>for (int j = 0; i &lt; 5; j++)</code></td>
+                    <td>inner condition 通常要檢查 <code>j</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>inner update 改錯變數</td>
+                    <td><code>for (int j = 0; j &lt; 5; i++)</code></td>
+                    <td>inner loop 要更新 <code>j</code>，否則可能無限迴圈或跳錯。</td>
+                  </tr>
+                  <tr>
+                    <td><code>println</code> 放錯位置</td>
+                    <td>每印一顆星就換行</td>
+                    <td>同一列用 <code>print</code>，一列結束才 <code>println</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>把 row accumulator 放錯 scope</td>
+                    <td><code>rowSum</code> 沒有每列歸零</td>
+                    <td>每列要重算的變數放在 outer body 裡、inner loop 前。</td>
+                  </tr>
+                  <tr>
+                    <td>pair 重複或 self-pair</td>
+                    <td><code>i,j</code> 與 <code>j,i</code> 都算，或 <code>i == j</code></td>
+                    <td>unique pair 常用 <code>j = i + 1</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>dependent bound 算成矩形</td>
+                    <td><code>1 + 2 + 3 + 4</code> 被算成 <code>4 * 4</code></td>
+                    <td>逐列列出 inner 次數，再加總。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Outer / Inner</strong><span>outer 控制大輪次，inner 控制每輪內部細節。</span></div>
+              <div><strong>Reset</strong><span>outer 每跑一次，inner variable 都重新初始化。</span></div>
+              <div><strong>Rows / Columns</strong><span>pattern 題先想列數，再想每列幾個。</span></div>
+              <div><strong>Fixed Count</strong><span>固定範圍通常是 outer 次數乘 inner 次數。</span></div>
+              <div><strong>Dependent Count</strong><span>內層界線用到 outer variable 時，逐列加總。</span></div>
+              <div><strong>Print</strong><span><code>print</code> 留在同一列；<code>println</code> 換到下一列。</span></div>
+              <div><strong>Pairs</strong><span>所有配對用完整 nested loops；unique pairs 常用 <code>j = i + 1</code>。</span></div>
+              <div><strong>Trace</strong><span>同時追蹤 outer variable、inner variable、state variable。</span></div>
+              <div><strong>Scope</strong><span>每列重算的變數放在 outer body 裡；總累積放在 outer loop 外。</span></div>
+              <div><strong>Runtime</strong><span>兩層各跑 n 次，直覺上是 <code>n^2</code>。</span></div>
+              <div><strong>Bug Check</strong><span>檢查 condition 和 update 是否使用正確 loop variable。</span></div>
+              <div><strong>AP Strategy</strong><span>先列出前兩輪 trace，再回答輸出或次數。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十二句</summary>
+              <p>Nested loop means a loop inside another loop.</p>
+              <p>The inner loop runs completely for each iteration of the outer loop.</p>
+              <p>The inner loop variable is reinitialized each time the inner loop starts.</p>
+              <p>Outer loop often controls rows; inner loop often controls columns.</p>
+              <p>For a rectangle, total iterations are rows times columns.</p>
+              <p>For a triangle, count each row and add them.</p>
+              <p>Use <code>print</code> for items on the same row.</p>
+              <p>Use <code>println</code> after the inner loop to move to the next row.</p>
+              <p><code>j = i + 1</code> is useful for unique pairs.</p>
+              <p>Trace nested loops by fixing the outer value first.</p>
+              <p>Accumulator scope decides whether it resets per row or keeps a total.</p>
+              <p>Nested loops often suggest quadratic runtime.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 12｜Nested Loops。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

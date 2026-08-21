@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 5 課後練習｜String Methods</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 5 課後練習：String index、length、substring、indexOf、equals、compareTo、concatenation、immutability、runtime errors 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 5 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-5-presentation.html">投影模式</a>
+        <a href="lesson-5.html">文章版</a>
+        <a href="lesson-4-practice.html">上一課練習</a>
+        <a href="lesson-6-practice.html">下一課練習</a>
+        <a href="#index">Index</a>
+        <a href="#substring">substring</a>
+        <a href="#compare">比較</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 5</p>
+          <h1>課後練習：String Methods</h1>
+          <p class="lead">
+            先自己標 index、判斷 return type、預測 output，再打開詳解。這份題本會練習
+            <code>length()</code>、<code>substring()</code>、<code>indexOf()</code>、<code>equals()</code>、
+            <code>compareTo()</code>、concatenation、immutability 與 AP-style method chaining。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>8</strong><span>主題分區</span></div>
+            <div><strong>Index</strong><span>重新標記</span></div>
+            <div><strong>AP-style</strong><span>追蹤與除錯</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 名詞與觀念</a>
+          <a href="#index">B. Index 與 length</a>
+          <a href="#substring">C. substring</a>
+          <a href="#indexof">D. indexOf</a>
+          <a href="#compare">E. equals / == / compareTo</a>
+          <a href="#concat">F. Concatenation / Immutability</a>
+          <a href="#errors">G. 錯誤與 AP tracing</a>
+          <a href="#coding">H. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>名詞與觀念</h2>
+              <p>先確認 String 的 type、literal、constructor 與 char 差異。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Reference Type</span></div>
+              <h3><code>String</code> 是 primitive type 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p1">詳解</button>
+              <div class="reveal-panel" id="l5p1">
+                <p>不是。<code>String</code> 是 class / reference type。<code>String name = "Alice";</code> 中的 <code>name</code> 是 reference variable。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Literal</span></div>
+              <h3>String literal 使用單引號還是雙引號？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p2">詳解</button>
+              <div class="reveal-panel" id="l5p2">
+                <p>使用雙引號，例如 <code>"Hello"</code>。單引號用於 <code>char</code>，例如 <code>'A'</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>char vs String</span></div>
+              <h3><code>'A'</code> 和 <code>"A"</code> 有什麼不同？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p3">詳解</button>
+              <div class="reveal-panel" id="l5p3">
+                <p><code>'A'</code> 是 <code>char</code>，使用單引號。<code>"A"</code> 是 <code>String</code>，使用雙引號。即使只有一個字元，<code>"A"</code> 仍是 String。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Import</span></div>
+              <h3>使用 <code>String</code> 需要 <code>import java.lang.String;</code> 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p4">詳解</button>
+              <div class="reveal-panel" id="l5p4">
+                <p>不需要。<code>String</code> 位於 <code>java.lang</code>，而 <code>java.lang</code> 中的 classes 預設可直接使用。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Constructor</span></div>
+              <h3>哪一行使用 constructor 建立 String object？</h3>
+              <div class="choices">
+                <span>A. <code>String a = "cat";</code></span>
+                <span>B. <code>String b = new String("cat");</code></span>
+                <span>C. <code>char c = 'c';</code></span>
+                <span>D. <code>int x = 5;</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l5p5">詳解</button>
+              <div class="reveal-panel" id="l5p5">
+                <p>答案是 B。<code>new String("cat")</code> 是 Lesson 4 中學過的 constructor call。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="index" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Index and length</p>
+              <h2>Index 與 <code>length()</code></h2>
+              <p>每題都先標 index。第一個 index 是 0，最後 index 是 <code>length() - 1</code>。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Index</span></div>
+              <h3><code>"computer"</code> 的最後一個合法 index 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p6">詳解</button>
+              <div class="reveal-panel" id="l5p6">
+                <p><code>"computer"</code> 長度是 <code>8</code>，最後 index 是 <code>8 - 1 = 7</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>length</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String s = "AP CSA";
+System.out.println(s.length());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p7">詳解</button>
+              <div class="reveal-panel" id="l5p7">
+                <p>Output 是 <code>6</code>。中間的 space 是一個 character。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Empty String</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String s = "";
+System.out.println(s.length());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p8">詳解</button>
+              <div class="reveal-panel" id="l5p8">
+                <p>Output 是 <code>0</code>。<code>""</code> 是 empty string，是存在的 String object，只是長度為 0。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Syntax</span></div>
+              <h3><code>word.length</code> 和 <code>word.length()</code> 哪個是本課正確 method call？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p9">詳解</button>
+              <div class="reveal-panel" id="l5p9">
+                <p><code>word.length()</code>。<code>length()</code> 是 method，所以需要 parentheses。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>null</span></div>
+              <h3><code>null</code>、<code>""</code>、<code>" "</code> 的 <code>length()</code> 差異是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p10">詳解</button>
+              <div class="reveal-panel" id="l5p10">
+                <p><code>null</code> 沒有 String object，呼叫 <code>length()</code> 會 error。<code>""</code> 長度是 <code>0</code>。<code>" "</code> 有一個 space，長度是 <code>1</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="substring" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. substring</p>
+              <h2><code>substring()</code></h2>
+              <p>看到 <code>substring(a, b)</code> 就寫 <code>a &lt;= index &lt; b</code>。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>substring</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String str = "computer";
+System.out.println(str.substring(2, 6));</code></pre>
+              <div class="choices">
+                <span>A. <code>mpu</code></span>
+                <span>B. <code>mput</code></span>
+                <span>C. <code>mpute</code></span>
+                <span>D. <code>ompu</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l5p11">詳解</button>
+              <div class="reveal-panel" id="l5p11">
+                <p>答案是 B。<code>substring(2, 6)</code> 取 index 2、3、4、5，也就是 <code>"mput"</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>substring</span></div>
+              <h3><code>"abcdef".substring(2)</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p12">詳解</button>
+              <div class="reveal-panel" id="l5p12">
+                <p>結果是 <code>"cdef"</code>。index 2 是 <code>c</code>，<code>substring(2)</code> 從 index 2 取到最後。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Empty String</span></div>
+              <h3><code>"abcdef".substring(2, 2)</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p13">詳解</button>
+              <div class="reveal-panel" id="l5p13">
+                <p>結果是 <code>""</code>。start 和 end 相同，沒有任何 character 被取出，但這是合法的。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Empty String</span></div>
+              <h3><code>"abcdef".substring(6)</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p14">詳解</button>
+              <div class="reveal-panel" id="l5p14">
+                <p>結果是 <code>""</code>。<code>6 == s.length()</code>，從結尾取到結尾是合法 empty string。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Runtime Error</span></div>
+              <h3><code>"abcdef".substring(5, 7)</code> 會發生什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p15">詳解</button>
+              <div class="reveal-panel" id="l5p15">
+                <p>Runtime error，可能是 <code>StringIndexOutOfBoundsException</code>。因為 length 是 <code>6</code>，但 ending index <code>7</code> 超出 <code>length()</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Single Character</span></div>
+              <h3>使用 <code>substring</code> 取得 <code>String word = "computer";</code> 中 index 4 的單一字元 String。</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p16">詳解</button>
+              <div class="reveal-panel" id="l5p16">
+                <p>寫 <code>word.substring(4, 5)</code>，結果是 <code>"u"</code>。注意回傳 type 是 <code>String</code>，不是 <code>char</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Last Character</span></div>
+              <h3>如何取得 String <code>s</code> 的最後一個 character 所形成的 String？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p17">詳解</button>
+              <div class="reveal-panel" id="l5p17">
+                <p>可以寫 <code>s.substring(s.length() - 1)</code>，或 <code>s.substring(s.length() - 1, s.length())</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Formula</span></div>
+              <h3><code>substring(from, to)</code> 的合法條件是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p18">詳解</button>
+              <div class="reveal-panel" id="l5p18">
+                <p><code>0 &lt;= from &lt;= to &lt;= s.length()</code>。注意 <code>to</code> 可以等於 <code>length()</code>，因為 <code>to</code> 是停止位置，不是最後一個被取出的 index。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="indexof" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. indexOf</p>
+              <h2><code>indexOf()</code></h2>
+              <p>只回傳第一次出現的位置，找不到回傳 <code>-1</code>。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>indexOf</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String str = "banana";
+System.out.println(str.indexOf("na"));</code></pre>
+              <div class="choices">
+                <span>A. <code>1</code></span>
+                <span>B. <code>2</code></span>
+                <span>C. <code>3</code></span>
+                <span>D. <code>4</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l5p19">詳解</button>
+              <div class="reveal-panel" id="l5p19">
+                <p>答案是 B。<code>"na"</code> 第一次從 index <code>2</code> 開始。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Not Found</span></div>
+              <h3><code>"banana".indexOf("x")</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p20">詳解</button>
+              <div class="reveal-panel" id="l5p20">
+                <p>結果是 <code>-1</code>。找不到時不是 <code>0</code>，因為 <code>0</code> 表示從第一個位置就找到。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>First Occurrence</span></div>
+              <h3><code>"banana".indexOf("a")</code> 為什麼不是 <code>3</code> 或 <code>5</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p21">詳解</button>
+              <div class="reveal-panel" id="l5p21">
+                <p><code>indexOf()</code> 只回傳第一次出現的位置。<code>"a"</code> 第一次出現在 index <code>1</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Case Sensitive</span></div>
+              <h3><code>"Computer".indexOf("com")</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p22">詳解</button>
+              <div class="reveal-panel" id="l5p22">
+                <p>結果是 <code>-1</code>。<code>indexOf()</code> 是 case-sensitive，<code>"C"</code> 和 <code>"c"</code> 不同。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Space</span></div>
+              <h3><code>"AP CSA".indexOf(" ")</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p23">詳解</button>
+              <div class="reveal-panel" id="l5p23">
+                <p>結果是 <code>2</code>。space 也是 String 的一部分。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>indexOf + substring</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String email = "student@example.com";
+int at = email.indexOf("@");
+System.out.println(email.substring(0, at));</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p24">詳解</button>
+              <div class="reveal-panel" id="l5p24">
+                <p>Output 是 <code>student</code>。<code>at</code> 是 <code>7</code>，<code>substring(0, 7)</code> 不包含 index 7 的 <code>@</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="compare" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Comparison</p>
+              <h2><code>equals()</code>、<code>==</code>、<code>compareTo()</code></h2>
+              <p>比較文字內容用 <code>equals()</code>；比較 references 是否同一個 object 才是 <code>==</code>。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>equals</span></div>
+              <h3><code>"hello".equals("Hello")</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p25">詳解</button>
+              <div class="reveal-panel" id="l5p25">
+                <p>結果是 <code>false</code>。<code>equals()</code> 是 case-sensitive。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>== vs equals</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String a = new String("AP");
+String b = new String("AP");
+
+System.out.println(a == b);
+System.out.println(a.equals(b));</code></pre>
+              <div class="choices">
+                <span>A. <code>true true</code></span>
+                <span>B. <code>true false</code></span>
+                <span>C. <code>false true</code></span>
+                <span>D. <code>false false</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l5p26">詳解</button>
+              <div class="reveal-panel" id="l5p26">
+                <p>答案是 C。兩次 <code>new</code> 建立兩個不同 objects，所以 <code>a == b</code> 是 <code>false</code>；內容相同，所以 <code>a.equals(b)</code> 是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>compareTo</span></div>
+              <h3>下列何者一定正確？</h3>
+              <pre><code>String a = "apple";
+String b = "banana";
+int result = a.compareTo(b);</code></pre>
+              <div class="choices">
+                <span>A. <code>result == -1</code></span>
+                <span>B. <code>result &lt; 0</code></span>
+                <span>C. <code>result &gt; 0</code></span>
+                <span>D. <code>result == 1</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l5p27">詳解</button>
+              <div class="reveal-panel" id="l5p27">
+                <p>答案是 B。<code>"apple"</code> 排在 <code>"banana"</code> 前面，所以結果是 negative。不要假設一定是 <code>-1</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>compareTo</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String a = "dog";
+String b = "cat";
+System.out.println(a.compareTo(b) &gt; 0);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p28">詳解</button>
+              <div class="reveal-panel" id="l5p28">
+                <p>Output 是 <code>true</code>。<code>"dog"</code> 排在 <code>"cat"</code> 後面，所以 <code>compareTo()</code> 回傳正數。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>compareTo</span></div>
+              <h3><code>"car".compareTo("card")</code> 的結果應該判斷成什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p29">詳解</button>
+              <div class="reveal-panel" id="l5p29">
+                <p>結果是 negative，也就是 <code>&lt; 0</code>。<code>"car"</code> 是 <code>"card"</code> 的 prefix，較短的 String 排在前面。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>null</span></div>
+              <h3>這段程式會發生什麼？</h3>
+              <pre><code>String s = null;
+System.out.println(s.equals("hello"));</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p30">詳解</button>
+              <div class="reveal-panel" id="l5p30">
+                <p>會造成 <code>NullPointerException</code>。<code>s</code> 是 <code>null</code>，沒有 String object 可以呼叫 <code>equals()</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="concat" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Concatenation and Immutability</p>
+              <h2>String Concatenation 與 Immutability</h2>
+              <p>注意 <code>+</code> 的左到右 evaluation，以及 String method 不會修改原 String object。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Concatenation</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>System.out.println("Result: " + 2 + 3);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p31">詳解</button>
+              <div class="reveal-panel" id="l5p31">
+                <p>Output 是 <code>Result: 23</code>。String 先出現，所以後面的 <code>2</code> 和 <code>3</code> 依序做 concatenation。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Concatenation</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>System.out.println(2 + 3 + "4");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p32">詳解</button>
+              <div class="reveal-panel" id="l5p32">
+                <p>Output 是 <code>54</code>。先做 <code>2 + 3 = 5</code>，再和 <code>"4"</code> 串接。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Concatenation</span></div>
+              <h3><code>"A" + (1 + 2)</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p33">詳解</button>
+              <div class="reveal-panel" id="l5p33">
+                <p>結果是 <code>"A3"</code>。parentheses 讓 <code>1 + 2</code> 先做 numeric addition。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Immutability</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String s = "hello";
+
+s.substring(1);
+
+System.out.println(s);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p34">詳解</button>
+              <div class="reveal-panel" id="l5p34">
+                <p>Output 是 <code>hello</code>。String 是 immutable，<code>substring(1)</code> 回傳新的 String result，但沒有被保存。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Immutability</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String s = "hello";
+
+s = s.substring(1);
+
+System.out.println(s);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p35">詳解</button>
+              <div class="reveal-panel" id="l5p35">
+                <p>Output 是 <code>ello</code>。這次 return value 被 assignment 回 <code>s</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>+=</span></div>
+              <h3><code>s += "!"</code> 是否代表原本的 String object 被修改？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p36">詳解</button>
+              <div class="reveal-panel" id="l5p36">
+                <p>不是。可以把它想成 <code>s = s + "!"</code>。它會產生新的 String result，然後讓 <code>s</code> reference 到新的結果。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="errors" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Errors and AP Tracing</p>
+              <h2>錯誤與 AP-style Tracing</h2>
+              <p>每次產生新的 String，都要重新標 index。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>Runtime Error</span></div>
+              <h3>這段程式會發生什麼？</h3>
+              <pre><code>String s = "cat";
+System.out.println(s.substring(0, 4));</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p37">詳解</button>
+              <div class="reveal-panel" id="l5p37">
+                <p>Runtime error，可能是 <code>StringIndexOutOfBoundsException</code>。<code>s.length()</code> 是 <code>3</code>，但 ending index <code>4</code> 超出範圍。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Compile Error</span></div>
+              <h3><code>String s = 10;</code> 是哪一種錯誤？</h3>
+              <button class="reveal-button" type="button" data-reveal="l5p38">詳解</button>
+              <div class="reveal-panel" id="l5p38">
+                <p>Compile-time error。<code>10</code> 是 <code>int</code> value，不能直接存進 <code>String</code> variable。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Logic Error</span></div>
+              <h3>如果想取前三個 characters，這行哪裡錯？</h3>
+              <pre><code>String s = "computer";
+String firstThree = s.substring(0, 2);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p39">詳解</button>
+              <div class="reveal-panel" id="l5p39">
+                <p>這是 logic / off-by-one error。<code>substring(0, 2)</code> 只取 index 0、1，得到 <code>"co"</code>。前三個應寫 <code>substring(0, 3)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Method Chaining</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String s = "banana";
+System.out.println(s.substring(2).indexOf("a"));</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p40">詳解</button>
+              <div class="reveal-panel" id="l5p40">
+                <p>Output 是 <code>1</code>。<code>s.substring(2)</code> 得到 <code>"nana"</code>，新的 String index 從 0 開始，第一個 <code>"a"</code> 在 index <code>1</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Tracing</span></div>
+              <h3>完整 trace，預測三行 output。</h3>
+              <pre><code>String str = "mississippi";
+
+int a = str.indexOf("iss");
+String b = str.substring(a, a + 4);
+int c = b.length();
+
+System.out.println(a);
+System.out.println(b);
+System.out.println(c);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p41">詳解</button>
+              <div class="reveal-panel" id="l5p41">
+                <pre><code>1
+issi
+4</code></pre>
+                <p><code>"iss"</code> 第一次從 index <code>1</code> 開始。<code>substring(1, 5)</code> 得到 <code>"issi"</code>，長度是 <code>4</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Re-index</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String s = "abcdefgh";
+
+s = s.substring(2, 7);
+s = s.substring(1, s.length() - 1);
+
+System.out.println(s);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p42">詳解</button>
+              <div class="reveal-panel" id="l5p42">
+                <p>第一行得到 <code>"cdefg"</code>。重新標 index 後，<code>s.length()</code> 是 <code>5</code>，第二行是 <code>substring(1, 4)</code>，得到 <code>"def"</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>AP-style</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String s = "AP CSA";
+
+int x = s.indexOf("C");
+String result = s.substring(x);
+
+System.out.println(result);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p43">詳解</button>
+              <div class="reveal-panel" id="l5p43">
+                <p><code>"C"</code> 在 index <code>3</code>，所以 <code>s.substring(3)</code> 得到 <code>CSA</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>AP-style</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String s = "abcdefgh";
+
+int x = s.length() / 2;
+
+System.out.println(s.substring(0, x));</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p44">詳解</button>
+              <div class="reveal-panel" id="l5p44">
+                <p><code>s.length()</code> 是 <code>8</code>，所以 <code>x = 4</code>。<code>substring(0, 4)</code> 得到 <code>abcd</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">H. Coding</p>
+              <h2>程式練習</h2>
+              <p>可以貼到 Java 執行器完成。先自己寫，再打開參考解法。</p>
+              <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Coding</span></div>
+              <h3>取得姓名縮寫</h3>
+              <p>設定 <code>String firstName = "Alice"; String lastName = "Brown";</code>，輸出 <code>AB</code>。</p>
+              <button class="reveal-button" type="button" data-reveal="l5p45">參考解法</button>
+              <div class="reveal-panel" id="l5p45">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        String firstName = "Alice";
+        String lastName = "Brown";
+
+        String initials = firstName.substring(0, 1)
+                        + lastName.substring(0, 1);
+
+        System.out.println(initials);
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Coding</span></div>
+              <h3>取 Email Username</h3>
+              <p>設定 <code>String email = "student@example.com";</code>，輸出 <code>student</code>。</p>
+              <button class="reveal-button" type="button" data-reveal="l5p46">參考解法</button>
+              <div class="reveal-panel" id="l5p46">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        String email = "student@example.com";
+
+        int at = email.indexOf("@");
+        String username = email.substring(0, at);
+
+        System.out.println(username);
+    }
+}</code></pre>
+                <p><code>substring(0, at)</code> 不包含 <code>@</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Coding</span></div>
+              <h3>取副檔名</h3>
+              <p>設定 <code>String file = "report.pdf";</code>，輸出 <code>pdf</code>。</p>
+              <button class="reveal-button" type="button" data-reveal="l5p47">參考解法</button>
+              <div class="reveal-panel" id="l5p47">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        String file = "report.pdf";
+
+        int dot = file.indexOf(".");
+        String extension = file.substring(dot + 1);
+
+        System.out.println(extension);
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Coding</span></div>
+              <h3>取前後字元</h3>
+              <p>設定 <code>String word = "computer";</code>，輸出第一個和最後一個 character 組成的 String：<code>cr</code>。</p>
+              <button class="reveal-button" type="button" data-reveal="l5p48">參考解法</button>
+              <div class="reveal-panel" id="l5p48">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        String word = "computer";
+
+        String first = word.substring(0, 1);
+        String last = word.substring(word.length() - 1);
+
+        System.out.println(first + last);
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Challenge Trace</span></div>
+              <h3>預測三行 output。</h3>
+              <pre><code>String s = "APComputerScience";
+
+int x = s.indexOf("Computer");
+String a = s.substring(x);
+String b = a.substring(0, a.indexOf("Science"));
+
+System.out.println(x);
+System.out.println(a);
+System.out.println(b);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p49">詳解</button>
+              <div class="reveal-panel" id="l5p49">
+                <pre><code>2
+ComputerScience
+Computer</code></pre>
+                <p><code>"Computer"</code> 從 index <code>2</code> 開始。<code>a</code> 是 <code>"ComputerScience"</code>。重新標 index 後，<code>"Science"</code> 從 index <code>8</code> 開始，所以 <code>a.substring(0, 8)</code> 是 <code>"Computer"</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>完整綜合考題，預測 output。</h3>
+              <pre><code>String s = "programming";
+
+String a = s.substring(0, 4);
+String b = s.substring(4);
+int c = b.indexOf("m");
+boolean d = a.equals("prog");
+int e = a.compareTo("test");
+
+System.out.println(a);
+System.out.println(b);
+System.out.println(c);
+System.out.println(d);
+System.out.println(e &lt; 0);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l5p50">詳解</button>
+              <div class="reveal-panel" id="l5p50">
+                <pre><code>prog
+ramming
+2
+true
+true</code></pre>
+                <p><code>a</code> 是 <code>"prog"</code>。<code>b</code> 是 <code>"ramming"</code>，其中第一個 <code>"m"</code> 在 index <code>2</code>。<code>a.equals("prog")</code> 是 <code>true</code>。<code>"prog"</code> 排在 <code>"test"</code> 前面，所以 <code>e &lt; 0</code> 是 <code>true</code>。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 5 課後練習。先標 index、判斷 return type，再打開詳解檢查推理。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 9 課後練習｜while Loops</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 9 課後練習：while loops、loop tracing、counter loops、off-by-one、accumulator、sentinel、input validation、infinite loops、digit algorithms 與 coding practice。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 9 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-9-presentation.html">投影模式</a>
+        <a href="lesson-9.html">文章版</a>
+        <a href="lesson-8-practice.html">上一課練習</a>
+        <a href="lesson-10-practice.html">下一課練習</a>
+        <a href="#trace">Trace</a>
+        <a href="#counter">Counter</a>
+        <a href="#accumulator">Accumulator</a>
+        <a href="#sentinel">Sentinel</a>
+        <a href="#digits">Digits</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 9</p>
+          <h1>課後練習：<code>while</code> Loops</h1>
+          <p class="lead">
+            先自己 trace 每一輪，再打開詳解。這份題本練習 <code>while</code> syntax、zero iterations、
+            execution count、off-by-one、accumulator、sentinel、input validation、infinite loops、
+            Boolean flags 與 digit algorithms。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>Trace</strong><span>逐輪推理</span></div>
+            <div><strong>AP-style</strong><span>常見陷阱</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#trace">B. Basic Tracing</a>
+          <a href="#counter">C. Counter / Off-by-One</a>
+          <a href="#accumulator">D. Accumulator</a>
+          <a href="#sentinel">E. Sentinel / Validation</a>
+          <a href="#digits">F. Digits / Flags</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先確認 <code>while</code> 的基本語意、execution order 與 loop 四元素。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Definition</span></div>
+              <h3><code>while</code> loop 的基本語意是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p1">詳解</button>
+              <div class="reveal-panel" id="l9p1">
+                <p>只要 condition 是 <code>true</code>，就執行 body；執行完後回去重新檢查 condition。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Pre-test</span></div>
+              <h3>為什麼說 <code>while</code> 是 pre-test loop？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p2">詳解</button>
+              <div class="reveal-panel" id="l9p2">
+                <p>因為它在執行 body 前先檢查 condition。若一開始 false，body 會執行 0 次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>if vs while</span></div>
+              <h3><code>if</code> 和 <code>while</code> 最大差異是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p3">詳解</button>
+              <div class="reveal-panel" id="l9p3">
+                <p><code>if</code> 最多執行一次 body；<code>while</code> 會在 condition 仍為 true 時一直重複。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Parts</span></div>
+              <h3>一個典型 <code>while</code> loop 需要哪四個核心元素？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p4">詳解</button>
+              <div class="reveal-panel" id="l9p4">
+                <p>Initialization、condition、update、termination。少了 update 或 termination 方向錯，常會 infinite loop。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Iteration</span></div>
+              <h3>Iteration 是什麼意思？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p5">詳解</button>
+              <div class="reveal-panel" id="l9p5">
+                <p>Loop body 完整執行一次，稱為 one iteration。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Termination</span></div>
+              <h3>判斷一個 loop 是否會停止時，最重要的兩個問題是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p6">詳解</button>
+              <div class="reveal-panel" id="l9p6">
+                <p>控制 condition 的變數有沒有改變？改變方向會不會讓 condition 最後變成 false？</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="trace" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Trace</p>
+              <h2>Basic Tracing</h2>
+              <p>逐輪寫出 condition、body、update 後的值。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Output</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 1;
+
+while (x &lt;= 3)
+{
+    System.out.println(x);
+    x++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p7">詳解</button>
+              <div class="reveal-panel" id="l9p7">
+                <pre><code>1
+2
+3</code></pre>
+                <p><code>x</code> 分別以 1、2、3 進入 body，更新到 4 後 condition false。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Final value</span></div>
+              <h3>最後印出什麼？</h3>
+              <pre><code>int x = 2;
+
+while (x &lt; 10)
+{
+    x += 3;
+}
+
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p8">詳解</button>
+              <div class="reveal-panel" id="l9p8">
+                <p><code>x</code> 變化是 2 → 5 → 8 → 11，接著 <code>11 &lt; 10</code> false，所以印 <code>11</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Zero iterations</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 10;
+
+while (x &lt; 5)
+{
+    System.out.println(x);
+    x++;
+}
+
+System.out.println("Done");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p9">詳解</button>
+              <div class="reveal-panel" id="l9p9">
+                <p>只印 <code>Done</code>。一開始 <code>10 &lt; 5</code> 就 false，body 執行 0 次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Order</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 1;
+
+while (x &lt;= 3)
+{
+    x++;
+    System.out.println(x);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p10">詳解</button>
+              <div class="reveal-panel" id="l9p10">
+                <pre><code>2
+3
+4</code></pre>
+                <p>先 <code>x++</code> 再 print，所以不是 1、2、3。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Division</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 100;
+
+while (x &gt; 1)
+{
+    x /= 2;
+    System.out.println(x);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p11">詳解</button>
+              <div class="reveal-panel" id="l9p11">
+                <pre><code>50
+25
+12
+6
+3
+1</code></pre>
+                <p>Java integer division 會捨去小數，最後 <code>x</code> 到 1 時下一輪 condition false。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Multiplication</span></div>
+              <h3>最後印出什麼？</h3>
+              <pre><code>int x = 1;
+
+while (x &lt; 20)
+{
+    x *= 2;
+}
+
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p12">詳解</button>
+              <div class="reveal-panel" id="l9p12">
+                <p><code>x</code> 變化是 1 → 2 → 4 → 8 → 16 → 32，所以印 <code>32</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Nested if</span></div>
+              <h3>最後 <code>count</code> 是多少？</h3>
+              <pre><code>int x = 1;
+int count = 0;
+
+while (x &lt;= 6)
+{
+    if (x % 2 == 0)
+    {
+        count++;
+    }
+    x++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p13">詳解</button>
+              <div class="reveal-panel" id="l9p13">
+                <p>偶數是 2、4、6，共 3 個，所以 <code>count</code> 是 <code>3</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Short-circuit</span></div>
+              <h3>這段會發生 division by zero 嗎？Loop 執行幾次？</h3>
+              <pre><code>int x = 0;
+
+while (x != 0 &amp;&amp; 100 / x &gt; 1)
+{
+    x--;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p14">詳解</button>
+              <div class="reveal-panel" id="l9p14">
+                <p>不會。<code>x != 0</code> 是 false，右邊不執行。Loop 是 0 iterations。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Order matters</span></div>
+              <h3>最後 <code>sum</code> 是多少？</h3>
+              <pre><code>int x = 1;
+int sum = 0;
+
+while (x &lt;= 5)
+{
+    x++;
+    sum += x;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p15">詳解</button>
+              <div class="reveal-panel" id="l9p15">
+                <p>加進 sum 的是 2、3、4、5、6，所以 <code>sum = 20</code>，不是 15。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="counter" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Counter</p>
+              <h2>Counter / Off-by-One</h2>
+              <p>判斷 loop body 執行幾次，並注意 boundary。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Count</span></div>
+              <h3>這個 loop body 執行幾次？</h3>
+              <pre><code>int i = 0;
+
+while (i &lt; 10)
+{
+    i++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p16">詳解</button>
+              <div class="reveal-panel" id="l9p16">
+                <p>10 次。<code>i</code> 以 0 到 9 進入 body。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Off-by-one</span></div>
+              <h3>這個 loop body 執行幾次？</h3>
+              <pre><code>int i = 0;
+
+while (i &lt;= 10)
+{
+    i++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p17">詳解</button>
+              <div class="reveal-panel" id="l9p17">
+                <p>11 次。<code>i</code> 以 0 到 10 進入 body。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Count</span></div>
+              <h3>這個 loop body 執行幾次？</h3>
+              <pre><code>int i = 1;
+
+while (i &lt; 10)
+{
+    i += 2;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p18">詳解</button>
+              <div class="reveal-panel" id="l9p18">
+                <p>5 次。<code>i</code> 以 1、3、5、7、9 進入 body。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Countdown</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int i = 5;
+
+while (i &gt;= 1)
+{
+    System.out.print(i + " ");
+    i--;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p19">詳解</button>
+              <div class="reveal-panel" id="l9p19">
+                <p><code>5 4 3 2 1 </code>。當 <code>i</code> 更新到 0，condition false。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Even loop</span></div>
+              <h3>寫出 while loop 印出 <code>2 4 6 8 10</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p20">參考解法</button>
+              <div class="reveal-panel" id="l9p20">
+                <pre><code>int i = 2;
+
+while (i &lt;= 10)
+{
+    System.out.print(i + " ");
+    i += 2;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Boundary</span></div>
+              <h3>想執行正好 5 次，哪個比較適合？</h3>
+              <pre><code>A. int i = 1; while (i &lt; 5)
+B. int i = 1; while (i &lt;= 5)</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p21">詳解</button>
+              <div class="reveal-panel" id="l9p21">
+                <p>B。從 1 開始時，<code>i &lt;= 5</code> 會對 1、2、3、4、5 執行，共 5 次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Final value</span></div>
+              <h3>最後 <code>i</code> 是多少？</h3>
+              <pre><code>int i = 4;
+
+while (i &lt;= 15)
+{
+    i += 4;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p22">詳解</button>
+              <div class="reveal-panel" id="l9p22">
+                <p><code>i</code> 變化是 4 → 8 → 12 → 16，最後 <code>16 &lt;= 15</code> false，所以 <code>i = 16</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>0-based</span></div>
+              <h3><code>int i = 0; while (i &lt; n) { ... i++; }</code> 通常執行幾次？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p23">詳解</button>
+              <div class="reveal-panel" id="l9p23">
+                <p>當 <code>n &gt; 0</code> 時執行 <code>n</code> 次，<code>i</code> 以 0 到 <code>n - 1</code> 進入 body。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Bug</span></div>
+              <h3>想印 1 到 5，這段多印了什麼？</h3>
+              <pre><code>int i = 0;
+
+while (i &lt;= 5)
+{
+    System.out.println(i);
+    i++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p24">詳解</button>
+              <div class="reveal-panel" id="l9p24">
+                <p>多印 <code>0</code>。如果想印 1 到 5，應該從 <code>int i = 1;</code> 開始。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="accumulator" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Accumulator</p>
+              <h2>Accumulator / Count Matches</h2>
+              <p>分辨 count、sum、product，並注意初始化值。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Sum</span></div>
+              <h3>最後 <code>sum</code> 是多少？</h3>
+              <pre><code>int i = 1;
+int sum = 0;
+
+while (i &lt;= 4)
+{
+    sum += i;
+    i++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p25">詳解</button>
+              <div class="reveal-panel" id="l9p25">
+                <p><code>1 + 2 + 3 + 4 = 10</code>，所以 <code>sum = 10</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Product</span></div>
+              <h3>為什麼乘法 accumulator 通常從 1 開始？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p26">詳解</button>
+              <div class="reveal-panel" id="l9p26">
+                <p>因為 1 是乘法 identity，<code>1 * x = x</code>。若從 0 開始，<code>0 * anything</code> 都是 0。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Product</span></div>
+              <h3>最後 <code>product</code> 是多少？</h3>
+              <pre><code>int i = 1;
+int product = 1;
+
+while (i &lt;= 4)
+{
+    product *= i;
+    i++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p27">詳解</button>
+              <div class="reveal-panel" id="l9p27">
+                <p><code>1 * 2 * 3 * 4 = 24</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Count</span></div>
+              <h3>最後 <code>count</code> 是多少？</h3>
+              <pre><code>int i = 1;
+int count = 0;
+
+while (i &lt;= 20)
+{
+    if (i % 5 == 0)
+    {
+        count++;
+    }
+    i++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p28">詳解</button>
+              <div class="reveal-panel" id="l9p28">
+                <p>5、10、15、20，共 4 個，所以 <code>count = 4</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Even sum</span></div>
+              <h3>最後 <code>sum</code> 是多少？</h3>
+              <pre><code>int i = 1;
+int sum = 0;
+
+while (i &lt;= 10)
+{
+    if (i % 2 == 0)
+    {
+        sum += i;
+    }
+    i++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p29">詳解</button>
+              <div class="reveal-panel" id="l9p29">
+                <p><code>2 + 4 + 6 + 8 + 10 = 30</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Average</span></div>
+              <h3>若要算平均，為什麼要檢查 <code>count &gt; 0</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p30">詳解</button>
+              <div class="reveal-panel" id="l9p30">
+                <p>避免沒有任何資料時做 <code>sum / count</code>，也就是除以 0。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Trace</span></div>
+              <h3>最後 <code>y</code> 是多少？</h3>
+              <pre><code>int x = 1;
+int y = 0;
+
+while (x &lt;= 8)
+{
+    y += x;
+    x *= 2;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p31">詳解</button>
+              <div class="reveal-panel" id="l9p31">
+                <p><code>x</code> 以 1、2、4、8 進入 body，所以 <code>y = 1 + 2 + 4 + 8 = 15</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Bug</span></div>
+              <h3>這段想求 1 到 5 的總和，為什麼結果不是 15？</h3>
+              <pre><code>int i = 1;
+int sum = 0;
+
+while (i &lt;= 5)
+{
+    i++;
+    sum += i;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p32">詳解</button>
+              <div class="reveal-panel" id="l9p32">
+                <p>更新順序錯。先 <code>i++</code> 後才加，所以加的是 2、3、4、5、6，結果是 20。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="sentinel" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Sentinel / Validation</p>
+              <h2>Sentinel、Input Validation、Infinite Loops</h2>
+              <p>未知輸入次數時，特別注意 priming read 與每輪讀下一筆。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Sentinel</span></div>
+              <h3>Sentinel value 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p33">詳解</button>
+              <div class="reveal-panel" id="l9p33">
+                <p>用來表示資料結束的特殊值，例如輸入 <code>-1</code> 停止讀取。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Priming read</span></div>
+              <h3>Sentinel loop 為什麼常在 loop 前先讀一次 input？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p34">詳解</button>
+              <div class="reveal-panel" id="l9p34">
+                <p>因為 <code>while</code> 要先有一個值，才能判斷它是不是 sentinel。這稱為 priming read。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Sentinel count</span></div>
+              <h3>輸入 <code>5 7 9 -1</code> 時，最後 <code>count</code> 是多少？</h3>
+              <pre><code>int count = 0;
+int number = input.nextInt();
+
+while (number != -1)
+{
+    count++;
+    number = input.nextInt();
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p35">詳解</button>
+              <div class="reveal-panel" id="l9p35">
+                <p><code>count = 3</code>。Sentinel <code>-1</code> 不進 body，不被計入。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Validation</span></div>
+              <h3>合法 score 是 0 到 100。Input validation 的 while condition 應該是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p36">詳解</button>
+              <div class="reveal-panel" id="l9p36">
+                <p><code>while (score &lt; 0 || score &gt; 100)</code>。不合法時才繼續要求輸入。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>Validation bug</span></div>
+              <h3>這個 validation condition 錯在哪？</h3>
+              <pre><code>while (score &gt;= 0 &amp;&amp; score &lt;= 100)
+{
+    System.out.println("Invalid");
+    score = input.nextInt();
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p37">詳解</button>
+              <div class="reveal-panel" id="l9p37">
+                <p>它在 score 合法時繼續問，邏輯反了。Validation 通常是 <code>while (invalid)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Infinite loop</span></div>
+              <h3>這段如果第一次輸入不是 <code>-1</code>，會發生什麼？</h3>
+              <pre><code>int n = input.nextInt();
+
+while (n != -1)
+{
+    System.out.println(n);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p38">詳解</button>
+              <div class="reveal-panel" id="l9p38">
+                <p>Infinite loop。<code>n</code> 在 body 裡沒有更新，也沒有讀下一筆 input。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Infinite loop</span></div>
+              <h3>這段是否會停止？</h3>
+              <pre><code>int x = 1;
+
+while (x &lt; 10)
+{
+    x--;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p39">詳解</button>
+              <div class="reveal-panel" id="l9p39">
+                <p>通常不會停止。<code>x</code> 越來越小，<code>x &lt; 10</code> 一直 true。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="digits" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Digits</p>
+              <h2>Digit Algorithms / Boolean Flags</h2>
+              <p>用 <code>% 10</code> 取得 digit，用 <code>/= 10</code> 移除 digit。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Digit</span></div>
+              <h3>若 <code>number = 58321</code>，<code>number % 10</code> 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p40">詳解</button>
+              <div class="reveal-panel" id="l9p40">
+                <p><code>1</code>，也就是最右邊的 digit。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Digit</span></div>
+              <h3>若 <code>number = 58321</code>，執行 <code>number /= 10</code> 後 <code>number</code> 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p41">詳解</button>
+              <div class="reveal-panel" id="l9p41">
+                <p><code>5832</code>。Integer division 會移除最右 digit。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Digit sum</span></div>
+              <h3>最後 <code>sum</code> 是多少？</h3>
+              <pre><code>int number = 6241;
+int sum = 0;
+
+while (number &gt; 0)
+{
+    int digit = number % 10;
+    sum += digit;
+    number /= 10;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p42">詳解</button>
+              <div class="reveal-panel" id="l9p42">
+                <p><code>6 + 2 + 4 + 1 = 13</code>。處理順序是 1、4、2、6，但總和一樣。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>Count digits</span></div>
+              <h3>最後 <code>count</code> 是多少？</h3>
+              <pre><code>int number = 5070;
+int count = 0;
+
+while (number &gt; 0)
+{
+    count++;
+    number /= 10;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p43">詳解</button>
+              <div class="reveal-panel" id="l9p43">
+                <p><code>count = 4</code>。中間的 0 仍然是一個 digit；<code>5070 → 507 → 50 → 5 → 0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Count specific digit</span></div>
+              <h3>最後 <code>count</code> 是多少？</h3>
+              <pre><code>int number = 727417;
+int count = 0;
+
+while (number &gt; 0)
+{
+    int digit = number % 10;
+    if (digit == 7)
+    {
+        count++;
+    }
+    number /= 10;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p44">詳解</button>
+              <div class="reveal-panel" id="l9p44">
+                <p>數字 7 出現 3 次，所以 <code>count = 3</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Flag</span></div>
+              <h3>這段最後 <code>found</code> 是什麼？</h3>
+              <pre><code>int number = 2468;
+boolean found = false;
+
+while (number &gt; 0 &amp;&amp; !found)
+{
+    int digit = number % 10;
+    if (digit == 7)
+    {
+        found = true;
+    }
+    number /= 10;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p45">詳解</button>
+              <div class="reveal-panel" id="l9p45">
+                <p><code>false</code>。沒有任何 digit 是 7，所以 flag 不會變成 true。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding</p>
+              <h2>程式練習</h2>
+              <p>把本課 pattern 寫成可執行 Java 片段。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Coding</span></div>
+              <h3>寫一個 while loop 印出 1 到 10。</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p46">參考解法</button>
+              <div class="reveal-panel" id="l9p46">
+                <pre><code>int i = 1;
+
+while (i &lt;= 10)
+{
+    System.out.println(i);
+    i++;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Coding</span></div>
+              <h3>寫一個 while loop 計算 1 到 20 的總和。</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p47">參考解法</button>
+              <div class="reveal-panel" id="l9p47">
+                <pre><code>int i = 1;
+int sum = 0;
+
+while (i &lt;= 20)
+{
+    sum += i;
+    i++;
+}
+
+System.out.println(sum);</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Coding</span></div>
+              <h3>寫 input validation：choice 必須在 1 到 5。</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p48">參考解法</button>
+              <div class="reveal-panel" id="l9p48">
+                <pre><code>int choice = input.nextInt();
+
+while (choice &lt; 1 || choice &gt; 5)
+{
+    System.out.println("Invalid.");
+    choice = input.nextInt();
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Coding</span></div>
+              <h3>寫 sentinel loop：讀入正整數，輸入 0 停止，計算總和。</h3>
+              <button class="reveal-button" type="button" data-reveal="l9p49">參考解法</button>
+              <div class="reveal-panel" id="l9p49">
+                <pre><code>int total = 0;
+int value = input.nextInt();
+
+while (value != 0)
+{
+    total += value;
+    value = input.nextInt();
+}
+
+System.out.println(total);</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int n = 6241;
+int result = 0;
+
+while (n &gt; 0)
+{
+    int digit = n % 10;
+
+    if (digit % 2 == 0)
+    {
+        result += digit;
+    }
+
+    n /= 10;
+}
+
+System.out.println(result);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l9p50">詳解</button>
+              <div class="reveal-panel" id="l9p50">
+                <p>偶數 digits 是 2、4、6，所以 <code>result = 12</code>。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 9 課後練習。先 trace condition、body、update，再打開詳解檢查推理。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

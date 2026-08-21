@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 6 課後練習｜Boolean Expressions</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 6 課後練習：boolean values、relational operators、= vs ==、numeric comparison、reference comparison、null、String Boolean expressions、compile errors 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 6 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-6-presentation.html">投影模式</a>
+        <a href="lesson-6.html">文章版</a>
+        <a href="lesson-5-practice.html">上一課練習</a>
+        <a href="lesson-7-practice.html">下一課練習</a>
+        <a href="#concepts">Concepts</a>
+        <a href="#operators">Operators</a>
+        <a href="#numeric">Numeric</a>
+        <a href="#reference">Reference</a>
+        <a href="#string">String</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 6</p>
+          <h1>課後練習：Boolean Expressions</h1>
+          <p class="lead">
+            先自己判斷 type、計算左右 expression、畫 reference diagram，再打開詳解。
+            這份題本會練習 Boolean values、relational operators、numeric tracing、reference comparison、
+            <code>null</code>、String Boolean expressions、compile-time errors 與 AP-style tracing。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>true/false</strong><span>精準判斷</span></div>
+            <div><strong>AP-style</strong><span>追蹤與除錯</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. Boolean 觀念</a>
+          <a href="#operators">B. Relational Operators</a>
+          <a href="#numeric">C. Numeric Tracing</a>
+          <a href="#reference">D. Reference / null</a>
+          <a href="#string">E. String Boolean</a>
+          <a href="#errors">F. 錯誤判斷</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>Boolean 觀念</h2>
+              <p>先確認 <code>boolean</code>、<code>true</code>、<code>false</code>、Boolean expression 的基本定義。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Type</span></div>
+              <h3><code>boolean</code> 是 primitive type 還是 reference type？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p1">詳解</button>
+              <div class="reveal-panel" id="l6p1">
+                <p><code>boolean</code> 是 primitive type。它只有 <code>true</code> 和 <code>false</code> 兩種值。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Literal</span></div>
+              <h3><code>true</code> 和 <code>"true"</code> 有什麼不同？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p2">詳解</button>
+              <div class="reveal-panel" id="l6p2">
+                <p><code>true</code> 是 <code>boolean</code> literal。<code>"true"</code> 是 <code>String</code>，因為有雙引號。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Java Rule</span></div>
+              <h3>在 Java 中，<code>boolean x = 1;</code> 合法嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p3">詳解</button>
+              <div class="reveal-panel" id="l6p3">
+                <p>不合法。Java 不把 <code>1</code> 當作 <code>true</code>，也不把 <code>0</code> 當作 <code>false</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Expression</span></div>
+              <h3>Boolean expression 的結果一定是什麼 type？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p4">詳解</button>
+              <div class="reveal-panel" id="l6p4">
+                <p>一定是 <code>boolean</code>，也就是 <code>true</code> 或 <code>false</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Assignment</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>boolean ready = false;
+ready = true;
+
+System.out.println(ready);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p5">詳解</button>
+              <div class="reveal-panel" id="l6p5">
+                <p>Output 是 <code>true</code>。第二行重新 assignment，讓 <code>ready</code> 變成 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Boolean Variable</span></div>
+              <h3>預測 <code>adult</code> 的值。</h3>
+              <pre><code>int age = 20;
+boolean adult = age &gt;= 18;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p6">詳解</button>
+              <div class="reveal-panel" id="l6p6">
+                <p><code>20 &gt;= 18</code> 是 <code>true</code>，所以 <code>adult</code> 是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Not Auto Update</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 5;
+boolean result = x &gt; 3;
+
+x = 1;
+
+System.out.println(result);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p7">詳解</button>
+              <div class="reveal-panel" id="l6p7">
+                <p>Output 是 <code>true</code>。<code>result</code> 在第二行已經被算出來，不會因為 <code>x</code> 後來改變而自動更新。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="operators" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Operators</p>
+              <h2>Relational Operators</h2>
+              <p>每一題都先確認 operator 的意思，尤其注意 boundary value。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>==</span></div>
+              <h3><code>5 == 5</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p8">詳解</button>
+              <div class="reveal-panel" id="l6p8">
+                <p><code>true</code>。兩邊數值相同。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>!=</span></div>
+              <h3><code>5 != 5</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p9">詳解</button>
+              <div class="reveal-panel" id="l6p9">
+                <p><code>false</code>。<code>!=</code> 是 not equal to，但兩邊其實相等。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>&lt;</span></div>
+              <h3>如果 <code>x = 5</code>，<code>x &lt; 5</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p10">詳解</button>
+              <div class="reveal-panel" id="l6p10">
+                <p><code>false</code>。<code>&lt;</code> 不包含等於。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>&lt;=</span></div>
+              <h3>如果 <code>x = 5</code>，<code>x &lt;= 5</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p11">詳解</button>
+              <div class="reveal-panel" id="l6p11">
+                <p><code>true</code>。<code>&lt;=</code> 包含等於。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Boundary</span></div>
+              <h3>條件是 <code>score &gt; 80</code>。當 <code>score = 80</code> 時結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p12">詳解</button>
+              <div class="reveal-panel" id="l6p12">
+                <p><code>false</code>。<code>&gt;</code> 不包含等於。如果條件是 <code>score &gt;= 80</code> 才會是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Boundary</span></div>
+              <h3>條件是 <code>age &gt;= 18</code>。哪幾個 age 會得到 <code>true</code>？</h3>
+              <div class="choices">
+                <span>A. 17</span>
+                <span>B. 18</span>
+                <span>C. 19</span>
+                <span>D. 18 和 19</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l6p13">詳解</button>
+              <div class="reveal-panel" id="l6p13">
+                <p>答案是 D。<code>&gt;=</code> 包含邊界值 <code>18</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>= vs ==</span></div>
+              <h3><code>x = 5;</code> 和 <code>x == 5</code> 差在哪裡？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p14">詳解</button>
+              <div class="reveal-panel" id="l6p14">
+                <p><code>x = 5;</code> 是 assignment，會修改 <code>x</code>。<code>x == 5</code> 是 comparison，結果是 <code>boolean</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Return Type</span></div>
+              <h3><code>x &gt;= 5</code> 的 return type 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p15">詳解</button>
+              <div class="reveal-panel" id="l6p15">
+                <p><code>boolean</code>。所有 relational expressions 都會得到 <code>true</code> 或 <code>false</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Comparison</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 3;
+int y = 8;
+
+System.out.println(x + 5 == y);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p16">詳解</button>
+              <div class="reveal-panel" id="l6p16">
+                <p><code>x + 5 = 8</code>，所以 <code>8 == 8</code>，output 是 <code>true</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="numeric" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Numeric Tracing</p>
+              <h2>Arithmetic、Integer Division、Casting</h2>
+              <p>先算左右數值，再做最後比較。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Precedence</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>int x = 4;
+int y = 5;
+
+boolean result = x + 3 &lt; y * 2;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p17">詳解</button>
+              <div class="reveal-panel" id="l6p17">
+                <p><code>x + 3 = 7</code>，<code>y * 2 = 10</code>，<code>7 &lt; 10</code> 是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Parentheses</span></div>
+              <h3>預測結果。</h3>
+              <pre><code>(2 + 3) * 4 &gt; 15</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p18">詳解</button>
+              <div class="reveal-panel" id="l6p18">
+                <p><code>(2 + 3) * 4 = 20</code>，<code>20 &gt; 15</code> 是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Integer Division</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>System.out.println(5 / 2 == 2.5);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p19">詳解</button>
+              <div class="reveal-panel" id="l6p19">
+                <p>Output 是 <code>false</code>。<code>5 / 2</code> 是 integer division，結果是 <code>2</code>，所以 <code>2 == 2.5</code> 是 <code>false</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Casting</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>System.out.println((double) 5 / 2 == 2.5);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p20">詳解</button>
+              <div class="reveal-panel" id="l6p20">
+                <p>Output 是 <code>true</code>。<code>(double) 5 / 2</code> 是 <code>2.5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Modulo</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>int x = 12;
+boolean result = x % 3 == 0;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p21">詳解</button>
+              <div class="reveal-panel" id="l6p21">
+                <p><code>12 % 3 = 0</code>，所以 <code>0 == 0</code> 是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Modulo</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>int x = 14;
+boolean result = x % 5 != 0;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p22">詳解</button>
+              <div class="reveal-panel" id="l6p22">
+                <p><code>14 % 5 = 4</code>，<code>4 != 0</code> 是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Integer Division</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>int a = 7;
+int b = 3;
+
+boolean result = a / b &gt; 2;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p23">詳解</button>
+              <div class="reveal-panel" id="l6p23">
+                <p><code>7 / 3 = 2</code>，<code>2 &gt; 2</code> 是 <code>false</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Mixed</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>int x = 4;
+int y = 9;
+
+boolean result = x * 2 + 1 == y;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p24">詳解</button>
+              <div class="reveal-panel" id="l6p24">
+                <p><code>4 * 2 + 1 = 9</code>，所以 <code>9 == 9</code> 是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>int / double</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 5;
+double y = 5.0;
+
+System.out.println(x == y);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p25">詳解</button>
+              <div class="reveal-panel" id="l6p25">
+                <p>Output 是 <code>true</code>。Java 會進行 numeric comparison，兩邊數值都是 <code>5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Trace</span></div>
+              <h3>預測三行 output。</h3>
+              <pre><code>int x = 8;
+int y = 3;
+
+boolean a = x / y == 2;
+boolean b = x % y == 2;
+boolean c = x + y &gt;= 11;
+
+System.out.println(a);
+System.out.println(b);
+System.out.println(c);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p26">詳解</button>
+              <div class="reveal-panel" id="l6p26">
+                <pre><code>true
+true
+true</code></pre>
+                <p><code>8 / 3 = 2</code>，<code>8 % 3 = 2</code>，<code>8 + 3 = 11</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="reference" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Reference / null</p>
+              <h2>Primitive vs Reference、<code>null</code></h2>
+              <p>看到 <code>new</code>、assignment、<code>==</code>、<code>null</code>，先畫 reference diagram。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Primitive</span></div>
+              <h3>Primitive 使用 <code>==</code> 比較什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p27">詳解</button>
+              <div class="reveal-panel" id="l6p27">
+                <p>比較實際 primitive values，例如 <code>int</code>、<code>double</code>、<code>boolean</code> 的值。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Reference</span></div>
+              <h3>Object reference 使用 <code>==</code> 比較什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p28">詳解</button>
+              <div class="reveal-panel" id="l6p28">
+                <p>比較兩個 variables 是否 reference 到同一個 object，不是比較內容。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Two new Strings</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String a = new String("hello");
+String b = new String("hello");
+
+System.out.println(a == b);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p29">詳解</button>
+              <div class="reveal-panel" id="l6p29">
+                <p>Output 是 <code>false</code>。兩次 <code>new</code> 建立兩個不同 objects。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>equals</span></div>
+              <h3>延續上一題，<code>a.equals(b)</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p30">詳解</button>
+              <div class="reveal-panel" id="l6p30">
+                <p><code>true</code>。<code>equals()</code> 比較 String contents，兩個 contents 都是 <code>"hello"</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Alias</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String a = new String("hello");
+String b = a;
+
+System.out.println(a == b);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p31">詳解</button>
+              <div class="reveal-panel" id="l6p31">
+                <p>Output 是 <code>true</code>。<code>b = a</code> 複製 reference，兩個 variables 指向同一個 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>!=</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>String a = new String("dog");
+String b = new String("dog");
+
+boolean result = a != b;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p32">詳解</button>
+              <div class="reveal-panel" id="l6p32">
+                <p><code>result</code> 是 <code>true</code>。兩個 reference 不同，所以 <code>a != b</code> 為真。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>null</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>String name = null;
+boolean result = name == null;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p33">詳解</button>
+              <div class="reveal-panel" id="l6p33">
+                <p><code>result</code> 是 <code>true</code>。<code>== null</code> 是安全的 reference comparison。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>null</span></div>
+              <h3>這段程式會輸出什麼或發生什麼？</h3>
+              <pre><code>String name = null;
+System.out.println(name.equals("Alice"));</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p34">詳解</button>
+              <div class="reveal-panel" id="l6p34">
+                <p>會發生 <code>NullPointerException</code>。<code>name</code> 沒有 reference 到 object，不能呼叫 instance method。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Reference Trace</span></div>
+              <h3>預測四行 output。</h3>
+              <pre><code>String first = new String("Java");
+String second = first;
+String third = null;
+
+boolean a = first == second;
+boolean b = first == third;
+boolean c = third == null;
+boolean d = first != null;
+
+System.out.println(a);
+System.out.println(b);
+System.out.println(c);
+System.out.println(d);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p35">詳解</button>
+              <div class="reveal-panel" id="l6p35">
+                <pre><code>true
+false
+true
+true</code></pre>
+                <p><code>first</code> 和 <code>second</code> 是 alias。<code>third</code> 是 <code>null</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="string" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. String Boolean</p>
+              <h2>String Methods 形成 Boolean Expression</h2>
+              <p>先判斷 method return type，再看比較運算子。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>equals</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>String answer = "yes";
+boolean result = answer.equals("yes");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p36">詳解</button>
+              <div class="reveal-panel" id="l6p36">
+                <p><code>result</code> 是 <code>true</code>。<code>equals()</code> 本身就回傳 <code>boolean</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>length</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>String s = "computer";
+boolean result = s.length() &gt;= 8;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p37">詳解</button>
+              <div class="reveal-panel" id="l6p37">
+                <p><code>"computer"</code> 長度是 <code>8</code>，所以 <code>8 &gt;= 8</code> 是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>indexOf</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>String s = "computer";
+boolean result = s.indexOf("put") == 3;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p38">詳解</button>
+              <div class="reveal-panel" id="l6p38">
+                <p><code>"put"</code> 從 index <code>3</code> 開始，所以結果是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>indexOf not found</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>String s = "computer";
+boolean result = s.indexOf("xyz") &gt;= 0;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p39">詳解</button>
+              <div class="reveal-panel" id="l6p39">
+                <p><code>indexOf("xyz")</code> 是 <code>-1</code>，<code>-1 &gt;= 0</code> 是 <code>false</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>substring + equals</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>String s = "computer";
+boolean result = s.substring(0, 3).equals("com");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p40">詳解</button>
+              <div class="reveal-panel" id="l6p40">
+                <p><code>s.substring(0, 3)</code> 得到 <code>"com"</code>，所以結果是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>compareTo</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>String a = "apple";
+String b = "banana";
+
+boolean result = a.compareTo(b) &lt; 0;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p41">詳解</button>
+              <div class="reveal-panel" id="l6p41">
+                <p><code>"apple"</code> 排在 <code>"banana"</code> 前面，<code>compareTo()</code> 是 negative，所以 <code>result</code> 是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>compareTo</span></div>
+              <h3>預測 <code>result</code>。</h3>
+              <pre><code>String a = "dog";
+String b = "cat";
+
+boolean result = a.compareTo(b) &lt; 0;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p42">詳解</button>
+              <div class="reveal-panel" id="l6p42">
+                <p><code>"dog"</code> 排在 <code>"cat"</code> 後面，<code>compareTo()</code> 是 positive，所以 <code>positive &lt; 0</code> 是 <code>false</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>String Trace</span></div>
+              <h3>預測三行 output。</h3>
+              <pre><code>String word = "programming";
+
+int x = word.indexOf("gram");
+int y = word.substring(3).length();
+boolean c = word.substring(0, 3).equals("pro");
+
+System.out.println(x == 3);
+System.out.println(y &gt; 5);
+System.out.println(c);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p43">詳解</button>
+              <div class="reveal-panel" id="l6p43">
+                <pre><code>true
+true
+true</code></pre>
+                <p><code>"gram"</code> 從 index <code>3</code> 開始。<code>word.substring(3)</code> 是 <code>"gramming"</code>，長度是 <code>8</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="errors" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Errors</p>
+              <h2>錯誤判斷</h2>
+              <p>有些題目答案不是 true/false，而是 compile-time error 或 runtime error。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Compile Error</span></div>
+              <h3>這行是否合法？</h3>
+              <pre><code>boolean result = 0 &lt; x &lt; 10;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p44">詳解</button>
+              <div class="reveal-panel" id="l6p44">
+                <p>不合法。Java 不支援 chained comparison。<code>0 &lt; x</code> 先得到 Boolean，接著不能再拿 Boolean 跟 <code>10</code> 比較。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Compile Error</span></div>
+              <h3>這行是否合法？</h3>
+              <pre><code>boolean result = name &lt; "John";</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p45">詳解</button>
+              <div class="reveal-panel" id="l6p45">
+                <p>不合法。String 不能直接用 <code>&lt;</code> 比較排序，應使用 <code>name.compareTo("John") &lt; 0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Syntax</span></div>
+              <h3><code>x =&gt; 5</code> 合法嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p46">詳解</button>
+              <div class="reveal-panel" id="l6p46">
+                <p>不合法。Java 沒有 <code>=&gt;</code>。應寫 <code>x &gt;= 5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Runtime Error</span></div>
+              <h3>這段程式會發生 compile-time error、runtime error，還是正常輸出？</h3>
+              <pre><code>String s = null;
+System.out.println(s == null);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p47">詳解</button>
+              <div class="reveal-panel" id="l6p47">
+                <p>正常輸出 <code>true</code>。<code>s == null</code> 是安全比較，不是 method call。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding</p>
+              <h2>程式練習</h2>
+              <p>這些小練習只需要建立 Boolean expressions，下一課才會正式把它們放進 <code>if</code>。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Coding</span></div>
+              <h3>建立 <code>passed</code>：當 <code>score</code> 大於等於 60 時為 true。</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p48">參考解法</button>
+              <div class="reveal-panel" id="l6p48">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int score = 72;
+        boolean passed = score &gt;= 60;
+
+        System.out.println(passed);
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Coding</span></div>
+              <h3>建立 <code>even</code>：當 <code>number</code> 是偶數時為 true。</h3>
+              <button class="reveal-button" type="button" data-reveal="l6p49">參考解法</button>
+              <div class="reveal-panel" id="l6p49">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int number = 14;
+        boolean even = number % 2 == 0;
+
+        System.out.println(even);
+    }
+}</code></pre>
+                <p><code>% 2</code> 的 remainder 是 <code>0</code>，代表可以被 2 整除。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>完整綜合考題，預測 output。</h3>
+              <pre><code>String a = new String("APCSA");
+String b = a;
+String c = new String("APCSA");
+
+int score = 85;
+boolean x = a == b;
+boolean y = a == c;
+boolean z = a.equals(c);
+boolean passed = score &gt;= 60;
+boolean hasCSA = a.indexOf("CSA") &gt;= 0;
+
+System.out.println(x);
+System.out.println(y);
+System.out.println(z);
+System.out.println(passed);
+System.out.println(hasCSA);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l6p50">詳解</button>
+              <div class="reveal-panel" id="l6p50">
+                <pre><code>true
+false
+true
+true
+true</code></pre>
+                <p><code>a</code> 和 <code>b</code> 是 alias；<code>c</code> 是另一個 object，但 contents 相同。<code>85 &gt;= 60</code> 是 <code>true</code>，<code>"CSA"</code> 找得到。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 6 課後練習。先判斷 type、計算左右 expression、畫 reference diagram，再打開詳解檢查推理。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 3 投影模式｜Methods、Math Class 與 API Reading</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 3 投影模式：method calls、arguments、parameters、return values、Math class、Math.random 與 random range。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 3</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-3.html">文章版</a>
+        <a href="lesson-3-practice.html">課後練習</a>
+        <a href="lesson-2.html">上一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 3</p>
+          <h1>Methods、Math Class 與 API Reading</h1>
+          <p class="slide-lead">
+            今天要把 expression tracing 推到下一層：method call 會先產生 return value，
+            然後這個 value 才繼續參與 assignment、casting、Math 與 random range 題型。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-3-practice.html">Lesson 3 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Opening Question</p>
+          <h2>這一行到底先算什麼？</h2>
+          <div class="deck-code">
+            <pre><code>double x = Math.sqrt(25) + 3;</code></pre>
+          </div>
+          <div class="prompt-box">
+            <h3>先想一想</h3>
+            <p><code>Math.sqrt(25)</code> 是一個 statement、expression，還是 output？</p>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l3-r1">揭曉概念</button>
+          <div class="reveal-panel" id="l3-r1">
+            <p><code>Math.sqrt(25)</code> 是 method call，也是 expression 的一部分。它先回傳 <code>5.0</code>，整行才變成 <code>double x = 5.0 + 3;</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Method Call Shape</p>
+          <h2>常見形式：<code>ClassName.methodName(arguments)</code></h2>
+          <div class="type-grid">
+            <div><strong><code>Math</code></strong><span>Class name</span></div>
+            <div><strong><code>pow</code></strong><span>Method name</span></div>
+            <div><strong><code>2, 3</code></strong><span>Arguments</span></div>
+          </div>
+          <div class="deck-code">
+            <pre><code>Math.pow(2, 3)</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l3-r2">這代表什麼</button>
+          <div class="reveal-panel" id="l3-r2">
+            <p>到 <code>Math</code> 這個 class 裡呼叫 <code>pow</code> method，並把 <code>2</code> 和 <code>3</code> 傳進去。Return value 是 <code>8.0</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content split-slide">
+          <div>
+            <p class="slide-kicker">Argument vs Parameter</p>
+            <h2>呼叫時傳入的是 argument，定義時接收的是 parameter</h2>
+            <p class="slide-text">
+              這兩個字描述的是同一個資料傳遞過程，但位置不同。
+            </p>
+          </div>
+          <div class="definition-grid">
+            <article>
+              <h3>Parameter</h3>
+              <p><code>int x</code> 在 method 定義中接收資料。</p>
+            </article>
+            <article>
+              <h3>Argument</h3>
+              <p><code>square(7)</code> 中的 <code>7</code> 是實際傳入的資料。</p>
+            </article>
+            <article>
+              <h3>Mental Model</h3>
+              <p>呼叫 <code>square(7)</code> 時，可以想成 <code>x = 7</code>。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Return Value</p>
+          <h2>Method call 可以被 return value 取代</h2>
+          <div class="big-flow">
+            <span><code>Math.sqrt(81)</code></span>
+            <span><code>9.0</code></span>
+            <span><code>9.0 + 1</code></span>
+            <span><code>10.0</code></span>
+          </div>
+          <p class="slide-text">
+            Return value 可以存進 variable、印出來，也可以放進更大的 expression。
+          </p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Return Value vs Output</p>
+          <h2><code>Math.sqrt(25)</code> 不會自己印出來</h2>
+          <div class="definition-grid">
+            <article>
+              <h3>Return only</h3>
+              <p><code>Math.sqrt(25);</code> 產生 return value，但沒有 output。</p>
+            </article>
+            <article>
+              <h3>Print output</h3>
+              <p><code>System.out.println(Math.sqrt(25));</code> 才會印出 <code>5.0</code>。</p>
+            </article>
+            <article>
+              <h3><code>void</code></h3>
+              <p><code>println</code> 的工作是印出東西，不是回傳一個可計算的 value。</p>
+            </article>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l3-r3">常見錯誤</button>
+          <div class="reveal-panel" id="l3-r3">
+            <p><code>int x = System.out.println("Hello");</code> 不合法，因為 <code>println</code> 沒有可以存進 <code>x</code> 的 return value。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">API Reading</p>
+          <h2>讀 method header：它要什麼？回傳什麼？</h2>
+          <div class="deck-code">
+            <pre><code>double pow(double base, double exponent)</code></pre>
+          </div>
+          <div class="definition-grid">
+            <article><h3>Return type</h3><p><code>double</code></p></article>
+            <article><h3>Method name</h3><p><code>pow</code></p></article>
+            <article><h3>Parameter types</h3><p><code>double</code>, <code>double</code></p></article>
+          </div>
+          <p class="slide-note">AP Java Quick Reference 不只是讓你查名字，更是讓你判斷 return type 與 argument 數量。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Method Signature</p>
+          <h2>Signature 主要看 method name 和 parameter types</h2>
+          <div class="stack-list">
+            <div><strong>Return type</strong><span>不是 Java method signature 的一部分。</span></div>
+            <div><strong>Parameter name</strong><span><code>calculate(int x)</code> 與 <code>calculate(int number)</code> 的 signature 一樣。</span></div>
+            <div><strong>Parameter type order</strong><span><code>mix(int, double)</code> 與 <code>mix(double, int)</code> 不同。</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Math Class</p>
+          <h2>AP CSA 前段最常見的四個 Math methods</h2>
+          <div class="type-grid operator-grid">
+            <div><strong><code>abs</code></strong><span>絕對值</span></div>
+            <div><strong><code>pow</code></strong><span>次方</span></div>
+            <div><strong><code>sqrt</code></strong><span>平方根</span></div>
+            <div><strong><code>random</code></strong><span>隨機 double</span></div>
+            <div><strong><code>Math.</code></strong><span>直接用 class 呼叫</span></div>
+          </div>
+          <p class="slide-note">目前先記住：使用 <code>Math.sqrt(25)</code>，不是 <code>sqrt(25)</code>，也不需要 <code>new Math()</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Math.abs</p>
+          <h2><code>Math.abs()</code> 回傳絕對值</h2>
+          <div class="multiple-choice">
+            <pre><code>int score = 83;
+int difference = Math.abs(score - 100);</code></pre>
+            <p><code>difference</code> 是多少？</p>
+            <div class="choices">
+              <span>A. -17</span>
+              <span>B. 17</span>
+              <span>C. 83</span>
+              <span>D. 100</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l3-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l3-r4">
+            <p>答案是 B。<code>score - 100</code> 是 <code>-17</code>，<code>Math.abs(-17)</code> 回傳 <code>17</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Math.pow</p>
+          <h2><code>Math.pow()</code> 回傳 <code>double</code></h2>
+          <div class="definition-grid">
+            <article><h3><code>Math.pow(2, 3)</code></h3><p>Return value 是 <code>8.0</code>。</p></article>
+            <article><h3>合法</h3><p><code>double x = Math.pow(2, 3);</code></p></article>
+            <article><h3>不合法</h3><p><code>int x = Math.pow(2, 3);</code></p></article>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l3-r5">如果真的要 int？</button>
+          <div class="reveal-panel" id="l3-r5">
+            <p>可以寫 <code>int x = (int)Math.pow(2, 3);</code>。這次是明確 casting，結果是 <code>8</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Math.sqrt</p>
+          <h2><code>Math.sqrt()</code> 也回傳 <code>double</code></h2>
+          <div class="deck-code">
+            <pre><code>double result = Math.sqrt(9) + Math.sqrt(16);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l3-r6">揭曉 trace</button>
+          <div class="reveal-panel" id="l3-r6">
+            <p><code>Math.sqrt(9)</code> 是 <code>3.0</code>，<code>Math.sqrt(16)</code> 是 <code>4.0</code>，所以 <code>result = 7.0</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Nested Method Calls</p>
+          <h2>從最內層開始 trace</h2>
+          <div class="deck-code">
+            <pre><code>double d =
+    Math.sqrt(
+        Math.pow(3, 2) + Math.pow(4, 2)
+    );</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l3-r7">揭曉 trace</button>
+          <div class="reveal-panel" id="l3-r7">
+            <p><code>Math.pow(3, 2) = 9.0</code>，<code>Math.pow(4, 2) = 16.0</code>，合起來是 <code>25.0</code>，最後 <code>Math.sqrt(25.0) = 5.0</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Integer Division Still Matters</p>
+          <h2>Method 不會救回已經發生的 integer division</h2>
+          <div class="definition-grid">
+            <article><h3><code>Math.sqrt(9 / 4)</code></h3><p><code>9 / 4 = 2</code>，所以是 <code>Math.sqrt(2)</code>。</p></article>
+            <article><h3><code>Math.sqrt(9.0 / 4)</code></h3><p><code>9.0 / 4 = 2.25</code>，所以結果是 <code>1.5</code>。</p></article>
+            <article><h3>AP View</h3><p>先計算 argument，再呼叫 method。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Math.random</p>
+          <h2><code>Math.random()</code> 的範圍是 <code>[0.0, 1.0)</code></h2>
+          <div class="type-grid">
+            <div><strong>可能</strong><span><code>0.0</code></span></div>
+            <div><strong>不可能</strong><span><code>1.0</code></span></div>
+            <div><strong>Return type</strong><span><code>double</code></span></div>
+          </div>
+          <p class="slide-text">它是 random integer 題型的起點，但本身不是 integer。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Random Integer</p>
+          <h2><code>(int)(Math.random() * 10)</code> 是 0 到 9</h2>
+          <div class="big-flow">
+            <span><code>0.0 &lt;= r &lt; 1.0</code></span>
+            <span><code>0.0 &lt;= r * 10 &lt; 10.0</code></span>
+            <span><code>(int)</code></span>
+            <span><code>0 through 9</code></span>
+          </div>
+          <p class="slide-note">它不是 1 through 10。要 1 through 10，需要再 <code>+ 1</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Dice</p>
+          <h2>模擬一顆六面骰</h2>
+          <div class="deck-code">
+            <pre><code>int roll = (int)(Math.random() * 6) + 1;</code></pre>
+          </div>
+          <div class="big-flow">
+            <span><code>0 through 5</code></span>
+            <span><code>+ 1</code></span>
+            <span><code>1 through 6</code></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Range Formula</p>
+          <h2>產生 <code>min through max</code> 的公式</h2>
+          <div class="deck-code">
+            <pre><code>(int)(Math.random() * (max - min + 1)) + min</code></pre>
+          </div>
+          <div class="definition-grid">
+            <article><h3>數字個數</h3><p><code>max - min + 1</code></p></article>
+            <article><h3>起點位移</h3><p><code>+ min</code></p></article>
+            <article><h3>包含兩端</h3><p>inclusive range</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Reverse Design</p>
+          <h2>想產生 12 through 20，怎麼寫？</h2>
+          <div class="prompt-box">
+            <h3>先算數字個數</h3>
+            <p><code>20 - 12 + 1 = ?</code></p>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l3-r8">揭曉 expression</button>
+          <div class="reveal-panel" id="l3-r8">
+            <p>一共有 <code>9</code> 個數，所以寫 <code>(int)(Math.random() * 9) + 12</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Casting Trap</p>
+          <h2>這兩個看起來像，但結果完全不同</h2>
+          <div class="definition-grid">
+            <article><h3>正確</h3><p><code>(int)(Math.random() * 10)</code><br />0 through 9</p></article>
+            <article><h3>陷阱</h3><p><code>(int)Math.random() * 10</code><br />永遠 0</p></article>
+            <article><h3>原因</h3><p><code>(int)Math.random()</code> 會先把小於 1 的 double 變成 0。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Compile Errors</p>
+          <h2>AP 題目常放的錯誤</h2>
+          <div class="stack-list">
+            <div><strong>Argument 數量錯</strong><span><code>Math.sqrt(4, 9)</code></span></div>
+            <div><strong>Return type 放錯</strong><span><code>int x = Math.sqrt(25);</code></span></div>
+            <div><strong>大小寫錯</strong><span><code>Math.Sqrt(25)</code></span></div>
+            <div><strong>忘記括號</strong><span><code>Math.sqrt;</code></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP-style Check</p>
+          <h2>快速檢核：method return type</h2>
+          <div class="multiple-choice">
+            <pre><code>int value = Math.sqrt(49);</code></pre>
+            <p>What happens when this code is compiled?</p>
+            <div class="choices">
+              <span>A. Prints 7</span>
+              <span>B. Prints 7.0</span>
+              <span>C. Stores 49</span>
+              <span>D. Compile-time error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l3-r9">揭曉答案</button>
+          <div class="reveal-panel" id="l3-r9">
+            <p>答案是 D。<code>Math.sqrt(49)</code> 回傳 <code>double</code>，不能直接存進 <code>int</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP-style Check</p>
+          <h2>快速檢核：random range</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = (int)(Math.random() * 8) + 5;</code></pre>
+            <p>Which set contains all possible values of <code>x</code>?</p>
+            <div class="choices">
+              <span>A. 0 through 7</span>
+              <span>B. 5 through 12</span>
+              <span>C. 5 through 13</span>
+              <span>D. 6 through 13</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l3-r10">揭曉答案</button>
+          <div class="reveal-panel" id="l3-r10">
+            <p>答案是 B。乘以 8 後 cast 得到 0 through 7，再加 5 得到 5 through 12。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Final Trace Challenge</p>
+          <h2>綜合追蹤：method、integer division、random</h2>
+          <div class="deck-code">
+            <pre><code>int a = 11;
+int b = 4;
+
+double x = Math.sqrt(a / b + Math.pow(b - 1, 2));
+int y = (int)(Math.random() * (b + 2)) + 3;
+int z = Math.abs((int)x - y);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l3-r11">揭曉重點</button>
+          <div class="reveal-panel" id="l3-r11">
+            <p><code>a / b = 2</code>，<code>Math.pow(3, 2) = 9.0</code>，所以 <code>x = Math.sqrt(11.0)</code>，約 <code>3.3166</code>。<code>y</code> 是 3 through 8，<code>(int)x</code> 是 3，因此 <code>z</code> 是 0 through 5。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Coding Practice</p>
+          <h2>今天可以完成的四個程式</h2>
+          <div class="exit-grid">
+            <div>Distance From Origin：使用 <code>sqrt</code> 與 <code>pow</code>。</div>
+            <div>Two Dice Simulator：產生兩個 1 through 6 的 random integers。</div>
+            <div>Random Four-Digit Code：產生 1000 through 9999。</div>
+            <div>Score Distance：使用 <code>Math.abs</code> 計算與目標分數差距。</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-3-practice.html">開始 Lesson 3 課後練習</a>
+            <a class="button" href="lesson-3.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這六題</h2>
+          <div class="exit-grid">
+            <div><code>Math.pow(2, 3)</code> 的 return type 是什麼？</div>
+            <div>argument 和 parameter 的差別是什麼？</div>
+            <div><code>Math.sqrt(9 / 4)</code> 為什麼不是 <code>1.5</code>？</div>
+            <div><code>(int)(Math.random() * 10)</code> 會產生哪些整數？</div>
+            <div>如何產生 7 through 15 的 random integer？</div>
+            <div><code>(int)Math.random() * 10</code> 為什麼永遠是 0？</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 3 課後練習｜Methods、Math Class 與 Random</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 3 課後練習：method vocabulary、return values、Math methods、nested tracing、Math.random、random range、AP-style questions 與 debugging。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 3 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-3-presentation.html">投影模式</a>
+        <a href="lesson-3.html">文章版</a>
+        <a href="lesson-2-practice.html">上一課練習</a>
+        <a href="#methods">Method</a>
+        <a href="#math">Math</a>
+        <a href="#random">Random</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 3</p>
+          <h1>課後練習：Methods、Math Class 與 Random</h1>
+          <p class="lead">
+            先自己作答，再點開詳解。這份題本會檢查你是否能讀懂 method call、
+            正確判斷 return value 與 return type、追蹤 nested method calls，並寫出 AP CSA 常考的 random integer range。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>42</strong><span>題課後練習</span></div>
+            <div><strong>6</strong><span>主題分區</span></div>
+            <div><strong>Math</strong><span>abs、pow、sqrt、random</span></div>
+            <div><strong>AP-style</strong><span>選擇題與除錯題</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#methods">A. Method vocabulary</a>
+          <a href="#math">B. Math methods</a>
+          <a href="#tracing">C. Nested tracing</a>
+          <a href="#random">D. Random range</a>
+          <a href="#ap">E. AP-style MCQ</a>
+          <a href="#coding">F. 程式與除錯</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="methods" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Method Vocabulary</p>
+              <h2>Method 名詞與 API Reading</h2>
+              <p>這一區確認你是否能分辨 method call、argument、parameter、return value 與 signature。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Method call</span></div>
+              <h3>在下列 method call 中，method name 是什麼？</h3>
+              <pre><code>Math.pow(2, 5)</code></pre>
+              <div class="choices">
+                <span>A. <code>Math</code></span>
+                <span>B. <code>pow</code></span>
+                <span>C. <code>2</code></span>
+                <span>D. <code>5</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l3p1">詳解</button>
+              <div class="reveal-panel" id="l3p1">
+                <p>答案是 B。<code>Math</code> 是 class name，<code>pow</code> 是 method name，<code>2</code> 和 <code>5</code> 是 arguments。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Argument</span></div>
+              <h3><code>Math.sqrt(36)</code> 的 argument 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l3p2">詳解</button>
+              <div class="reveal-panel" id="l3p2">
+                <p>Argument 是 <code>36</code>，也就是呼叫 method 時實際傳入的資料。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Parameter vs Argument</span></div>
+              <h3>請指出 parameter 與 argument。</h3>
+              <pre><code>public static int square(int n)
+{
+    return n * n;
+}
+
+int value = square(6);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p3">詳解</button>
+              <div class="reveal-panel" id="l3p3">
+                <p><code>int n</code> 是 parameter，因為它出現在 method 定義。<code>6</code> 是 argument，因為它出現在 method call <code>square(6)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Return value</span></div>
+              <h3>下列哪一個說法最精確？</h3>
+              <div class="choices">
+                <span>A. Return value 一定會自動印出來。</span>
+                <span>B. Return value 可以被存進變數或放進 expression。</span>
+                <span>C. 所有 methods 都有 return value。</span>
+                <span>D. <code>println</code> 回傳 <code>String</code>。</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l3p4">詳解</button>
+              <div class="reveal-panel" id="l3p4">
+                <p>答案是 B。Return value 不會自動印出；需要 <code>System.out.println(...)</code> 才會輸出。有些 methods 的 return type 是 <code>void</code>，沒有 return value。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>void</span></div>
+              <h3>這段程式是否合法？</h3>
+              <pre><code>int x = System.out.println("Hello");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p5">詳解</button>
+              <div class="reveal-panel" id="l3p5">
+                <p>不合法。<code>System.out.println</code> 的 return type 是 <code>void</code>，它沒有可以存進 <code>int x</code> 的 return value。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>API Reading</span></div>
+              <h3>讀下面 method header。</h3>
+              <pre><code>double pow(double base, double exponent)</code></pre>
+              <p>請回答 return type、method name、parameter types。</p>
+              <button class="reveal-button" type="button" data-reveal="l3p6">詳解</button>
+              <div class="reveal-panel" id="l3p6">
+                <p>Return type 是 <code>double</code>。Method name 是 <code>pow</code>。Parameter types 是 <code>double</code>、<code>double</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="math" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Math Methods</p>
+              <h2><code>Math.abs</code>、<code>Math.pow</code>、<code>Math.sqrt</code></h2>
+              <p>這一區練習 Math methods 的結果與型別。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Math.abs</span></div>
+              <h3>求 expression 的值。</h3>
+              <pre><code>Math.abs(-12)</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p7">詳解</button>
+              <div class="reveal-panel" id="l3p7">
+                <p>答案是 <code>12</code>。<code>abs</code> 是 absolute value。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Math.abs</span></div>
+              <h3>最後 <code>difference</code> 是多少？</h3>
+              <pre><code>int score = 76;
+int target = 90;
+int difference = Math.abs(score - target);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p8">詳解</button>
+              <div class="reveal-panel" id="l3p8">
+                <p><code>score - target = 76 - 90 = -14</code>，所以 <code>Math.abs(-14) = 14</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Math.pow</span></div>
+              <h3>求 expression 的值與型別。</h3>
+              <pre><code>Math.pow(3, 2)</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p9">詳解</button>
+              <div class="reveal-panel" id="l3p9">
+                <p>值是 <code>9.0</code>，型別是 <code>double</code>。不是 <code>9</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Return type</span></div>
+              <h3>這段程式是否合法？</h3>
+              <pre><code>int x = Math.pow(2, 3);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p10">詳解</button>
+              <div class="reveal-panel" id="l3p10">
+                <p>不合法。<code>Math.pow</code> 回傳 <code>double</code>，不能直接存進 <code>int</code>。可以改成 <code>double x = Math.pow(2, 3);</code> 或 <code>int x = (int)Math.pow(2, 3);</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Math.sqrt</span></div>
+              <h3>求 expression 的值與型別。</h3>
+              <pre><code>Math.sqrt(49)</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p11">詳解</button>
+              <div class="reveal-panel" id="l3p11">
+                <p>值是 <code>7.0</code>，型別是 <code>double</code>。即使答案看起來是整數，<code>sqrt</code> 仍回傳 <code>double</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Casting</span></div>
+              <h3>最後 <code>x</code> 是多少？</h3>
+              <pre><code>int x = (int)Math.sqrt(50);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p12">詳解</button>
+              <div class="reveal-panel" id="l3p12">
+                <p><code>Math.sqrt(50)</code> 約為 <code>7.071</code>，<code>(int)</code> 會 truncate 成 <code>7</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Expression</span></div>
+              <h3>求 <code>x</code>。</h3>
+              <pre><code>double x = Math.pow(3, 2) + Math.sqrt(49);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p13">詳解</button>
+              <div class="reveal-panel" id="l3p13">
+                <p><code>Math.pow(3, 2) = 9.0</code>，<code>Math.sqrt(49) = 7.0</code>，所以 <code>x = 16.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Compile-time Error</span></div>
+              <h3>這段程式的錯誤是什麼？</h3>
+              <pre><code>double x = Math.Sqrt(25, 36);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p14">詳解</button>
+              <div class="reveal-panel" id="l3p14">
+                <p>有兩個問題。第一，Java 大小寫敏感，應該是 <code>Math.sqrt</code>。第二，<code>sqrt</code> 只接收一個 argument，不是兩個。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="tracing" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Nested Tracing</p>
+              <h2>巢狀 method call 與 expression tracing</h2>
+              <p>從最內層開始，把每個 method call 換成它的 return value。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Nested</span></div>
+              <h3>求 <code>result</code>。</h3>
+              <pre><code>double result =
+    Math.sqrt(Math.pow(3, 2) + Math.pow(4, 2));</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p15">詳解</button>
+              <div class="reveal-panel" id="l3p15">
+                <p><code>Math.pow(3, 2) = 9.0</code>，<code>Math.pow(4, 2) = 16.0</code>，總和 <code>25.0</code>，所以 <code>Math.sqrt(25.0) = 5.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Integer Division</span></div>
+              <h3>最後 <code>x</code> 約是多少？</h3>
+              <pre><code>double x = Math.sqrt(9 / 4);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p16">詳解</button>
+              <div class="reveal-panel" id="l3p16">
+                <p><code>9 / 4</code> 是 integer division，先得到 <code>2</code>。所以 <code>x = Math.sqrt(2)</code>，約 <code>1.414</code>。不是 <code>1.5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Integer Division</span></div>
+              <h3>最後 <code>x</code> 是多少？</h3>
+              <pre><code>double x = Math.sqrt(9.0 / 4);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p17">詳解</button>
+              <div class="reveal-panel" id="l3p17">
+                <p><code>9.0 / 4 = 2.25</code>，所以 <code>Math.sqrt(2.25) = 1.5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Trace</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 7;
+int y = (int)Math.pow(x - 5, 3);
+System.out.println(y);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p18">詳解</button>
+              <div class="reveal-panel" id="l3p18">
+                <p><code>x - 5 = 2</code>，<code>Math.pow(2, 3) = 8.0</code>，<code>(int)8.0 = 8</code>。Output 是 <code>8</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Trace</span></div>
+              <h3>求 expression 的值。</h3>
+              <pre><code>Math.abs((int)Math.pow(2, 3) - 10)</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p19">詳解</button>
+              <div class="reveal-panel" id="l3p19">
+                <p><code>Math.pow(2, 3) = 8.0</code>，cast 成 <code>8</code>，<code>8 - 10 = -2</code>，<code>Math.abs(-2) = 2</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Trace</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int n = 20;
+
+double result =
+    Math.sqrt(
+        Math.pow(n / 5, 2)
+        +
+        Math.abs(n - 29)
+    );
+
+System.out.println(result);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p20">詳解</button>
+              <div class="reveal-panel" id="l3p20">
+                <p><code>n / 5 = 4</code>，<code>Math.pow(4, 2) = 16.0</code>，<code>Math.abs(20 - 29) = 9</code>，總和 <code>25.0</code>，所以 output 是 <code>5.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Trace</span></div>
+              <h3>最後 <code>y</code> 是多少？</h3>
+              <pre><code>int x = 3;
+double y = Math.pow(x + 1, 2) - Math.sqrt(16);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p21">詳解</button>
+              <div class="reveal-panel" id="l3p21">
+                <p><code>x + 1 = 4</code>，<code>Math.pow(4, 2) = 16.0</code>，<code>Math.sqrt(16) = 4.0</code>，所以 <code>y = 12.0</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="random" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Random Range</p>
+              <h2><code>Math.random()</code> 與指定範圍整數</h2>
+              <p>先判斷乘以多少，再判斷 cast 後的整數，再做位移。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Math.random</span></div>
+              <h3><code>Math.random()</code> 的範圍是什麼？</h3>
+              <div class="choices">
+                <span>A. <code>0.0 &lt; r &lt; 1.0</code></span>
+                <span>B. <code>0.0 &lt;= r &lt; 1.0</code></span>
+                <span>C. <code>0.0 &lt;= r &lt;= 1.0</code></span>
+                <span>D. <code>1.0 &lt;= r &lt; 10.0</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l3p22">詳解</button>
+              <div class="reveal-panel" id="l3p22">
+                <p>答案是 B。<code>Math.random()</code> 可能是 <code>0.0</code>，但不會是 <code>1.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Random</span></div>
+              <h3>下面 expression 可能產生哪些整數？</h3>
+              <pre><code>(int)(Math.random() * 10)</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p23">詳解</button>
+              <div class="reveal-panel" id="l3p23">
+                <p>可能產生 <code>0 through 9</code>。不是 <code>1 through 10</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Dice</span></div>
+              <h3>寫出一個 expression，產生 <code>1 through 6</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l3p24">詳解</button>
+              <div class="reveal-panel" id="l3p24">
+                <pre><code>(int)(Math.random() * 6) + 1</code></pre>
+                <p>先產生 <code>0 through 5</code>，再加 <code>1</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Range</span></div>
+              <h3>下面 expression 可能產生哪些整數？</h3>
+              <pre><code>(int)(Math.random() * 5) + 2</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p25">詳解</button>
+              <div class="reveal-panel" id="l3p25">
+                <p><code>(int)(Math.random() * 5)</code> 產生 <code>0 through 4</code>，加 <code>2</code> 後是 <code>2 through 6</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Reverse Design</span></div>
+              <h3>寫出一個 expression，產生 <code>10 through 15</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l3p26">詳解</button>
+              <div class="reveal-panel" id="l3p26">
+                <pre><code>(int)(Math.random() * 6) + 10</code></pre>
+                <p>因為 <code>15 - 10 + 1 = 6</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Reverse Design</span></div>
+              <h3>寫出一個 expression，產生 <code>-3 through 4</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l3p27">詳解</button>
+              <div class="reveal-panel" id="l3p27">
+                <pre><code>(int)(Math.random() * 8) - 3</code></pre>
+                <p>因為 <code>4 - (-3) + 1 = 8</code>。先產生 <code>0 through 7</code>，再減 <code>3</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Casting Trap</span></div>
+              <h3>下面 expression 可能產生哪些值？</h3>
+              <pre><code>(int)Math.random() * 10</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p28">詳解</button>
+              <div class="reveal-panel" id="l3p28">
+                <p>永遠是 <code>0</code>。因為先做 <code>(int)Math.random()</code>，而 <code>Math.random()</code> 一定小於 <code>1.0</code>，cast 後是 <code>0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Formula</span></div>
+              <h3>完整填空。</h3>
+              <pre><code>// min through max, inclusive
+(int)(Math.random() * (_____)) + _____</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p29">詳解</button>
+              <div class="reveal-panel" id="l3p29">
+                <pre><code>(int)(Math.random() * (max - min + 1)) + min</code></pre>
+                <p>第一格是數字個數，第二格是起點位移。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Range</span></div>
+              <h3>下面程式中 <code>x</code> 可能有哪些值？</h3>
+              <pre><code>int min = 4;
+int max = 9;
+
+int x = (int)(Math.random() * (max - min + 1)) + min;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p30">詳解</button>
+              <div class="reveal-panel" id="l3p30">
+                <p><code>max - min + 1 = 6</code>，所以先產生 <code>0 through 5</code>，再加 <code>4</code>。<code>x</code> 可能是 <code>4, 5, 6, 7, 8, 9</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="ap" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. AP-style MCQ</p>
+              <h2>AP 風格選擇題</h2>
+              <p>這一區混合 return type、integer division、random range 與 method tracing。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>AP-style</span></div>
+              <h3>What is printed?</h3>
+              <pre><code>int x = 3;
+double y = Math.pow(x + 1, 2) / 2;
+System.out.println(y);</code></pre>
+              <div class="choices">
+                <span>A. <code>8</code></span>
+                <span>B. <code>8.0</code></span>
+                <span>C. <code>4.0</code></span>
+                <span>D. <code>16.0</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l3p31">詳解</button>
+              <div class="reveal-panel" id="l3p31">
+                <p>答案是 B。<code>x + 1 = 4</code>，<code>Math.pow(4, 2) = 16.0</code>，<code>16.0 / 2 = 8.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>AP-style</span></div>
+              <h3>Which expression generates an integer from <code>5</code> through <code>12</code>, inclusive?</h3>
+              <div class="choices">
+                <span>A. <code>(int)(Math.random() * 7) + 5</code></span>
+                <span>B. <code>(int)(Math.random() * 8) + 5</code></span>
+                <span>C. <code>(int)(Math.random() * 12) + 5</code></span>
+                <span>D. <code>(int)Math.random() * 8 + 5</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l3p32">詳解</button>
+              <div class="reveal-panel" id="l3p32">
+                <p>答案是 B。<code>12 - 5 + 1 = 8</code>，所以乘以 <code>8</code> 再加 <code>5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>AP-style</span></div>
+              <h3>What value is assigned to <code>x</code>?</h3>
+              <pre><code>double x = Math.sqrt(16 / 9);</code></pre>
+              <div class="choices">
+                <span>A. <code>1.0</code></span>
+                <span>B. <code>1.333...</code></span>
+                <span>C. <code>4.0</code></span>
+                <span>D. Compile-time error</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l3p33">詳解</button>
+              <div class="reveal-panel" id="l3p33">
+                <p>答案是 A。<code>16 / 9</code> 是 integer division，先得到 <code>1</code>。<code>Math.sqrt(1)</code> 是 <code>1.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>AP-style</span></div>
+              <h3>Which set contains all possible values of <code>x</code>?</h3>
+              <pre><code>int x = (int)(Math.random() * 3) + 6;</code></pre>
+              <div class="choices">
+                <span>A. <code>0, 1, 2</code></span>
+                <span>B. <code>3, 4, 5</code></span>
+                <span>C. <code>6, 7, 8</code></span>
+                <span>D. <code>6, 7, 8, 9</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l3p34">詳解</button>
+              <div class="reveal-panel" id="l3p34">
+                <p>答案是 C。乘以 <code>3</code> 後 cast 得到 <code>0, 1, 2</code>，加 <code>6</code> 後是 <code>6, 7, 8</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>AP-style</span></div>
+              <h3>What values can <code>x</code> have?</h3>
+              <pre><code>int x = (int)Math.random() * 10;</code></pre>
+              <div class="choices">
+                <span>A. <code>0</code> only</span>
+                <span>B. <code>0 through 9</code></span>
+                <span>C. <code>1 through 10</code></span>
+                <span>D. Compile-time error</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l3p35">詳解</button>
+              <div class="reveal-panel" id="l3p35">
+                <p>答案是 A。<code>(int)Math.random()</code> 永遠是 <code>0</code>，所以整個 expression 永遠是 <code>0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>AP-style</span></div>
+              <h3>What happens when this code is compiled?</h3>
+              <pre><code>int value = Math.sqrt(49);</code></pre>
+              <div class="choices">
+                <span>A. It stores <code>7</code></span>
+                <span>B. It stores <code>7.0</code></span>
+                <span>C. It stores <code>49</code></span>
+                <span>D. Compile-time error</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l3p36">詳解</button>
+              <div class="reveal-panel" id="l3p36">
+                <p>答案是 D。<code>Math.sqrt(49)</code> 回傳 <code>double</code>，不能直接 assignment 給 <code>int</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Coding and Debugging</p>
+              <h2>程式與除錯</h2>
+              <p>這一區可以貼到 Java 執行器完成。先試著自己寫，再打開參考解法。</p>
+              <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>Coding</span></div>
+              <h3>Distance From Origin</h3>
+              <p>設定 <code>double x = 6;</code> 與 <code>double y = 8;</code>，使用公式 <code>sqrt(x^2 + y^2)</code> 計算到原點距離。</p>
+              <button class="reveal-button" type="button" data-reveal="l3p37">參考解法與說明</button>
+              <div class="reveal-panel" id="l3p37">
+                <pre><code>public class Main
+{
+    public static void main(String[] args)
+    {
+        double x = 6;
+        double y = 8;
+
+        double distance = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+
+        System.out.println("Distance: " + distance);
+    }
+}</code></pre>
+                <p><code>Math.pow(6, 2) = 36.0</code>，<code>Math.pow(8, 2) = 64.0</code>，總和 <code>100.0</code>，平方根是 <code>10.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Coding</span></div>
+              <h3>Two Dice Simulator</h3>
+              <p>產生兩顆六面骰，輸出每顆骰子與總和。</p>
+              <button class="reveal-button" type="button" data-reveal="l3p38">參考解法與說明</button>
+              <div class="reveal-panel" id="l3p38">
+                <pre><code>public class Main
+{
+    public static void main(String[] args)
+    {
+        int die1 = (int)(Math.random() * 6) + 1;
+        int die2 = (int)(Math.random() * 6) + 1;
+
+        int total = die1 + die2;
+
+        System.out.println("Die 1: " + die1);
+        System.out.println("Die 2: " + die2);
+        System.out.println("Total: " + total);
+    }
+}</code></pre>
+                <p>每顆骰子的公式都是 <code>(int)(Math.random() * 6) + 1</code>，產生 <code>1 through 6</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Coding</span></div>
+              <h3>Random Four-Digit Code</h3>
+              <p>產生一個 <code>1000 through 9999</code> 的四位數驗證碼。</p>
+              <button class="reveal-button" type="button" data-reveal="l3p39">參考解法與說明</button>
+              <div class="reveal-panel" id="l3p39">
+                <pre><code>public class Main
+{
+    public static void main(String[] args)
+    {
+        int code = (int)(Math.random() * 9000) + 1000;
+
+        System.out.println("Code: " + code);
+    }
+}</code></pre>
+                <p><code>9999 - 1000 + 1 = 9000</code>，所以乘以 <code>9000</code>，再加 <code>1000</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Debugging</span></div>
+              <h3>這段程式想要模擬骰子，但永遠只會印出 <code>1</code>。請修正。</h3>
+              <pre><code>int roll = (int)Math.random() * 6 + 1;
+System.out.println(roll);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p40">詳解</button>
+              <div class="reveal-panel" id="l3p40">
+                <p>問題是 casting 位置太早。<code>(int)Math.random()</code> 永遠是 <code>0</code>。</p>
+                <pre><code>int roll = (int)(Math.random() * 6) + 1;</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Debugging</span></div>
+              <h3>這段程式無法 compile。請修正。</h3>
+              <pre><code>int x = Math.pow(2, 3);
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l3p41">詳解</button>
+              <div class="reveal-panel" id="l3p41">
+                <p><code>Math.pow</code> 回傳 <code>double</code>。如果保留 double：</p>
+                <pre><code>double x = Math.pow(2, 3);</code></pre>
+                <p>如果真的需要 int：</p>
+                <pre><code>int x = (int)Math.pow(2, 3);</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Final Challenge</span></div>
+              <h3>完整 trace，回答四個問題。</h3>
+              <pre><code>int a = 11;
+int b = 4;
+
+double x = Math.sqrt(a / b + Math.pow(b - 1, 2));
+int y = (int)(Math.random() * (b + 2)) + 3;
+int z = Math.abs((int)x - y);</code></pre>
+              <p>1. <code>x</code> 約是多少？ 2. <code>y</code> 可能有哪些值？ 3. <code>z</code> 可能有哪些值？ 4. 若 <code>y</code> 是 6，<code>z</code> 是多少？</p>
+              <button class="reveal-button" type="button" data-reveal="l3p42">詳解</button>
+              <div class="reveal-panel" id="l3p42">
+                <p><code>a / b = 11 / 4 = 2</code>。<code>b - 1 = 3</code>，<code>Math.pow(3, 2) = 9.0</code>。所以 <code>x = Math.sqrt(11.0)</code>，約 <code>3.3166</code>。</p>
+                <p><code>b + 2 = 6</code>，所以 <code>(int)(Math.random() * 6)</code> 是 <code>0 through 5</code>，<code>y</code> 是 <code>3 through 8</code>。</p>
+                <p><code>(int)x = 3</code>，所以 <code>z = Math.abs(3 - y)</code>。當 <code>y</code> 是 <code>3, 4, 5, 6, 7, 8</code> 時，<code>z</code> 是 <code>0, 1, 2, 3, 4, 5</code>。若 <code>y = 6</code>，<code>z = 3</code>。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 3 課後練習。先自己作答，再打開詳解檢查推理。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

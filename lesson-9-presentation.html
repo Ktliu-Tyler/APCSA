@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 9 投影模式｜while Loops</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 9 投影模式：while loops、execution order、trace table、counter loops、off-by-one、accumulator、sentinel、validation、infinite loop 與 digit algorithms。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 9</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-9.html">文章版</a>
+        <a href="lesson-9-practice.html">課後練習</a>
+        <a href="lesson-8.html">上一課</a>
+        <a href="lesson-10.html">下一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 9</p>
+          <h1><code>while</code> Loops</h1>
+          <p class="slide-lead">
+            今天把 Boolean condition 變成重複控制：syntax、execution order、trace、
+            counter loops、sentinel loops、input validation、infinite loops 與 digit algorithms。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-9-practice.html">Lesson 9 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Why Loops?</p>
+          <h2>有些工作不是做一次，而是「條件成立就一直做」</h2>
+          <div class="exit-grid">
+            <div>從 1 印到 100</div>
+            <div>持續要求輸入直到合法</div>
+            <div>讀資料直到 sentinel 出現</div>
+            <div>處理整數的每個 digit</div>
+            <div>搜尋直到找到目標</div>
+            <div>計算 sum、count、average</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Syntax</p>
+          <h2><code>while</code> 的基本結構</h2>
+          <div class="deck-code">
+            <pre><code>initialization;
+
+while (condition)
+{
+    body;
+    update;
+}</code></pre>
+          </div>
+          <p class="slide-note">只要 condition 是 true，就執行 body；執行完後回去重新判斷。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">if vs while</p>
+          <h2><code>if</code> 最多一次；<code>while</code> 可以很多次</h2>
+          <div class="definition-grid">
+            <article><h3><code>if</code></h3><p>condition true 時 body 最多執行一次。</p></article>
+            <article><h3><code>while</code></h3><p>condition true 時 body 會重複執行。</p></article>
+            <article><h3>AP trap</h3><p><code>while</code> 可能 0 次，也可能 infinite loop。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">First Trace</p>
+          <h2>預測 output</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 1;
+
+while (x &lt;= 3)
+{
+    System.out.println(x);
+    x++;
+}</code></pre>
+            <div class="choices">
+              <span>A. 1 2</span>
+              <span>B. 1 2 3</span>
+              <span>C. 2 3 4</span>
+              <span>D. Infinite loop</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l9-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l9-r1">
+            <p>答案是 B。<code>x</code> 以 1、2、3 進入 body，更新到 4 後 condition false。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Four Parts</p>
+          <h2>分析 while loop 的四個核心元素</h2>
+          <div class="big-flow">
+            <span>Initialization</span>
+            <span>Condition</span>
+            <span>Body</span>
+            <span>Update</span>
+            <span>Termination</span>
+          </div>
+          <p class="slide-note">看到 while，先問：哪個值控制 condition？它每輪如何改變？何時會 false？</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Zero Iterations</p>
+          <h2><code>while</code> 一開始 false，就一次也不跑</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 10;
+
+while (x &lt; 5)
+{
+    System.out.println(x);
+    x++;
+}
+
+System.out.println("Done");</code></pre>
+            <div class="choices">
+              <span>A. 10 Done</span>
+              <span>B. 5 Done</span>
+              <span>C. Done</span>
+              <span>D. Infinite loop</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l9-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l9-r2">
+            <p>答案是 C。<code>10 &lt; 5</code> 是 false，所以 loop body 0 iterations。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Trace Table</p>
+          <h2>複雜 loop 用表格追蹤</h2>
+          <div class="deck-code">
+            <pre><code>int x = 1;
+int sum = 0;
+
+while (x &lt;= 4)
+{
+    sum += x;
+    x++;
+}</code></pre>
+          </div>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead><tr><th>Iteration</th><th>x before</th><th>sum after</th><th>x after</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>1</td><td>1</td><td>2</td></tr>
+                <tr><td>2</td><td>2</td><td>3</td><td>3</td></tr>
+                <tr><td>3</td><td>3</td><td>6</td><td>4</td></tr>
+                <tr><td>4</td><td>4</td><td>10</td><td>5</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Counter Loop</p>
+          <h2>已知次數時，counter-controlled loop 最常見</h2>
+          <div class="definition-grid">
+            <article><h3>Counting up</h3><p><code>int i = 1; while (i &lt;= 10) { ... i++; }</code></p></article>
+            <article><h3>Counting down</h3><p><code>int i = 10; while (i &gt;= 1) { ... i--; }</code></p></article>
+            <article><h3>Skip by 2</h3><p><code>int i = 2; while (i &lt;= 10) { ... i += 2; }</code></p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Execution Count</p>
+          <h2>這個 loop body 執行幾次？</h2>
+          <div class="multiple-choice">
+            <pre><code>int i = 1;
+
+while (i &lt; 10)
+{
+    i += 2;
+}</code></pre>
+            <div class="choices">
+              <span>A. 4</span>
+              <span>B. 5</span>
+              <span>C. 9</span>
+              <span>D. 10</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l9-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l9-r3">
+            <p>答案是 B。<code>i</code> 以 1、3、5、7、9 進入 body，共 5 次。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Off-by-One</p>
+          <h2><code>&lt;</code> 和 <code>&lt;=</code> 通常差一輪</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead><tr><th>Loop</th><th>Values entering body</th><th>Count</th></tr></thead>
+              <tbody>
+                <tr><td><code>i = 1; i &lt; 5</code></td><td>1, 2, 3, 4</td><td>4</td></tr>
+                <tr><td><code>i = 1; i &lt;= 5</code></td><td>1, 2, 3, 4, 5</td><td>5</td></tr>
+                <tr><td><code>i = 0; i &lt; 10</code></td><td>0 through 9</td><td>10</td></tr>
+                <tr><td><code>i = 0; i &lt;= 10</code></td><td>0 through 10</td><td>11</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Accumulator</p>
+          <h2>Sum、product、count 都是 loop 的常見用途</h2>
+          <div class="definition-grid">
+            <article><h3>Sum</h3><p><code>sum += value;</code>，通常從 0 開始。</p></article>
+            <article><h3>Product</h3><p><code>product *= value;</code>，通常從 1 開始。</p></article>
+            <article><h3>Count</h3><p><code>count++;</code>，找到符合條件的資料就加一。</p></article>
+          </div>
+          <p class="slide-note">AP 題很常同時出現 loop control variable、counter、accumulator。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Order Matters</p>
+          <h2>最後 <code>sum</code> 是多少？</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 1;
+int sum = 0;
+
+while (x &lt;= 5)
+{
+    x++;
+    sum += x;
+}</code></pre>
+            <div class="choices">
+              <span>A. 15</span>
+              <span>B. 20</span>
+              <span>C. 21</span>
+              <span>D. Infinite loop</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l9-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l9-r4">
+            <p>答案是 B。加進 sum 的是 2、3、4、5、6，所以 <code>sum = 20</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Sentinel</p>
+          <h2>Sentinel loop：讀到特殊值才停止</h2>
+          <div class="deck-code">
+            <pre><code>int value = input.nextInt();   // priming read
+
+while (value != -1)
+{
+    // process value
+    value = input.nextInt();   // read next value
+}</code></pre>
+          </div>
+          <p class="slide-note">Sentinel 本身通常不被處理。成績用 <code>-1</code> 結束很常見。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Validation</p>
+          <h2>Input validation：通常是 <code>while invalid</code></h2>
+          <div class="deck-code">
+            <pre><code>int score = input.nextInt();
+
+while (score &lt; 0 || score &gt; 100)
+{
+    System.out.println("Invalid");
+    score = input.nextInt();
+}</code></pre>
+          </div>
+          <p class="slide-note">合法是 <code>score &gt;= 0 &amp;&amp; score &lt;= 100</code>；重問時要寫不合法條件。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Infinite Loop</p>
+          <h2>Infinite loop 常見原因</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead><tr><th>Cause</th><th>Example</th><th>Problem</th></tr></thead>
+              <tbody>
+                <tr><td>Missing update</td><td><code>while (i &lt; 10) { print(i); }</code></td><td><code>i</code> 不變</td></tr>
+                <tr><td>Wrong direction</td><td><code>while (i &lt; 10) { i--; }</code></td><td>離 false 更遠</td></tr>
+                <tr><td>Conditional update</td><td><code>if (i % 2 == 0) i++;</code></td><td>update 不一定發生</td></tr>
+                <tr><td>Extra semicolon</td><td><code>while (x &lt; 5);</code></td><td>empty loop</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Update Direction</p>
+          <h2>這段會停止嗎？</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 1;
+
+while (x &lt; 10)
+{
+    x--;
+}</code></pre>
+            <div class="choices">
+              <span>A. 會，停在 10</span>
+              <span>B. 會，停在 0</span>
+              <span>C. 不會，通常 infinite loop</span>
+              <span>D. Compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l9-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l9-r5">
+            <p>答案是 C。<code>x</code> 越來越小，<code>x &lt; 10</code> 一直 true。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Digit Basics</p>
+          <h2>整數 digit algorithm 兩個動作</h2>
+          <div class="definition-grid">
+            <article><h3>Get last digit</h3><p><code>int digit = number % 10;</code></p></article>
+            <article><h3>Remove last digit</h3><p><code>number /= 10;</code></p></article>
+            <article><h3>Loop condition</h3><p><code>while (number &gt; 0)</code></p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Digit Sum</p>
+          <h2>最後 <code>sum</code> 是多少？</h2>
+          <div class="multiple-choice">
+            <pre><code>int number = 6241;
+int sum = 0;
+
+while (number &gt; 0)
+{
+    int digit = number % 10;
+    sum += digit;
+    number /= 10;
+}</code></pre>
+            <div class="choices">
+              <span>A. 10</span>
+              <span>B. 12</span>
+              <span>C. 13</span>
+              <span>D. 6241</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l9-r6">揭曉答案</button>
+          <div class="reveal-panel" id="l9-r6">
+            <p>答案是 C。<code>6 + 2 + 4 + 1 = 13</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Digit Patterns</p>
+          <h2>同一個 digit loop，可以換不同 body</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead><tr><th>Goal</th><th>Body pattern</th></tr></thead>
+              <tbody>
+                <tr><td>Sum digits</td><td><code>sum += digit;</code></td></tr>
+                <tr><td>Count digits</td><td><code>count++;</code></td></tr>
+                <tr><td>Count a digit</td><td><code>if (digit == target) count++;</code></td></tr>
+                <tr><td>Reverse number</td><td><code>reverse = reverse * 10 + digit;</code></td></tr>
+                <tr><td>Preserve original</td><td><code>int temp = number;</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Boolean Flag</p>
+          <h2>找到了就停：flag-controlled loop</h2>
+          <div class="deck-code">
+            <pre><code>boolean found = false;
+
+while (number &gt; 0 &amp;&amp; !found)
+{
+    int digit = number % 10;
+
+    if (digit == 7)
+    {
+        found = true;
+    }
+
+    number /= 10;
+}</code></pre>
+          </div>
+          <p class="slide-note">這把 Lesson 8 的 compound Boolean 和 Lesson 9 的 loop 結合起來。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Errors</p>
+          <h2>今天最常見的錯誤</h2>
+          <div class="exit-grid">
+            <div>忘記 update</div>
+            <div>update 方向錯</div>
+            <div><code>&lt;</code> / <code>&lt;=</code> 差一輪</div>
+            <div>validation 寫成 <code>while valid</code></div>
+            <div>sentinel 被加入 sum</div>
+            <div><code>while (...);</code> 多一個分號</div>
+            <div>digit loop 忘記 <code>number /= 10</code></div>
+            <div>還需要原數字卻沒有 copy</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP SOP</p>
+          <h2>AP while 題固定解題流程</h2>
+          <div class="big-flow">
+            <span>Initial values</span>
+            <span>Check condition</span>
+            <span>Execute body</span>
+            <span>Apply update</span>
+            <span>Repeat</span>
+            <span>Stop at first false</span>
+          </div>
+          <p class="slide-note">不要跳著猜，尤其遇到 <code>+= 3</code>、<code>*= 2</code>、integer division、nested if。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的五個小程式</h2>
+          <div class="exit-grid">
+            <div>印 1 到 10</div>
+            <div>倒數 10 到 1</div>
+            <div>計算 1 到 100 總和</div>
+            <div>輸入 score，直到 0 到 100</div>
+            <div>輸入數字直到 -1，計算平均</div>
+            <div>計算一個整數的 digit sum</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-9-practice.html">開始 Lesson 9 課後練習</a>
+            <a class="button" href="lesson-9.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十二句</h2>
+          <div class="exit-grid">
+            <div><code>while</code> 先判斷 condition，再決定 body 是否執行。</div>
+            <div>Body 可能執行 0 次。</div>
+            <div>Iteration 是 body 完整執行一次。</div>
+            <div>Trace 要追 initial、condition、body、update。</div>
+            <div>Counter loop 要小心 boundary。</div>
+            <div><code>i = 0; i &lt; n</code> 通常跑 n 次。</div>
+            <div><code>sum</code> 從 0；<code>product</code> 通常從 1。</div>
+            <div>Sentinel 通常不被處理。</div>
+            <div>Validation 通常是 <code>while invalid</code>。</div>
+            <div>Infinite loop 要檢查 update 方向。</div>
+            <div><code>% 10</code> 取得最後 digit。</div>
+            <div><code>/= 10</code> 移除最後 digit。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

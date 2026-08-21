@@ -1,0 +1,10 @@
+assets/lesson/
+apcsa_teacher_resources/*
+!apcsa_teacher_resources/official_pdfs/
+apcsa_teacher_resources/official_pdfs/*
+!apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf
+!apcsa_teacher_resources/official_pdfs/ap-csa-course-and-exam-description-fall-2025.pdf
+!apcsa_teacher_resources/official_pdfs/ap-csa-course-at-a-glance.pdf
+
+.DS_Store
+Thumbs.db

@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 4｜Objects &amp; References</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 4：class vs object、new、constructor call、reference variable、primitive copy vs reference copy、object state、null 與 NullPointerException。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 4</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第四堂課導覽">
+        <a href="lesson-4-presentation.html">投影模式</a>
+        <a href="lesson-4-practice.html">課後練習</a>
+        <a href="lesson-3.html">上一課</a>
+        <a href="#class-object">Class/Object</a>
+        <a href="#references">References</a>
+        <a href="#copying">Copy</a>
+        <a href="#null">null</a>
+        <a href="#ap-patterns">AP 題型</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 4</p>
+          <h1>Objects &amp; References</h1>
+          <p class="lead">
+            這一課把前面學過的 primitive values、assignment、Scanner 與 Math 重新整理成 Java
+            最重要的物件模型：變數有時直接存 value，有時存的是找到 object 的 reference。
+            這個差異會一路影響 String、arrays、ArrayList、class design 和 AP tracing 題。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-4-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-4-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-3.html">回 Lesson 3</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#review">Primitive 回顧</a>
+          <a href="#class-object">Class 與 Object</a>
+          <a href="#new-constructor">new 與 Constructor</a>
+          <a href="#scanner-breakdown">Scanner 完整拆解</a>
+          <a href="#references">Reference Variable</a>
+          <a href="#copying">Primitive Copy vs Reference Copy</a>
+          <a href="#alias-state">Alias 與 Object State</a>
+          <a href="#dot-operator">Math、Scanner 與 Dot Operator</a>
+          <a href="#reassignment">Reference Reassignment</a>
+          <a href="#null">null 與 NullPointerException</a>
+          <a href="#trace-method">Reference Diagram 解題法</a>
+          <a href="#ap-patterns">AP 題型</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>分辨 <strong>class</strong>、<strong>object</strong> 與 <strong>instance</strong>。</div>
+              <div>理解 <code>new</code> 會建立 object，constructor call 會初始化 object。</div>
+              <div>說明 <code>Scanner input = new Scanner(System.in);</code> 的每一個部分。</div>
+              <div>分辨 primitive variable 與 reference variable 儲存的東西。</div>
+              <div>預測 primitive assignment 與 reference assignment 的差異。</div>
+              <div>畫出兩個 reference variables 指向同一個 object 的 diagram。</div>
+              <div>理解 alias、object state 與 method 對 state 的影響。</div>
+              <div>判斷 <code>null</code> 是否合法，以及何時會造成 <code>NullPointerException</code>。</div>
+              <div>分辨 compile-time error 與 runtime error。</div>
+              <div>使用 <code>new</code> 的出現次數輔助判斷建立了幾個 objects。</div>
+              <div>理解 <code>Math.sqrt(...)</code> 與 <code>input.nextInt()</code> 的呼叫差異。</div>
+              <div>用 reference diagram 解 AP CSA object tracing 題。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson4-flow-0" /> <span><strong>回顧</strong>：primitive types 與 assignment copy value。</span></label>
+              <label><input type="checkbox" data-progress="lesson4-flow-1" /> <span><strong>建立語言</strong>：class、object、instance、state、behavior。</span></label>
+              <label><input type="checkbox" data-progress="lesson4-flow-2" /> <span><strong>拆解 Scanner</strong>：<code>new</code>、constructor call、reference variable。</span></label>
+              <label><input type="checkbox" data-progress="lesson4-flow-3" /> <span><strong>核心對比</strong>：primitive copy 與 reference copy。</span></label>
+              <label><input type="checkbox" data-progress="lesson4-flow-4" /> <span><strong>null</strong>：沒有 reference 到 object、runtime error、NullPointerException。</span></label>
+              <label><input type="checkbox" data-progress="lesson4-flow-5" /> <span><strong>AP 題型</strong>：數 objects、畫箭頭、判斷 aliases 與 error 類型。</span></label>
+            </div>
+          </section>
+
+          <section id="review" class="article-section">
+            <p class="eyebrow">Primitive Review</p>
+            <h2>Primitive variable 直接存 value</h2>
+            <p>
+              前幾堂課已經學過 <code>int</code>、<code>double</code>、<code>boolean</code>、<code>char</code>。
+              這些是 primitive types。當我們寫 <code>int age = 18;</code> 時，可以先把
+              <code>age</code> 想成直接儲存數值 <code>18</code> 的位置。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Primitive type</th>
+                    <th>可以儲存</th>
+                    <th>範例</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>int</code></td>
+                    <td>整數</td>
+                    <td><code>10</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>double</code></td>
+                    <td>小數或可轉成小數的數值</td>
+                    <td><code>3.14</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>boolean</code></td>
+                    <td>真或假</td>
+                    <td><code>true</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>char</code></td>
+                    <td>單一字元</td>
+                    <td><code>'A'</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Primitive Copy</h3>
+                <button class="copy-button" type="button" data-copy="l4-code-primitive-copy">Copy</button>
+              </div>
+              <pre><code id="l4-code-primitive-copy">int a = 10;
+int b = a;
+
+a = 30;
+
+System.out.println(a);
+System.out.println(b);</code></pre>
+            </div>
+            <p>
+              Output 是 <code>30</code> 和 <code>10</code>。<code>int b = a;</code> 只在當下把
+              <code>a</code> 裡的 primitive value 複製給 <code>b</code>，不會讓兩個變數永久連動。
+            </p>
+            <div class="flow-strip">
+              <span><code>a = 10</code></span>
+              <span><code>b = 10</code></span>
+              <span><code>a = 30</code></span>
+              <span><code>b</code> remains <code>10</code></span>
+            </div>
+          </section>
+
+          <section id="class-object" class="article-section">
+            <p class="eyebrow">Class and Object</p>
+            <h2>Class 是設計規格，Object 是實際建立出來的個體</h2>
+            <p>
+              Java 是 object-oriented programming language。大量資料與操作會被組織成 objects。
+              但在理解 object 之前，要先分清楚 class 和 object。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Class</th>
+                    <th>Object</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>類別、設計規格、blueprint。</td>
+                    <td>根據 class 建立出來的 instance。</td>
+                  </tr>
+                  <tr>
+                    <td>描述每個物件應具有什麼 state 與 behavior。</td>
+                    <td>真正存在、可以被程式操作的個體。</td>
+                  </tr>
+                  <tr>
+                    <td><code>Scanner</code> class</td>
+                    <td>某一個 Scanner object</td>
+                  </tr>
+                  <tr>
+                    <td><code>String</code> class</td>
+                    <td>某一個 String object</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="note-grid">
+              <div><strong>Blueprint</strong><span><code>Car</code> class 可以規定 color、speed、battery。</span></div>
+              <div><strong>Instance</strong><span>Toyota Corolla、Tesla Model 3、Honda Civic 可以各自是 object。</span></div>
+              <div><strong>Many objects</strong><span>一個 class 可以建立很多不同 objects。</span></div>
+              <div><strong>AP wording</strong><span><code>input</code> refers to an instance of <code>Scanner</code>。</span></div>
+            </div>
+            <p class="callout">
+              看到 <strong>instance of a class</strong> 時，可以先理解成「根據某個 class 建立出來的 object」。
+            </p>
+          </section>
+
+          <section id="new-constructor" class="article-section">
+            <p class="eyebrow">Object Creation</p>
+            <h2><code>new</code> 通常表示建立新的 object</h2>
+            <p>
+              Lesson 2 已經寫過 <code>Scanner input = new Scanner(System.in);</code>。
+              現在可以更精確地理解：<code>new Scanner(System.in)</code> 會建立一個新的
+              <code>Scanner</code> object。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Constructor Call Pattern</h3>
+                <button class="copy-button" type="button" data-copy="l4-code-new">Copy</button>
+              </div>
+              <pre><code id="l4-code-new">new ClassName(arguments)</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>片段</th>
+                    <th>意思</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>new</code></td>
+                    <td>建立新的 object。</td>
+                  </tr>
+                  <tr>
+                    <td><code>Scanner</code></td>
+                    <td>要根據哪個 class 建立 object。</td>
+                  </tr>
+                  <tr>
+                    <td><code>Scanner(System.in)</code></td>
+                    <td>constructor call，用來建立並初始化 object。</td>
+                  </tr>
+                  <tr>
+                    <td><code>System.in</code></td>
+                    <td>傳給 constructor 的 argument，代表標準輸入來源。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Constructor 看起來很像 method call，因為也有 parentheses，但目的不同：constructor 是建立 object
+              時用來初始化 object；method 則是對既有 class 或 object 執行某個操作。
+            </p>
+          </section>
+
+          <section id="scanner-breakdown" class="article-section">
+            <p class="eyebrow">Scanner Breakdown</p>
+            <h2>重新拆解 <code>Scanner input = new Scanner(System.in);</code></h2>
+            <p>
+              這一行其實同時做了三件事：宣告 reference variable、建立 object、把 object reference
+              存進 variable。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Scanner Object Creation</h3>
+                <button class="copy-button" type="button" data-copy="l4-code-scanner-breakdown">Copy</button>
+              </div>
+              <pre><code id="l4-code-scanner-breakdown">Scanner input = new Scanner(System.in);</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>部分</th>
+                    <th>角色</th>
+                    <th>AP CSA 說法</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>Scanner</code></td>
+                    <td>變數的 type</td>
+                    <td>reference type / class name</td>
+                  </tr>
+                  <tr>
+                    <td><code>input</code></td>
+                    <td>變數名稱</td>
+                    <td>reference variable</td>
+                  </tr>
+                  <tr>
+                    <td><code>new</code></td>
+                    <td>建立 object</td>
+                    <td>object creation</td>
+                  </tr>
+                  <tr>
+                    <td><code>Scanner(System.in)</code></td>
+                    <td>constructor call</td>
+                    <td>建立並初始化 Scanner object</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="flow-strip">
+              <span>建立 Scanner object</span>
+              <span>取得 reference</span>
+              <span>把 reference 存進 <code>input</code></span>
+              <span><code>input</code> 指向 object</span>
+            </div>
+          </section>
+
+          <section id="references" class="article-section">
+            <p class="eyebrow">Reference Variable</p>
+            <h2>Reference 是用來找到某個 object 的資訊</h2>
+            <p>
+              在學習階段，可以把 reference 畫成箭頭。重點是：<code>input</code> 並不是整個
+              Scanner object 本身；<code>input</code> 是一個儲存 reference 的變數。
+            </p>
+            <div class="concept-card">
+              <pre><code>input
+  |
+  v
+Scanner object</code></pre>
+              <p><code>input</code> stores a reference to the Scanner object.</p>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Primitive Variable</th>
+                    <th>Reference Variable</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>儲存 primitive value。</td>
+                    <td>儲存 object reference。</td>
+                  </tr>
+                  <tr>
+                    <td><code>int x = 5;</code></td>
+                    <td><code>Scanner input = new Scanner(System.in);</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>x</code> 直接存 <code>5</code>。</td>
+                    <td><code>input</code> 存的是找到 Scanner object 的 reference。</td>
+                  </tr>
+                  <tr>
+                    <td>Assignment 複製 value。</td>
+                    <td>Assignment 複製 reference。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              Reference assignment 不會複製 object。這是本課最重要的一句話。
+            </p>
+          </section>
+
+          <section id="copying" class="article-section">
+            <p class="eyebrow">Copying</p>
+            <h2>Primitive copy 複製 value；reference copy 複製 reference</h2>
+            <div class="question-list">
+              <article>
+                <h3>Primitive Copy</h3>
+                <pre><code>int a = 5;
+int b = a;
+
+a = 20;</code></pre>
+                <p><code>a</code> 和 <code>b</code> 是兩份獨立的 primitive values。最後 <code>a = 20</code>，<code>b = 5</code>。</p>
+              </article>
+              <article>
+                <h3>Reference Copy</h3>
+                <pre><code>Scanner first = new Scanner(System.in);
+Scanner second = first;</code></pre>
+                <p><code>second = first</code> 只複製 reference。<code>first</code> 和 <code>second</code> 指向同一個 Scanner object。</p>
+              </article>
+            </div>
+            <div class="concept-card">
+              <pre><code>first  ----\
+           > Scanner object
+second ----/</code></pre>
+              <p>
+                兩個 reference variables 指向同一個 object 時，稱為 <strong>aliases</strong>。
+              </p>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Scanner Alias Example</h3>
+                <button class="copy-button" type="button" data-copy="l4-code-scanner-alias">Copy</button>
+              </div>
+              <pre><code id="l4-code-scanner-alias">import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner first = new Scanner(System.in);
+        Scanner second = first;
+
+        int a = first.nextInt();
+        int b = second.nextInt();
+
+        System.out.println(a);
+        System.out.println(b);
+    }
+}</code></pre>
+            </div>
+            <p>
+              如果輸入 <code>10 20</code>，output 是 <code>10</code> 和 <code>20</code>。
+              因為 <code>first</code> 和 <code>second</code> 操作的是同一個 Scanner object。
+            </p>
+          </section>
+
+          <section id="alias-state" class="article-section">
+            <p class="eyebrow">Alias and State</p>
+            <h2>多個 references 可以看到同一個 object state</h2>
+            <p>
+              每個 object 都可以有 state，也就是 object 目前內部資料的狀態。例如一個 Car object
+              可能有 <code>speed = 50</code>、<code>battery = 80</code>、<code>gear = 3</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>概念</th>
+                    <th>意思</th>
+                    <th>例子</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>State</td>
+                    <td>object 目前儲存的資料狀態。</td>
+                    <td><code>speed</code>、<code>battery</code>、<code>direction</code></td>
+                  </tr>
+                  <tr>
+                    <td>Behavior</td>
+                    <td>object 可以執行的操作。</td>
+                    <td><code>accelerate()</code>、<code>brake()</code>、<code>turn()</code></td>
+                  </tr>
+                  <tr>
+                    <td>Method</td>
+                    <td>Java 中常用 method 表現 behavior。</td>
+                    <td><code>input.nextInt()</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              如果 <code>a</code> 和 <code>b</code> 都指向同一個 object，透過 <code>a</code> 修改 object state，
+              之後透過 <code>b</code> 看到的也是修改後的同一個 object。
+            </p>
+            <p class="callout">
+              不是「<code>a</code> 的 object」和「<code>b</code> 的 object」。如果兩個 references 指向同一個 object，
+              根本只有一個 object。
+            </p>
+          </section>
+
+          <section id="dot-operator" class="article-section">
+            <p class="eyebrow">Dot Operator</p>
+            <h2><code>Math.sqrt(25)</code> 與 <code>input.nextInt()</code> 的角度不同</h2>
+            <p>
+              Lesson 3 學過 <code>Math.sqrt(25)</code>。這一課可以補上另一半：<code>Math.sqrt</code>
+              是 static method，可以透過 class name 呼叫；<code>input.nextInt()</code> 是對
+              <code>input</code> 指向的 Scanner object 呼叫 method。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>寫法</th>
+                    <th>概念</th>
+                    <th>說明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>Math.sqrt(25)</code></td>
+                    <td><code>Class.method(...)</code></td>
+                    <td><code>sqrt</code> 是 static method，不需要 <code>new Math(...)</code>。</td>
+                  </tr>
+                  <tr>
+                    <td><code>input.nextInt()</code></td>
+                    <td><code>objectReference.method(...)</code></td>
+                    <td>對 <code>input</code> 指向的 Scanner object 呼叫 <code>nextInt()</code>。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Dot operator <code>.</code> 在 <code>input.nextInt()</code> 中，可以先理解成：
+              對 <code>input</code> 所指向的 object 使用某個 method。
+            </p>
+          </section>
+
+          <section id="reassignment" class="article-section">
+            <p class="eyebrow">Reference Reassignment</p>
+            <h2>Reference variable 可以改指向別的 object</h2>
+            <p>
+              Reference variable 和 object 是兩件不同的事情。重新 assignment 會改變變數裡存的 reference，
+              但不會把 object 本身搬來搬去，也不會自動複製 object。
+            </p>
+            <div class="question-list">
+              <article>
+                <h3>Assignment Copies Reference</h3>
+                <pre><code>SomeClass a = new SomeClass();
+SomeClass b = new SomeClass();
+
+a = b;</code></pre>
+                <p>執行 <code>a = b;</code> 後，<code>a</code> 和 <code>b</code> 指向同一個 object B。</p>
+              </article>
+              <article>
+                <h3>What about Object A?</h3>
+                <pre><code>a ----\ 
+       > Object B
+b ----/
+
+Object A has no reference</code></pre>
+                <p>如果沒有其他 reference 指向 Object A，程式就再也無法使用它。Java 之後可能透過 garbage collection 回收記憶體。</p>
+              </article>
+            </div>
+            <p>
+              AP CSA 不需要你控制 garbage collection，但需要理解：object 和 reference variable 不是同一件事。
+            </p>
+          </section>
+
+          <section id="null" class="article-section">
+            <p class="eyebrow">null</p>
+            <h2><code>null</code> 表示沒有 reference 到任何 object</h2>
+            <p>
+              Reference variable 可以儲存特殊值 <code>null</code>。這不是一個叫做 null 的 object，
+              而是表示這個 reference variable 目前沒有指向任何 object。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>是否合法</th>
+                    <th>原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>Scanner input = null;</code></td>
+                    <td>合法</td>
+                    <td><code>Scanner</code> 是 reference type。</td>
+                  </tr>
+                  <tr>
+                    <td><code>String name = null;</code></td>
+                    <td>合法</td>
+                    <td><code>String</code> 是 reference type。</td>
+                  </tr>
+                  <tr>
+                    <td><code>int x = null;</code></td>
+                    <td>不合法</td>
+                    <td><code>int</code> 是 primitive type。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="question-list">
+              <article>
+                <h3><code>null</code> 不是 0</h3>
+                <p><code>0</code> 是 numeric value。<code>null</code> 是沒有 object reference。</p>
+              </article>
+              <article>
+                <h3><code>null</code> 不是空字串</h3>
+                <p><code>String s = null;</code> 沒有 String object；<code>String s = "";</code> 有一個長度為 0 的 String object。</p>
+              </article>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>NullPointerException</h3>
+                <button class="copy-button" type="button" data-copy="l4-code-null-pointer">Copy</button>
+              </div>
+              <pre><code id="l4-code-null-pointer">String name = null;
+
+System.out.println(name.length());</code></pre>
+            </div>
+            <p>
+              這段程式可以通過 declaration，但執行到 <code>name.length()</code> 時會出現
+              <code>NullPointerException</code>，因為沒有 String object 可以執行 <code>length()</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>錯誤類型</th>
+                    <th>例子</th>
+                    <th>原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Compile-time error</td>
+                    <td><code>int x = null;</code></td>
+                    <td>編譯時就知道 primitive type 不能儲存 <code>null</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>Runtime error</td>
+                    <td><code>String s = null; s.length();</code></td>
+                    <td>宣告合法，但執行 method call 時沒有 object。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              AP 題目看到 <code>SomeClass obj = null;</code> 不要立刻說 compile error。
+              真正危險的是後面如果 <code>obj</code> 仍然是 <code>null</code>，卻呼叫 <code>obj.someMethod()</code>。
+            </p>
+          </section>
+
+          <section id="trace-method" class="article-section">
+            <p class="eyebrow">Reference Diagram Strategy</p>
+            <h2>遇到 object tracing 題，請直接畫箭頭</h2>
+            <p>
+              Reference 題不要只在腦中想。最穩定的方法是畫 variables、objects 和 arrows。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Step</th>
+                    <th>做法</th>
+                    <th>例子</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>找 <code>new</code>。</td>
+                    <td>每次執行 <code>new SomeClass()</code> 通常建立新 object。</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>畫 object。</td>
+                    <td>Object A、Object B。</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>畫 reference variables。</td>
+                    <td><code>a</code>、<code>b</code>、<code>c</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>根據 assignment 畫箭頭。</td>
+                    <td><code>b = a;</code> 表示複製 <code>a</code> 的 reference。</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>遇到 <code>null</code> 就移除箭頭。</td>
+                    <td><code>a = null;</code> 讓 <code>a</code> 不再指向 object。</td>
+                  </tr>
+                  <tr>
+                    <td>6</td>
+                    <td>檢查 object 是否還有其他 reference。</td>
+                    <td>不要看到 <code>a = null</code> 就以為 object 一定消失。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Trace Challenge</h3>
+                <button class="copy-button" type="button" data-copy="l4-code-reference-trace">Copy</button>
+              </div>
+              <pre><code id="l4-code-reference-trace">Scanner a = new Scanner(System.in);
+Scanner b = a;
+Scanner c = b;
+
+b = null;</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>a ----\
+       > Scanner object
+c ----/
+
+b -> null</code></pre>
+              <p>最後 Scanner object 仍然存在，因為 <code>a</code> 和 <code>c</code> 還 reference 到它。</p>
+            </div>
+          </section>
+
+          <section id="ap-patterns" class="article-section">
+            <p class="eyebrow">AP Patterns</p>
+            <h2>AP CSA 常見題型與陷阱</h2>
+            <div class="question-list">
+              <article>
+                <h3>Class / Object / Reference</h3>
+                <pre><code>Scanner keyboard = new Scanner(System.in);</code></pre>
+                <p><code>Scanner</code> 是 class/type，<code>keyboard</code> 是 reference variable，<code>new Scanner(System.in)</code> 是 object creation + constructor call。</p>
+              </article>
+              <article>
+                <h3>Primitive Copy</h3>
+                <pre><code>int a = 7;
+int b = a;
+b = 20;</code></pre>
+                <p><code>a</code> 仍是 <code>7</code>，<code>b</code> 是 <code>20</code>。Primitive values 是獨立 copy。</p>
+              </article>
+              <article>
+                <h3>Reference Copy</h3>
+                <pre><code>Scanner one = new Scanner(System.in);
+Scanner two = one;</code></pre>
+                <p><code>one</code> 和 <code>two</code> 儲存相同 reference，指向同一個 object。</p>
+              </article>
+              <article>
+                <h3>Count Objects</h3>
+                <pre><code>Scanner a = new Scanner(System.in);
+Scanner b = a;
+Scanner c = b;</code></pre>
+                <p>明確建立 <code>1</code> 個 Scanner object，有 <code>3</code> 個 reference variables。</p>
+              </article>
+              <article>
+                <h3>null Is Legal for Reference Types</h3>
+                <pre><code>String word = null;</code></pre>
+                <p>這行合法，沒有立即 runtime error，也沒有建立空字串。</p>
+              </article>
+              <article>
+                <h3>NullPointerException</h3>
+                <pre><code>String word = null;
+System.out.println(word.length());</code></pre>
+                <p>執行到 <code>word.length()</code> 時出現 runtime error，因為 <code>word</code> 沒有指向 String object。</p>
+              </article>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>常見迷思</th>
+                    <th>正確觀念</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>a = b;</code> 會複製整個 object。</td>
+                    <td>Reference assignment 只複製 reference。</td>
+                  </tr>
+                  <tr>
+                    <td>兩個變數就一定有兩個 objects。</td>
+                    <td>多個 reference variables 可以指向同一個 object。</td>
+                  </tr>
+                  <tr>
+                    <td>使用 <code>new</code> 就會建立 reference variable。</td>
+                    <td><code>new</code> 建立 object；variable declaration 建立 variable。</td>
+                  </tr>
+                  <tr>
+                    <td>Reference variable 就是 object。</td>
+                    <td>Reference variable 儲存 reference，不是 object 本身。</td>
+                  </tr>
+                  <tr>
+                    <td><code>null</code> 是 object 或空字串。</td>
+                    <td><code>null</code> 表示沒有 object reference。</td>
+                  </tr>
+                  <tr>
+                    <td>Reference 一定要理解成裸記憶體位址。</td>
+                    <td>AP CSA 只需要你能畫 reference 指向 object。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="practice" class="article-section">
+            <p class="eyebrow">Practice</p>
+            <h2>練習題與可完成的小實驗</h2>
+            <p>
+              完整課後題本已整理成 vocabulary、primitive/reference copy、object counting、null、
+              NullPointerException、AP-style multiple choice 和小型 tracing 練習。
+            </p>
+            <div class="inline-actions">
+              <a class="button primary" href="lesson-4-practice.html">開始 Lesson 4 課後練習</a>
+              <a class="button" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+            <div class="practice-set">
+              <article>
+                <h3>Primitive Trace</h3>
+                <p>追蹤 <code>int x = 3; int y = x; x = 8;</code>，確認 <code>y</code> 不會跟著變。</p>
+              </article>
+              <article>
+                <h3>Reference Diagram</h3>
+                <p>畫出 <code>SomeClass x = new SomeClass(); SomeClass y = x; x = null;</code> 的最後狀態。</p>
+              </article>
+              <article>
+                <h3>Count Objects</h3>
+                <p>數一段程式中 <code>new</code> 實際執行幾次，不要只數變數個數。</p>
+              </article>
+              <article>
+                <h3>null Debugging</h3>
+                <p>判斷 <code>String s = null;</code>、<code>String s = "";</code> 和 <code>String s = " ";</code> 的差異。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Class</strong><span>描述一類 objects 的設計或規格。</span></div>
+              <div><strong>Object</strong><span>根據 class 建立的 instance。</span></div>
+              <div><strong><code>new</code></strong><span>通常用來建立新的 object。</span></div>
+              <div><strong>Constructor</strong><span>建立 object 時負責初始化 object。</span></div>
+              <div><strong>Reference</strong><span>讓程式可以找到某個 object。</span></div>
+              <div><strong>Reference Variable</strong><span>儲存 object reference，例如 <code>Scanner input;</code>。</span></div>
+              <div><strong>Primitive Assignment</strong><span><code>int b = a;</code> 複製 primitive value。</span></div>
+              <div><strong>Reference Assignment</strong><span><code>SomeClass b = a;</code> 複製 reference，不複製 object。</span></div>
+              <div><strong>Object State</strong><span>object 目前內部資料的狀態。</span></div>
+              <div><strong><code>null</code></strong><span>表示沒有 reference 到任何 object。</span></div>
+              <div><strong>NullPointerException</strong><span>對 <code>null</code> 呼叫 method 時常見的 runtime error。</span></div>
+              <div><strong>Tracing</strong><span>畫 arrows，比只在腦中想更可靠。</span></div>
+            </div>
+            <details>
+              <summary>Lesson 4 自我檢核問題</summary>
+              <p>Class 和 object 有什麼不同？<code>new</code> 的作用是什麼？<code>Scanner input</code> 中的 <code>input</code> 是 object 還是 reference variable？</p>
+              <p><code>int b = a</code> 複製什麼？<code>SomeClass b = a</code> 複製什麼？兩個 references 可以指向同一個 object 嗎？</p>
+              <p><code>null</code> 是 object 嗎？<code>null</code> 和 <code>""</code> 一樣嗎？對 <code>null</code> 呼叫 method 會發生什麼？</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 4｜Objects &amp; References。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

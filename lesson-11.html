@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 11｜Loop Algorithms</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 11：loop algorithms、sum、count、average、min/max、find any、find first、early exit、String traversal、substring search、loop invariants 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 11</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第十一堂課導覽">
+        <a href="lesson-11-presentation.html">投影模式</a>
+        <a href="lesson-11-practice.html">課後練習</a>
+        <a href="lesson-10.html">上一課</a>
+        <a href="#sum-count">Sum / Count</a>
+        <a href="#average">Average</a>
+        <a href="#min-max">Min / Max</a>
+        <a href="#search">Search</a>
+        <a href="#string">String</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 11</p>
+          <h1>Loop Algorithms：用迴圈真正設計演算法</h1>
+          <p class="lead">
+            Lesson 9 和 Lesson 10 讓你會寫 <code>while</code> 與 <code>for</code>。
+            這堂課把 loop 變成演算法工具：累積總和、計數、平均、最大最小值、搜尋是否存在、
+            找第一個符合值、early exit、String traversal、substring pattern search 與 AP-style trace。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-11-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-11-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-10.html">回 Lesson 10</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#structure">Algorithm 結構</a>
+          <a href="#sum-count">Sum / Count</a>
+          <a href="#average">Average</a>
+          <a href="#min-max">Minimum / Maximum</a>
+          <a href="#search">Find Any / Find First</a>
+          <a href="#early-exit">Early Exit</a>
+          <a href="#string">String Traversal</a>
+          <a href="#pairs">Substring / Pairs</a>
+          <a href="#one-pass">One-Pass Algorithms</a>
+          <a href="#invariant">Loop Invariant</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>把 loop algorithm 拆成 initialization、repeated processing、final result。</div>
+              <div>使用 <code>sum</code> accumulator，並知道 <code>sum</code> 通常從 0 開始。</div>
+              <div>使用 <code>count</code> accumulator，分辨 <code>count++</code> 和 <code>sum += value</code> 的差異。</div>
+              <div>同時維護 <code>sum</code> 與 <code>count</code>，並在 loop 後計算 average。</div>
+              <div>避免 average 的 integer division，必要時使用 <code>(double)</code> cast。</div>
+              <div>理解為什麼 average 前常要檢查 <code>count &gt; 0</code>。</div>
+              <div>使用 running maximum / minimum，並用第一個真實資料初始化。</div>
+              <div>使用 <code>boolean found</code> 寫 find-any algorithm，避免後面又把 flag 改回 false。</div>
+              <div>寫 find-first algorithm，理解 first 和 last matching value 的差異。</div>
+              <div>使用 early exit：答案已確定時停止 loop 或直接 return。</div>
+              <div>正確走訪 String：<code>i &lt; str.length()</code> 與 <code>substring(i, i + 1)</code>。</div>
+              <div>計算字元出現次數、反向 traversal、String accumulator、filtering 與 overlapping substring matches。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson11-flow-0" /> <span><strong>狀態變數</strong>：<code>sum</code>、<code>count</code>、<code>max</code>、<code>min</code>、<code>found</code>、<code>first</code>、<code>result</code>。</span></label>
+              <label><input type="checkbox" data-progress="lesson11-flow-1" /> <span><strong>累積型演算法</strong>：sum、conditional sum、count、average。</span></label>
+              <label><input type="checkbox" data-progress="lesson11-flow-2" /> <span><strong>極值演算法</strong>：running max / min 與正確 initialization。</span></label>
+              <label><input type="checkbox" data-progress="lesson11-flow-3" /> <span><strong>搜尋型演算法</strong>：find any、find first、early exit、early return。</span></label>
+              <label><input type="checkbox" data-progress="lesson11-flow-4" /> <span><strong>String traversal</strong>：逐字、反向、filter、count pattern、overlapping pairs。</span></label>
+              <label><input type="checkbox" data-progress="lesson11-flow-5" /> <span><strong>AP trace</strong>：同時追蹤多個 state variable 與常見錯誤。</span></label>
+            </div>
+          </section>
+
+          <section id="structure" class="article-section">
+            <p class="eyebrow">Algorithm Structure</p>
+            <h2>Loop algorithm 的核心：初始化狀態，逐筆處理，最後輸出結果</h2>
+            <div class="concept-card">
+              <pre><code>Initialization
+Repeated Processing
+Final Result</code></pre>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Sum 1 to 5</h3>
+                <button class="copy-button" type="button" data-copy="l11-code-structure">Copy</button>
+              </div>
+              <pre><code id="l11-code-structure">int sum = 0;                 // initialization
+
+for (int i = 1; i &lt;= 5; i++)
+{
+    sum += i;                // repeated processing
+}
+
+System.out.println(sum);     // final result</code></pre>
+            </div>
+            <p>
+              本課的重點不是背某一段程式，而是問清楚：我要保存什麼狀態？每看到一筆資料要怎麼更新這個狀態？
+            </p>
+          </section>
+
+          <section id="sum-count" class="article-section">
+            <p class="eyebrow">Sum / Count</p>
+            <h2>Sum 是把值加起來；Count 是找到一個就加一</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Algorithm</th>
+                    <th>Initialization</th>
+                    <th>Update</th>
+                    <th>意思</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Sum</td><td><code>int sum = 0;</code></td><td><code>sum += value;</code></td><td>把 value 加進總和。</td></tr>
+                  <tr><td>Count</td><td><code>int count = 0;</code></td><td><code>count++;</code></td><td>又找到一個符合項目。</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="question-list">
+              <article>
+                <h3>Conditional Sum</h3>
+                <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 10; i++)
+{
+    if (i % 2 == 0)
+    {
+        sum += i;
+    }
+}</code></pre>
+                <p>加進去的是 2、4、6、8、10，所以 <code>sum = 30</code>。</p>
+              </article>
+              <article>
+                <h3>Conditional Count</h3>
+                <pre><code>int count = 0;
+
+for (int i = 1; i &lt;= 20; i++)
+{
+    if (i % 3 == 0)
+    {
+        count++;
+    }
+}</code></pre>
+                <p>3、6、9、12、15、18，共 6 個，所以 <code>count = 6</code>。</p>
+              </article>
+              <article>
+                <h3>Sum and Count Together</h3>
+                <pre><code>int sum = 0;
+int count = 0;
+
+for (int i = 1; i &lt;= 20; i++)
+{
+    if (i % 3 == 0)
+    {
+        sum += i;
+        count++;
+    }
+}</code></pre>
+                <p>同時知道符合值的總和與數量，之後就能算 average。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="average" class="article-section">
+            <p class="eyebrow">Average</p>
+            <h2>Average 通常是 loop 後才算：<code>average = sum / count</code></h2>
+            <p>
+              平均不是每輪隨便除一次；標準做法是先累積 <code>sum</code> 和 <code>count</code>，
+              loop 結束後再計算。若 <code>sum</code> 和 <code>count</code> 都是 <code>int</code>，
+              要注意 integer division。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Average of Matching Values</h3>
+                <button class="copy-button" type="button" data-copy="l11-code-average">Copy</button>
+              </div>
+              <pre><code id="l11-code-average">int sum = 0;
+int count = 0;
+
+for (int i = 1; i &lt;= 100; i++)
+{
+    if (i % 10 == 0)
+    {
+        sum += i;
+        count++;
+    }
+}
+
+if (count &gt; 0)
+{
+    double average = (double) sum / count;
+    System.out.println(average);
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>陷阱</th>
+                    <th>錯誤</th>
+                    <th>正確</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Integer division</td><td><code>double avg = sum / count;</code></td><td><code>double avg = (double) sum / count;</code></td></tr>
+                  <tr><td>Zero matches</td><td>直接除以 <code>count</code></td><td>先檢查 <code>count &gt; 0</code>。</td></tr>
+                  <tr><td>每輪除</td><td><code>avg += value / count;</code></td><td>先 sum/count，最後再除。</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="min-max" class="article-section">
+            <p class="eyebrow">Min / Max</p>
+            <h2>Running max / min：到目前為止看過的最大或最小</h2>
+            <p>
+              找最大或最小值時，最重要的是 initialization。不要隨便寫 <code>max = 0</code> 或
+              <code>min = 0</code>，因為資料可能全是負數或全是正數。最常見的安全做法是用第一個真實資料初始化。
+            </p>
+            <div class="question-list">
+              <article>
+                <h3>Maximum</h3>
+                <pre><code>int max = input.nextInt();
+
+for (int i = 1; i &lt; 5; i++)
+{
+    int value = input.nextInt();
+
+    if (value &gt; max)
+    {
+        max = value;
+    }
+}</code></pre>
+                <p>第一筆已經用來初始化，所以 loop 再讀 4 筆。</p>
+              </article>
+              <article>
+                <h3>Minimum</h3>
+                <pre><code>int min = input.nextInt();
+
+for (int i = 1; i &lt; 5; i++)
+{
+    int value = input.nextInt();
+
+    if (value &lt; min)
+    {
+        min = value;
+    }
+}</code></pre>
+                <p>比較方向和 maximum 相反。</p>
+              </article>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Algorithm</th>
+                    <th>Invariant</th>
+                    <th>Condition</th>
+                    <th>Update</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Maximum</td><td><code>max</code> 是目前看過最大值</td><td><code>value &gt; max</code></td><td><code>max = value</code></td></tr>
+                  <tr><td>Minimum</td><td><code>min</code> 是目前看過最小值</td><td><code>value &lt; min</code></td><td><code>min = value</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="search" class="article-section">
+            <p class="eyebrow">Search Algorithms</p>
+            <h2>搜尋題先分清楚：有沒有？第一個？最後一個？有幾個？</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>題目問法</th>
+                    <th>常見變數</th>
+                    <th>Match 時</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>有沒有？</td><td><code>boolean found</code></td><td><code>found = true</code></td></tr>
+                  <tr><td>第一個是什麼？</td><td><code>first</code> + <code>found</code></td><td>保存答案，停止搜尋。</td></tr>
+                  <tr><td>最後一個是什麼？</td><td><code>last</code></td><td>每次 match 都更新。</td></tr>
+                  <tr><td>有幾個？</td><td><code>count</code></td><td><code>count++</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="question-list">
+              <article>
+                <h3>Find Any</h3>
+                <pre><code>boolean found = false;
+
+for (int i = 1; i &lt;= 20; i++)
+{
+    if (i % 4 == 0 &amp;&amp; i % 6 == 0)
+    {
+        found = true;
+    }
+}</code></pre>
+                <p>找到 12，所以最後 <code>found</code> 是 true。</p>
+              </article>
+              <article>
+                <h3>Find First</h3>
+                <pre><code>int first = -1;
+boolean found = false;
+int i = 1;
+
+while (i &lt;= 100 &amp;&amp; !found)
+{
+    if (i % 7 == 0 &amp;&amp; i % 9 == 0)
+    {
+        first = i;
+        found = true;
+    }
+    i++;
+}</code></pre>
+                <p>第一個同時是 7 和 9 的倍數是 63。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="early-exit" class="article-section">
+            <p class="eyebrow">Early Exit</p>
+            <h2>答案已經確定時，可以提早停止</h2>
+            <p>
+              Find any 和 find first 適合 early exit，因為找到後答案已經確定。Sum、count all、average、
+              max、min 通常要看完整份資料，不能隨便停。
+            </p>
+            <div class="definition-grid">
+              <article>
+                <h3>Flag-controlled</h3>
+                <pre><code>while (i &lt;= end &amp;&amp; !found)</code></pre>
+              </article>
+              <article>
+                <h3>Early return</h3>
+                <pre><code>if (match)
+{
+    return true;
+}</code></pre>
+              </article>
+              <article>
+                <h3>Special result</h3>
+                <pre><code>int first = -1;</code></pre>
+                <p>如果合法答案不可能是 -1，就可代表 not found。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="string" class="article-section">
+            <p class="eyebrow">String Traversal</p>
+            <h2>String traversal：用 index 逐字處理</h2>
+            <p>
+              String 的合法 index 是 <code>0</code> 到 <code>length() - 1</code>。
+              因此標準 traversal 是 <code>i &lt; word.length()</code>，不是 <code>i &lt;= word.length()</code>。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Count Letter I</h3>
+                <button class="copy-button" type="button" data-copy="l11-code-string-count">Copy</button>
+              </div>
+              <pre><code id="l11-code-string-count">String word = "MISSISSIPPI";
+int count = 0;
+
+for (int i = 0; i &lt; word.length(); i++)
+{
+    String letter = word.substring(i, i + 1);
+
+    if (letter.equals("I"))
+    {
+        count++;
+    }
+}</code></pre>
+            </div>
+            <div class="question-list">
+              <article>
+                <h3>Reverse Traversal</h3>
+                <pre><code>String s = "CODE";
+String result = "";
+
+for (int i = s.length() - 1; i &gt;= 0; i--)
+{
+    result += s.substring(i, i + 1);
+}</code></pre>
+                <p>最後 <code>result</code> 是 <code>"EDOC"</code>。</p>
+              </article>
+              <article>
+                <h3>String Filter</h3>
+                <pre><code>String s = "ABACADA";
+String result = "";
+
+for (int i = 0; i &lt; s.length(); i++)
+{
+    String letter = s.substring(i, i + 1);
+
+    if (!letter.equals("A"))
+    {
+        result += letter;
+    }
+}</code></pre>
+                <p>保留 B、C、D，所以 <code>result</code> 是 <code>"BCD"</code>。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="pairs" class="article-section">
+            <p class="eyebrow">Substring Search</p>
+            <h2>搜尋長度 2 的 substring 時，最後起點是 <code>length() - 2</code></h2>
+            <p>
+              <code>substring(i, i + 2)</code> 需要兩個字元，所以最後一個合法起點是
+              <code>s.length() - 2</code>。Loop condition 常寫成 <code>i &lt; s.length() - 1</code>。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Count Adjacent Pair</h3>
+                <button class="copy-button" type="button" data-copy="l11-code-pair">Copy</button>
+              </div>
+              <pre><code id="l11-code-pair">String s = "ABABAB";
+int count = 0;
+
+for (int i = 0; i &lt; s.length() - 1; i++)
+{
+    if (s.substring(i, i + 2).equals("AB"))
+    {
+        count++;
+    }
+}</code></pre>
+            </div>
+            <p>
+              這會檢查 index 0~1、1~2、2~3、3~4、4~5，所以可以找到 overlapping matches。
+              例如 <code>"AAA"</code> 裡的 <code>"AA"</code> 有 2 個：0~1 和 1~2。
+            </p>
+          </section>
+
+          <section id="one-pass" class="article-section">
+            <p class="eyebrow">One-Pass Algorithm</p>
+            <h2>同一次 traversal 可以維護多個狀態</h2>
+            <p>
+              AP CSA 常見題會要求一次掃描資料，同時求 sum、count、min、max 或 found。
+              關鍵是每一輪用目前 value 更新所有需要的狀態。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Sum / Count / Min / Max</h3>
+                <button class="copy-button" type="button" data-copy="l11-code-one-pass">Copy</button>
+              </div>
+              <pre><code id="l11-code-one-pass">int first = input.nextInt();
+int sum = first;
+int count = 1;
+int min = first;
+int max = first;
+
+for (int i = 1; i &lt; 5; i++)
+{
+    int value = input.nextInt();
+
+    sum += value;
+    count++;
+
+    if (value &lt; min)
+    {
+        min = value;
+    }
+
+    if (value &gt; max)
+    {
+        max = value;
+    }
+}</code></pre>
+            </div>
+            <p class="callout">
+              第一筆已經處理進 <code>sum</code>、<code>count</code>、<code>min</code>、<code>max</code>，所以 loop 從第二筆開始。
+            </p>
+          </section>
+
+          <section id="invariant" class="article-section">
+            <p class="eyebrow">Loop Invariant</p>
+            <h2>Loop invariant：每輪開始時都維持正確的狀態描述</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Variable</th>
+                    <th>Invariant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>sum</code></td><td>已處理資料的總和。</td></tr>
+                  <tr><td><code>count</code></td><td>已找到 match 的數量。</td></tr>
+                  <tr><td><code>max</code></td><td>已看過資料的最大值。</td></tr>
+                  <tr><td><code>min</code></td><td>已看過資料的最小值。</td></tr>
+                  <tr><td><code>found</code></td><td>已看過資料中是否出現 match。</td></tr>
+                  <tr><td><code>result</code></td><td>目前已建立好的輸出字串。</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              這種「目前已知資訊」的思考，是後面 arrays、ArrayList、searching、sorting 和 FRQ 的核心。
+            </p>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Errors</p>
+            <h2>Lesson 11 常見錯誤與 AP 陷阱</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>問題</th>
+                    <th>常見錯誤</th>
+                    <th>正確觀念</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Sum</td><td><code>sum++</code></td><td>通常是 <code>sum += value</code>。</td></tr>
+                  <tr><td>Count</td><td><code>count += value</code></td><td>通常是 <code>count++</code>。</td></tr>
+                  <tr><td>Average</td><td>integer division</td><td>用 <code>(double) sum / count</code>。</td></tr>
+                  <tr><td>Average</td><td><code>count == 0</code> 仍除</td><td>先檢查 <code>count &gt; 0</code>。</td></tr>
+                  <tr><td>Maximum</td><td><code>max = 0</code></td><td>用第一個真實資料初始化。</td></tr>
+                  <tr><td>Minimum</td><td><code>min = 0</code></td><td>用第一個真實資料初始化。</td></tr>
+                  <tr><td>Find any</td><td><code>else found = false</code></td><td>找到後不要因後面不 match 改回 false。</td></tr>
+                  <tr><td>Find first</td><td>每次 match 都覆寫</td><td>early exit 或只在尚未找到時更新。</td></tr>
+                  <tr><td>String bounds</td><td><code>i &lt;= str.length()</code></td><td>應使用 <code>i &lt; str.length()</code>。</td></tr>
+                  <tr><td>Reverse</td><td>從 <code>length()</code> 開始</td><td>從 <code>length() - 1</code> 開始。</td></tr>
+                  <tr><td>Substring</td><td>以為 end index inclusive</td><td>end index 是 exclusive。</td></tr>
+                  <tr><td>Tracing</td><td>只追 loop variable</td><td>還要追 accumulator、flag、result。</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="practice" class="article-section">
+            <p class="eyebrow">Practice</p>
+            <h2>練習題與可完成的小程式</h2>
+            <p>
+              完整課後題本已整理成 sum、count、average、min/max、find any、find first、
+              String traversal、substring search、one-pass algorithm 與 AP-style tracing。
+            </p>
+            <div class="inline-actions">
+              <a class="button primary" href="lesson-11-practice.html">開始 Lesson 11 課後練習</a>
+              <a class="button" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+            <div class="practice-set">
+              <article>
+                <h3>Accumulator</h3>
+                <p>使用 <code>sum</code>、<code>count</code>、<code>result</code> 保存 loop 狀態。</p>
+              </article>
+              <article>
+                <h3>Min / Max</h3>
+                <p>使用第一個真實資料初始化，逐筆更新 running min / max。</p>
+              </article>
+              <article>
+                <h3>Search</h3>
+                <p>分辨 find any、find first、find last、count all。</p>
+              </article>
+              <article>
+                <h3>String</h3>
+                <p>使用 <code>substring</code> 逐字或逐段處理文字。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Structure</strong><span>Initialization → processing → final result。</span></div>
+              <div><strong>Sum</strong><span><code>sum = 0</code>；<code>sum += value</code>。</span></div>
+              <div><strong>Count</strong><span><code>count = 0</code>；<code>count++</code>。</span></div>
+              <div><strong>Average</strong><span><code>(double) sum / count</code>；小心 <code>count == 0</code>。</span></div>
+              <div><strong>Max</strong><span><code>max = first</code>；更大才更新。</span></div>
+              <div><strong>Min</strong><span><code>min = first</code>；更小才更新。</span></div>
+              <div><strong>Find Any</strong><span><code>found = false</code>；match 時變 true。</span></div>
+              <div><strong>Find First</strong><span>保存答案後停止，避免被後面覆寫。</span></div>
+              <div><strong>Early Exit</strong><span>find any / first 適合；sum/count/max/min 通常不適合。</span></div>
+              <div><strong>String</strong><span><code>i &lt; str.length()</code>，<code>substring(i, i + 1)</code>。</span></div>
+              <div><strong>Pairs</strong><span><code>i &lt; str.length() - 1</code>，<code>substring(i, i + 2)</code>。</span></div>
+              <div><strong>Invariant</strong><span>每個變數代表 loop 目前已知的資訊。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十二句</summary>
+              <p>Loop algorithms are about maintaining state.</p>
+              <p><code>sum += value</code> adds a value to the total.</p>
+              <p><code>count++</code> means one more match was found.</p>
+              <p>Average is usually computed after the loop.</p>
+              <p>Use <code>(double)</code> to avoid integer division.</p>
+              <p>Check <code>count &gt; 0</code> before dividing when matches are not guaranteed.</p>
+              <p>Initialize max and min with real data when possible.</p>
+              <p>Do not reset <code>found</code> to false after it becomes true.</p>
+              <p>Find first must stop or avoid overwriting the first match.</p>
+              <p>String traversal uses indexes <code>0</code> through <code>length() - 1</code>.</p>
+              <p><code>substring</code> end index is exclusive.</p>
+              <p>For tracing, track every state variable, not only <code>i</code>.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 11｜Loop Algorithms。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

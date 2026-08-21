@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 5 投影模式｜String Methods</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 5 投影模式：String index、length、substring、indexOf、equals、compareTo、concatenation、immutability 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 5</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-5.html">文章版</a>
+        <a href="lesson-5-practice.html">課後練習</a>
+        <a href="lesson-4.html">上一課</a>
+        <a href="lesson-6.html">下一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 5</p>
+          <h1>String Methods</h1>
+          <p class="slide-lead">
+            今天正式操作 String objects：index、<code>length()</code>、<code>substring()</code>、
+            <code>indexOf()</code>、<code>equals()</code>、<code>compareTo()</code>、concatenation 與 immutability。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-5-practice.html">Lesson 5 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">From Lesson 4</p>
+          <h2><code>String</code> 是 class，不是 primitive type</h2>
+          <div class="deck-code">
+            <pre><code>String name = "Alice";</code></pre>
+          </div>
+          <div class="definition-grid">
+            <article><h3><code>String</code></h3><p>class / reference type</p></article>
+            <article><h3><code>name</code></h3><p>reference variable</p></article>
+            <article><h3><code>"Alice"</code></h3><p>String object / literal</p></article>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r1">核心觀念</button>
+          <div class="reveal-panel" id="l5-r1">
+            <p><code>name</code> 不是直接放著文字本身；它 reference 到一個 String object。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Literal and char</p>
+          <h2>雙引號是 String，單引號是 char</h2>
+          <div class="type-grid">
+            <div><strong><code>'A'</code></strong><span><code>char</code></span></div>
+            <div><strong><code>"A"</code></strong><span><code>String</code></span></div>
+            <div><strong><code>""</code></strong><span>empty String</span></div>
+          </div>
+          <p class="slide-note">即使 <code>"A"</code> 只有一個字元，它仍然是 String。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Index</p>
+          <h2>String index 從 0 開始</h2>
+          <div class="deck-code">
+            <pre><code>character: c o m p u t e r
+index:     0 1 2 3 4 5 6 7
+length:    8</code></pre>
+          </div>
+          <div class="big-flow">
+            <span>first index = 0</span>
+            <span>length = characters</span>
+            <span>last index = length - 1</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">length()</p>
+          <h2><code>length()</code> 回傳 character 數量</h2>
+          <div class="multiple-choice">
+            <pre><code>String text = "AP CSA";
+System.out.println(text.length());</code></pre>
+            <p>Output 是多少？</p>
+            <div class="choices">
+              <span>A. 5</span>
+              <span>B. 6</span>
+              <span>C. 7</span>
+              <span>D. Compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l5-r2">
+            <p>答案是 B。中間的 space 也是 character，所以 <code>"AP CSA"</code> 長度是 <code>6</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Empty vs null</p>
+          <h2><code>""</code> 和 <code>null</code> 完全不同</h2>
+          <div class="definition-grid">
+            <article><h3><code>""</code></h3><p>有 String object；<code>length()</code> 是 <code>0</code>。</p></article>
+            <article><h3><code>null</code></h3><p>沒有 String object；呼叫 method 會 error。</p></article>
+            <article><h3><code>" "</code></h3><p>一個 space；<code>length()</code> 是 <code>1</code>。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">substring</p>
+          <h2><code>substring(a, b)</code> 取 <code>a &lt;= index &lt; b</code></h2>
+          <div class="deck-code">
+            <pre><code>String word = "computer";
+System.out.println(word.substring(2, 5));</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r3">揭曉 trace</button>
+          <div class="reveal-panel" id="l5-r3">
+            <pre><code>c o m p u t e r
+0 1 2 3 4 5 6 7
+    ^ ^ ^</code></pre>
+            <p>取 index 2、3、4，結果是 <code>"mpu"</code>。不包含 index 5。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">substring Formula</p>
+          <h2>合法條件：<code>0 &lt;= from &lt;= to &lt;= length()</code></h2>
+          <div class="definition-grid">
+            <article><h3>Result length</h3><p><code>substring(a, b)</code> 長度通常是 <code>b - a</code>。</p></article>
+            <article><h3>Full String</h3><p><code>s.substring(0, s.length())</code></p></article>
+            <article><h3>Single character String</h3><p><code>s.substring(i, i + 1)</code></p></article>
+          </div>
+          <p class="slide-note">第二個 parameter 是停止位置，不是最後一個被取出的 index。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">substring(from)</p>
+          <h2><code>substring(from)</code> 從 <code>from</code> 取到最後</h2>
+          <div class="multiple-choice">
+            <pre><code>String s = "abcdef";
+System.out.println(s.substring(2));</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. ab</span>
+              <span>B. bcdef</span>
+              <span>C. cdef</span>
+              <span>D. def</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l5-r4">
+            <p>答案是 C。index 2 是 <code>c</code>，所以從 <code>c</code> 取到最後得到 <code>"cdef"</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Special but Legal</p>
+          <h2>有些 substring 會得到 empty string，但合法</h2>
+          <div class="definition-grid">
+            <article><h3><code>s.substring(s.length())</code></h3><p>從結尾取到結尾，結果是 <code>""</code>。</p></article>
+            <article><h3><code>s.substring(3, 3)</code></h3><p>start 等於 end，沒有取出 character。</p></article>
+            <article><h3>Not legal</h3><p><code>from &gt; to</code> 或超出 length。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">indexOf</p>
+          <h2><code>indexOf()</code> 回傳第一次出現的位置</h2>
+          <div class="multiple-choice">
+            <pre><code>String s = "banana";
+System.out.println(s.indexOf("an"));</code></pre>
+            <p>Output 是多少？</p>
+            <div class="choices">
+              <span>A. 0</span>
+              <span>B. 1</span>
+              <span>C. 3</span>
+              <span>D. 4</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l5-r5">
+            <p>答案是 B。<code>"an"</code> 第一次從 index <code>1</code> 開始。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Not Found</p>
+          <h2><code>indexOf()</code> 找不到回傳 <code>-1</code></h2>
+          <div class="definition-grid">
+            <article><h3><code>"computer".indexOf("com")</code></h3><p><code>0</code>，因為在開頭找到。</p></article>
+            <article><h3><code>"computer".indexOf("xyz")</code></h3><p><code>-1</code>，因為找不到。</p></article>
+            <article><h3>Trap</h3><p>找不到不是 <code>0</code>。<code>0</code> 代表在第一個位置找到。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">indexOf + substring</p>
+          <h2>重要組合：取 Email username</h2>
+          <div class="deck-code">
+            <pre><code>String email = "student@gmail.com";
+int at = email.indexOf("@");
+String username = email.substring(0, at);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r6">為什麼不包含 @</button>
+          <div class="reveal-panel" id="l5-r6">
+            <p><code>substring(0, at)</code> 不包含 ending index <code>at</code>，所以剛好取到 <code>@</code> 前一個 character。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">equals</p>
+          <h2><code>equals()</code> 比較 String 內容</h2>
+          <div class="multiple-choice">
+            <pre><code>System.out.println("hello".equals("Hello"));</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. true</span>
+              <span>B. false</span>
+              <span>C. 0</span>
+              <span>D. Runtime error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r7">揭曉答案</button>
+          <div class="reveal-panel" id="l5-r7">
+            <p>答案是 B。<code>equals()</code> 是 case-sensitive，<code>h</code> 和 <code>H</code> 不同。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">== vs equals</p>
+          <h2><code>==</code> 比較 references；<code>equals()</code> 比較 contents</h2>
+          <div class="deck-code">
+            <pre><code>String a = new String("cat");
+String b = new String("cat");
+
+System.out.println(a == b);
+System.out.println(a.equals(b));</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r8">揭曉 output</button>
+          <div class="reveal-panel" id="l5-r8">
+            <pre><code>false
+true</code></pre>
+            <p>兩次 <code>new</code> 建立兩個不同 objects，所以 <code>==</code> 是 false；內容相同，所以 <code>equals()</code> 是 true。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">compareTo</p>
+          <h2><code>compareTo()</code> 看正負號，不要假設 ±1</h2>
+          <div class="definition-grid">
+            <article><h3><code>&lt; 0</code></h3><p>前面的 String 排在前面。</p></article>
+            <article><h3><code>0</code></h3><p>兩個 Strings 相同。</p></article>
+            <article><h3><code>&gt; 0</code></h3><p>前面的 String 排在後面。</p></article>
+          </div>
+          <p class="slide-note"><code>"apple".compareTo("banana") &lt; 0</code>，但不一定等於 <code>-1</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">compareTo Check</p>
+          <h2>快速檢核</h2>
+          <div class="multiple-choice">
+            <pre><code>String a = "dog";
+String b = "cat";
+System.out.println(a.compareTo(b) > 0);</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. true</span>
+              <span>B. false</span>
+              <span>C. 1</span>
+              <span>D. -1</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r9">揭曉答案</button>
+          <div class="reveal-panel" id="l5-r9">
+            <p>答案是 A。<code>"dog"</code> 排在 <code>"cat"</code> 後面，所以 <code>compareTo</code> 回傳正數。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Concatenation</p>
+          <h2><code>+</code> 遇到 String 會做串接</h2>
+          <div class="multiple-choice">
+            <pre><code>System.out.println("A" + 1 + 2);
+System.out.println(1 + 2 + "A");</code></pre>
+            <p>兩行 output 是什麼？</p>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r10">揭曉答案</button>
+          <div class="reveal-panel" id="l5-r10">
+            <pre><code>A12
+3A</code></pre>
+            <p><code>+</code> 左到右。String 先出現就串接；數字先相加則先算數字加法。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Immutability</p>
+          <h2>String objects are immutable</h2>
+          <div class="deck-code">
+            <pre><code>String s = "hello";
+s.substring(1);
+System.out.println(s);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r11">揭曉 output</button>
+          <div class="reveal-panel" id="l5-r11">
+            <p>Output 是 <code>hello</code>。<code>substring(1)</code> 回傳新 String，但沒有修改原本的 <code>s</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Save Return Value</p>
+          <h2>要保存 String method 的結果，需要 assignment</h2>
+          <div class="deck-code">
+            <pre><code>String s = "hello";
+s = s.substring(1);
+System.out.println(s);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r12">揭曉 output</button>
+          <div class="reveal-panel" id="l5-r12">
+            <p>Output 是 <code>ello</code>。這不是原本 object 被修改，而是 <code>s</code> 被重新 assignment 到新的 String result。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Method Chaining</p>
+          <h2>一次只算一個 method call</h2>
+          <div class="deck-code">
+            <pre><code>String s = "banana";
+System.out.println(s.substring(2).indexOf("a"));</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r13">揭曉 trace</button>
+          <div class="reveal-panel" id="l5-r13">
+            <p><code>s.substring(2)</code> 得到 <code>"nana"</code>。新的 String 重新從 index 0 開始，所以 <code>"nana".indexOf("a")</code> 是 <code>1</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Runtime Errors</p>
+          <h2>兩個常見 runtime errors</h2>
+          <div class="definition-grid">
+            <article><h3><code>NullPointerException</code></h3><p><code>String s = null; s.length();</code></p></article>
+            <article><h3><code>StringIndexOutOfBoundsException</code></h3><p><code>"cat".substring(0, 4)</code></p></article>
+            <article><h3>Logic error</h3><p>想取前三個，卻寫 <code>substring(0, 2)</code>。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP SOP</p>
+          <h2>String tracing 固定流程</h2>
+          <div class="big-flow">
+            <span>Write String</span>
+            <span>Mark index</span>
+            <span>Mark length</span>
+            <span>One method</span>
+            <span>Re-index new String</span>
+          </div>
+          <p class="slide-note">產生新 String 後，index 必須重新從 0 開始。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP-style Check</p>
+          <h2>綜合追蹤</h2>
+          <div class="deck-code">
+            <pre><code>String str = "mississippi";
+
+int a = str.indexOf("iss");
+String b = str.substring(a, a + 4);
+int c = b.length();</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l5-r14">揭曉結果</button>
+          <div class="reveal-panel" id="l5-r14">
+            <p><code>"iss"</code> 第一次從 index <code>1</code> 開始，所以 <code>a = 1</code>。<code>substring(1, 5)</code> 得到 <code>"issi"</code>，所以 <code>c = 4</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的五個小程式</h2>
+          <div class="exit-grid">
+            <div>Initials：用 <code>substring(0, 1)</code> 取姓名縮寫。</div>
+            <div>Email Username：用 <code>indexOf("@")</code> 加 <code>substring</code>。</div>
+            <div>File Extension：找到 <code>"."</code> 後取後半段。</div>
+            <div>First and Last：取第一個與最後一個 character String。</div>
+            <div>String Trace：每次 substring 後重新標 index。</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-5-practice.html">開始 Lesson 5 課後練習</a>
+            <a class="button" href="lesson-5.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這六句</h2>
+          <div class="exit-grid">
+            <div>String index starts at 0.</div>
+            <div>last index = <code>length() - 1</code>.</div>
+            <div><code>substring(a,b)</code> includes <code>a</code> but excludes <code>b</code>.</div>
+            <div><code>indexOf()</code> returns <code>-1</code> if not found.</div>
+            <div>Use <code>equals()</code> to compare String contents.</div>
+            <div>String objects are immutable.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

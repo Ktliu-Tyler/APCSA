@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 5｜String Methods</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 5：String object、String literal、index、length、substring、indexOf、equals、compareTo、String concatenation、immutability 與 AP-style String tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 5</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第五堂課導覽">
+        <a href="lesson-5-presentation.html">投影模式</a>
+        <a href="lesson-5-practice.html">課後練習</a>
+        <a href="lesson-4.html">上一課</a>
+        <a href="lesson-6.html">下一課</a>
+        <a href="#index">Index</a>
+        <a href="#substring">substring</a>
+        <a href="#indexof">indexOf</a>
+        <a href="#equals">equals</a>
+        <a href="#compareto">compareTo</a>
+        <a href="#immutability">Immutability</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 5</p>
+          <h1>String Methods</h1>
+          <p class="lead">
+            Lesson 4 學到 <code>String</code> 是 class，不是 primitive type。這一課正式操作
+            String objects：你會用 index 追蹤文字，熟悉 <code>length()</code>、<code>substring()</code>、
+            <code>indexOf()</code>、<code>equals()</code>、<code>compareTo()</code>，並理解 String immutability
+            與 AP CSA 最常見的 off-by-one 陷阱。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-5-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-5-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-4.html">回 Lesson 4</a>
+            <a class="button" href="lesson-6.html">前往 Lesson 6</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#string-object">String 是 Object</a>
+          <a href="#literal">Literal、Constructor、char</a>
+          <a href="#index">Index 與 length</a>
+          <a href="#substring">substring</a>
+          <a href="#indexof">indexOf</a>
+          <a href="#equals">equals 與 ==</a>
+          <a href="#compareto">compareTo</a>
+          <a href="#concat">Concatenation</a>
+          <a href="#immutability">Immutability</a>
+          <a href="#chaining">Method Chaining</a>
+          <a href="#errors">錯誤類型</a>
+          <a href="#ap-patterns">AP 題型</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>理解 <code>String</code> 是 class / reference type，不是 primitive type。</div>
+              <div>分辨 String literal、String constructor、<code>char</code> 與 <code>String</code>。</div>
+              <div>使用 index 追蹤 String characters，記住 first index 是 <code>0</code>。</div>
+              <div>使用 <code>length()</code> 並分辨 length 與 last index。</div>
+              <div>使用兩種 <code>substring()</code>，並判斷合法 index 範圍。</div>
+              <div>使用 <code>indexOf()</code> 找第一次出現的位置，知道找不到回傳 <code>-1</code>。</div>
+              <div>用 <code>equals()</code> 比較 String contents，分辨 <code>==</code> 的 reference comparison。</div>
+              <div>用 <code>compareTo()</code> 判斷排序前後，重點看正負號。</div>
+              <div>理解 String concatenation 和左到右 evaluation order。</div>
+              <div>理解 String immutable，知道 method call 不會修改原 String object。</div>
+              <div>找出 <code>NullPointerException</code> 與 <code>StringIndexOutOfBoundsException</code>。</div>
+              <div>追蹤多層 String method chaining 和 AP-style String tracing 題。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson5-flow-0" /> <span><strong>銜接 Lesson 4</strong>：<code>String</code> 是 reference type，變數存 reference。</span></label>
+              <label><input type="checkbox" data-progress="lesson5-flow-1" /> <span><strong>建立 indexing</strong>：characters、index、length、last index。</span></label>
+              <label><input type="checkbox" data-progress="lesson5-flow-2" /> <span><strong>核心 methods</strong>：<code>length</code>、<code>substring</code>、<code>indexOf</code>。</span></label>
+              <label><input type="checkbox" data-progress="lesson5-flow-3" /> <span><strong>比較</strong>：<code>equals</code>、<code>==</code>、<code>compareTo</code>。</span></label>
+              <label><input type="checkbox" data-progress="lesson5-flow-4" /> <span><strong>String behavior</strong>：concatenation、immutability、method chaining。</span></label>
+              <label><input type="checkbox" data-progress="lesson5-flow-5" /> <span><strong>AP 題型</strong>：off-by-one、runtime errors、重新標 index、綜合 tracing。</span></label>
+            </div>
+          </section>
+
+          <section id="string-object" class="article-section">
+            <p class="eyebrow">String as Object</p>
+            <h2><code>String</code> 是 class，不是 primitive type</h2>
+            <p>
+              程式中大量資料都是文字：姓名、帳號、Email、網址、地址、車牌、學號、檔案名稱、搜尋關鍵字。
+              Java 使用 <code>String</code> 表示文字資料。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>String Variables</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-string-vars">Copy</button>
+              </div>
+              <pre><code id="l5-code-string-vars">String name = "Alice";
+String school = "NTU";
+String message = "Hello World";</code></pre>
+            </div>
+            <p>
+              更精確地說，<code>name</code> 是 reference variable，reference 到一個 String object。
+              所以不要把 <code>String word = "computer";</code> 想成 word 裡直接放著整個文字；它是指向
+              String object 的 reference。
+            </p>
+            <div class="concept-card">
+              <pre><code>word
+  |
+  v
+"computer" String object</code></pre>
+              <p><code>word</code> stores a reference to a String object.</p>
+            </div>
+            <p class="callout">
+              Lesson 5 的所有 method tracing，都建立在 Lesson 4 的 object/reference 觀念上。
+            </p>
+          </section>
+
+          <section id="literal" class="article-section">
+            <p class="eyebrow">Literal and char</p>
+            <h2>String literal 使用雙引號；<code>char</code> 使用單引號</h2>
+            <p>
+              像 <code>"Hello"</code> 這種使用雙引號建立的文字稱為 String literal。String 可以直接使用，
+              不需要 <code>import java.lang.String;</code>，因為 <code>java.lang</code> 預設可用。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>程式</th>
+                    <th>Type</th>
+                    <th>重點</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>'A'</code></td>
+                    <td><code>char</code></td>
+                    <td>單一字元，使用單引號。</td>
+                  </tr>
+                  <tr>
+                    <td><code>"A"</code></td>
+                    <td><code>String</code></td>
+                    <td>即使只有一個 character，仍然是 String。</td>
+                  </tr>
+                  <tr>
+                    <td><code>"Hello"</code></td>
+                    <td><code>String</code></td>
+                    <td>String literal。</td>
+                  </tr>
+                  <tr>
+                    <td><code>""</code></td>
+                    <td><code>String</code></td>
+                    <td>empty string，長度是 0。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              String 也可以使用 constructor 建立：
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Literal vs Constructor</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-literal-constructor">Copy</button>
+              </div>
+              <pre><code id="l5-code-literal-constructor">String a = "hello";
+String b = new String("hello");</code></pre>
+            </div>
+            <p>
+              AP CSA 最常看到的是 literal，但 constructor 形式對理解 <code>==</code> 與 reference comparison 很重要。
+            </p>
+          </section>
+
+          <section id="index" class="article-section">
+            <p class="eyebrow">Index and length</p>
+            <h2>String 是一串有順序的 characters，index 從 0 開始</h2>
+            <p>
+              <code>String word = "computer";</code> 包含 8 個 characters。Java 會為每個 character 編號，
+              第一個位置是 <code>0</code>，不是 <code>1</code>。
+            </p>
+            <div class="concept-card">
+              <pre><code>character: c o m p u t e r
+index:     0 1 2 3 4 5 6 7
+length:    8
+last index = length() - 1 = 7</code></pre>
+            </div>
+            <p>
+              <code>length()</code> 回傳 <code>int</code>，表示 String 中有多少 characters。空白、標點符號、
+              可見和不可見字元都可能算進長度。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>length()</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-length">Copy</button>
+              </div>
+              <pre><code id="l5-code-length">String word = "computer";
+String text = "AP CSA";
+String empty = "";
+
+System.out.println(word.length());
+System.out.println(text.length());
+System.out.println(empty.length());</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Value</th>
+                    <th><code>length()</code></th>
+                    <th>說明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>"computer"</code></td>
+                    <td><code>8</code></td>
+                    <td>最後 index 是 <code>7</code>。</td>
+                  </tr>
+                  <tr>
+                    <td><code>"AP CSA"</code></td>
+                    <td><code>6</code></td>
+                    <td>中間的 space 也是 character。</td>
+                  </tr>
+                  <tr>
+                    <td><code>""</code></td>
+                    <td><code>0</code></td>
+                    <td>empty string 是存在的 String object。</td>
+                  </tr>
+                  <tr>
+                    <td><code>null</code></td>
+                    <td>呼叫會 error</td>
+                    <td>沒有 String object 可以呼叫 method。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              <code>length()</code> 是 method，所以要寫 parentheses。<code>word.length</code> 不是本課的正確寫法。
+            </p>
+          </section>
+
+          <section id="substring" class="article-section">
+            <p class="eyebrow">substring</p>
+            <h2><code>substring(from, to)</code> 包含 <code>from</code>，不包含 <code>to</code></h2>
+            <p>
+              <code>substring()</code> 是 AP CSA 最重要、也最容易出現 off-by-one error 的 String method。
+              有兩種版本：<code>substring(int from, int to)</code> 和 <code>substring(int from)</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Return</th>
+                    <th>意思</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>s.substring(from, to)</code></td>
+                    <td><code>String</code></td>
+                    <td>取 <code>from &lt;= index &lt; to</code>，也就是 <code>[from, to)</code>。</td>
+                  </tr>
+                  <tr>
+                    <td><code>s.substring(from)</code></td>
+                    <td><code>String</code></td>
+                    <td>從 <code>from</code> 取到最後，等同 <code>s.substring(from, s.length())</code>。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>substring Basics</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-substring">Copy</button>
+              </div>
+              <pre><code id="l5-code-substring">String word = "computer";
+
+System.out.println(word.substring(2, 5));
+System.out.println(word.substring(3));
+System.out.println(word.substring(0, word.length()));
+System.out.println(word.substring(word.length()));</code></pre>
+            </div>
+            <div class="note-grid">
+              <div><strong><code>substring(2, 5)</code></strong><span>取 index 2、3、4，結果是 <code>"mpu"</code>。</span></div>
+              <div><strong><code>substring(3)</code></strong><span>從 index 3 取到最後，結果是 <code>"puter"</code>。</span></div>
+              <div><strong><code>substring(0, length())</code></strong><span>取得完整 String。</span></div>
+              <div><strong><code>substring(length())</code></strong><span>合法，結果是 empty string。</span></div>
+            </div>
+            <p>
+              對 <code>substring(a, b)</code>，結果長度通常是 <code>b - a</code>。合法條件可以記成：
+            </p>
+            <div class="concept-card">
+              <pre><code>0 <= from <= to <= s.length()</code></pre>
+              <p>如果 <code>from &gt; to</code>、<code>from &lt; 0</code>、或 <code>to &gt; length()</code>，runtime 可能出現 <code>StringIndexOutOfBoundsException</code>。</p>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>常用目的</th>
+                    <th>寫法</th>
+                    <th>以 <code>"computer"</code> 為例</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>取得前 <code>n</code> 個 characters</td>
+                    <td><code>s.substring(0, n)</code></td>
+                    <td><code>substring(0, 3)</code> 得到 <code>"com"</code></td>
+                  </tr>
+                  <tr>
+                    <td>移除第一個 character</td>
+                    <td><code>s.substring(1)</code></td>
+                    <td><code>"omputer"</code></td>
+                  </tr>
+                  <tr>
+                    <td>移除最後一個 character</td>
+                    <td><code>s.substring(0, s.length() - 1)</code></td>
+                    <td><code>"compute"</code></td>
+                  </tr>
+                  <tr>
+                    <td>取得最後 <code>n</code> 個 characters</td>
+                    <td><code>s.substring(s.length() - n)</code></td>
+                    <td>最後 3 個是 <code>"ter"</code></td>
+                  </tr>
+                  <tr>
+                    <td>取得 index <code>i</code> 的單一字元 String</td>
+                    <td><code>s.substring(i, i + 1)</code></td>
+                    <td><code>substring(4, 5)</code> 得到 <code>"u"</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="indexof" class="article-section">
+            <p class="eyebrow">indexOf</p>
+            <h2><code>indexOf()</code> 回傳 search string 第一次出現的位置</h2>
+            <p>
+              <code>string.indexOf(searchString)</code> 回傳 <code>int</code>。它找的是第一次出現的位置，
+              而且回傳的是那段 substring 的開始 index。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>indexOf Examples</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-indexof">Copy</button>
+              </div>
+              <pre><code id="l5-code-indexof">String word = "computer";
+String fruit = "banana";
+
+System.out.println(word.indexOf("put"));
+System.out.println(fruit.indexOf("an"));
+System.out.println(fruit.indexOf("a"));
+System.out.println(word.indexOf("z"));</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Expression</th>
+                    <th>Result</th>
+                    <th>原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>"computer".indexOf("put")</code></td>
+                    <td><code>3</code></td>
+                    <td><code>"put"</code> 從 index 3 開始。</td>
+                  </tr>
+                  <tr>
+                    <td><code>"banana".indexOf("an")</code></td>
+                    <td><code>1</code></td>
+                    <td>只回傳第一次出現的位置。</td>
+                  </tr>
+                  <tr>
+                    <td><code>"banana".indexOf("a")</code></td>
+                    <td><code>1</code></td>
+                    <td>雖然 <code>"a"</code> 出現多次，只回傳第一次。</td>
+                  </tr>
+                  <tr>
+                    <td><code>"computer".indexOf("z")</code></td>
+                    <td><code>-1</code></td>
+                    <td>找不到時回傳 <code>-1</code>，不是 <code>0</code>。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              <code>indexOf()</code> 是 case-sensitive，space 也是 String 的一部分。
+              例如 <code>"AP CSA".indexOf(" ")</code> 是 <code>2</code>。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Email Username</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-email">Copy</button>
+              </div>
+              <pre><code id="l5-code-email">String email = "student@gmail.com";
+
+int at = email.indexOf("@");
+String username = email.substring(0, at);
+
+System.out.println(username);</code></pre>
+            </div>
+            <p class="callout">
+              <code>indexOf()</code> 和 <code>substring()</code> 的組合是 String processing 的高頻模式。
+              <code>substring(0, at)</code> 剛好不包含 <code>@</code>，因為 ending index 不包含在結果內。
+            </p>
+          </section>
+
+          <section id="equals" class="article-section">
+            <p class="eyebrow">equals and ==</p>
+            <h2>用 <code>equals()</code> 比較 String 內容，不要用 <code>==</code> 取代</h2>
+            <p>
+              <code>string1.equals(string2)</code> 回傳 <code>boolean</code>，比較的是兩個 Strings 的 character sequence
+              是否相同。它是 case-sensitive。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>equals()</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-equals">Copy</button>
+              </div>
+              <pre><code id="l5-code-equals">String a = "hello";
+String b = "hello";
+String c = "Hello";
+
+System.out.println(a.equals(b));
+System.out.println(a.equals(c));</code></pre>
+            </div>
+            <p>
+              <code>==</code> 對 object references 比較的是兩個 references 是否指向同一個 object。
+              這和 String contents 是否相同不是同一件事。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>== vs equals</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-eq-vs-equals">Copy</button>
+              </div>
+              <pre><code id="l5-code-eq-vs-equals">String a = new String("cat");
+String b = new String("cat");
+
+System.out.println(a == b);
+System.out.println(a.equals(b));</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>a -> "cat" Object A
+b -> "cat" Object B
+
+a == b      -> false
+a.equals(b) -> true</code></pre>
+            </div>
+            <p>
+              String literals 有 internal optimization，像 <code>String a = "hello"; String b = "hello";</code>
+              可能讓 <code>a == b</code> 得到 <code>true</code>。但如果目標是比較文字內容，
+              正確表達仍然是 <code>a.equals(b)</code>。
+            </p>
+            <p class="callout">
+              如果 <code>String s = null;</code>，呼叫 <code>s.equals("hello")</code> 會造成
+              <code>NullPointerException</code>，因為 <code>s</code> 沒有指向 String object。
+            </p>
+          </section>
+
+          <section id="compareto" class="article-section">
+            <p class="eyebrow">compareTo</p>
+            <h2><code>compareTo()</code> 用來比較排序；重點是正負號</h2>
+            <p>
+              <code>string1.compareTo(string2)</code> 回傳 <code>int</code>。AP CSA 的重點通常不是精確數字，
+              而是小於 0、等於 0、大於 0 的意義。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Expression</th>
+                    <th>Result meaning</th>
+                    <th>說明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>"apple".compareTo("banana")</code></td>
+                    <td><code>&lt; 0</code></td>
+                    <td><code>"apple"</code> 排在 <code>"banana"</code> 前面。</td>
+                  </tr>
+                  <tr>
+                    <td><code>"apple".compareTo("apple")</code></td>
+                    <td><code>0</code></td>
+                    <td>兩個 Strings 內容相同。</td>
+                  </tr>
+                  <tr>
+                    <td><code>"dog".compareTo("cat")</code></td>
+                    <td><code>&gt; 0</code></td>
+                    <td><code>"dog"</code> 排在 <code>"cat"</code> 後面。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              不要假設 <code>compareTo()</code> 只會回傳 <code>-1</code>、<code>0</code>、<code>1</code>。
+              考試中通常應判斷 <code>&lt; 0</code>、<code>== 0</code>、<code>&gt; 0</code>。
+            </p>
+            <div class="question-list">
+              <article>
+                <h3><code>equals()</code></h3>
+                <p>回傳 <code>boolean</code>，問 contents 是否相同。</p>
+                <pre><code>a.equals(b)</code></pre>
+              </article>
+              <article>
+                <h3><code>compareTo()</code></h3>
+                <p>回傳 <code>int</code>，問排序前後。</p>
+                <pre><code>a.compareTo(b)</code></pre>
+              </article>
+            </div>
+            <p>
+              Prefix 情況也要小心。例如 <code>"car".compareTo("card")</code> 是 negative，
+              因為 <code>"car"</code> 是較短的 prefix，排序時在 <code>"card"</code> 前面。
+            </p>
+          </section>
+
+          <section id="concat" class="article-section">
+            <p class="eyebrow">String Concatenation</p>
+            <h2><code>+</code> 遇到 String 時會做 concatenation</h2>
+            <p>
+              String concatenation 是把 Strings 接在一起。Primitive value 和 String 做 concatenation 時，
+              primitive value 會被轉成 String。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Concatenation</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-concat">Copy</button>
+              </div>
+              <pre><code id="l5-code-concat">String first = "AP";
+String second = "CSA";
+int score = 5;
+
+System.out.println(first + " " + second);
+System.out.println("Score: " + score);</code></pre>
+            </div>
+            <p>
+              AP 超高頻陷阱是 <code>+</code> 的左到右 evaluation order。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Expression</th>
+                    <th>Result</th>
+                    <th>原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>"A" + 1 + 2</code></td>
+                    <td><code>"A12"</code></td>
+                    <td>String 先出現，後面依序做 concatenation。</td>
+                  </tr>
+                  <tr>
+                    <td><code>1 + 2 + "A"</code></td>
+                    <td><code>"3A"</code></td>
+                    <td>先做數字加法 <code>1 + 2</code>。</td>
+                  </tr>
+                  <tr>
+                    <td><code>"A" + (1 + 2)</code></td>
+                    <td><code>"A3"</code></td>
+                    <td>parentheses 先算數字加法。</td>
+                  </tr>
+                  <tr>
+                    <td><code>2 + 3 + "4"</code></td>
+                    <td><code>"54"</code></td>
+                    <td><code>2 + 3</code> 先變 <code>5</code>，再和 <code>"4"</code> 串接。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              <code>+=</code> 也可以用在 String，例如 <code>s += "!"</code>。但這會引出下一個核心概念：
+              String 是 immutable。
+            </p>
+          </section>
+
+          <section id="immutability" class="article-section">
+            <p class="eyebrow">String Immutability</p>
+            <h2>String objects are immutable</h2>
+            <p>
+              String immutable 的意思是：String object 本身不能被修改。String methods 通常 return 新的結果，
+              不會改變原本的 String object。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>substring Does Not Mutate</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-immutability">Copy</button>
+              </div>
+              <pre><code id="l5-code-immutability">String s = "hello";
+
+s.substring(1);
+
+System.out.println(s);</code></pre>
+            </div>
+            <p>
+              Output 還是 <code>hello</code>。<code>substring(1)</code> 產生了新的 String result，但沒有被保存。
+              如果想改變 <code>s</code> 這個 variable 指向的結果，需要重新 assignment。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Save the Return Value</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-save-return">Copy</button>
+              </div>
+              <pre><code id="l5-code-save-return">String s = "hello";
+
+s = s.substring(1);
+
+System.out.println(s);</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>Before: s -> "hello"
+After:  s -> "ello"</code></pre>
+              <p>不是原本的 String object 被修改，而是 <code>s</code> 這個 reference variable 被重新指定到新的 String result。</p>
+            </div>
+            <p class="callout">
+              快速心法：看到 <code>s.substring(...);</code> 如果沒有 <code>s =</code> 或其他 variable 接住 result，
+              <code>s</code> 不會改變。
+            </p>
+          </section>
+
+          <section id="chaining" class="article-section">
+            <p class="eyebrow">Method Chaining</p>
+            <h2>String method call 可以接著另一個 method call</h2>
+            <p>
+              因為 <code>substring()</code> 回傳 String，所以可以立刻對它呼叫另一個 String method。
+              解題時一次只算一個 method，產生新 String 後重新標 index。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Chaining Example</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-chaining">Copy</button>
+              </div>
+              <pre><code id="l5-code-chaining">String s = "banana";
+
+System.out.println(s.substring(2).indexOf("a"));</code></pre>
+            </div>
+            <div class="flow-strip">
+              <span><code>s.substring(2)</code></span>
+              <span><code>"nana"</code></span>
+              <span><code>"nana".indexOf("a")</code></span>
+              <span><code>1</code></span>
+            </div>
+            <p>
+              最重要陷阱：新的 String index 從 0 重新開始。不要沿用原本 <code>"banana"</code> 的 index。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Index Relative to Current String</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-relative-index">Copy</button>
+              </div>
+              <pre><code id="l5-code-relative-index">String s = "abcdefgh";
+
+s = s.substring(2, 7);
+s = s.substring(1, s.length() - 1);
+
+System.out.println(s);</code></pre>
+            </div>
+            <p>
+              第一行得到 <code>"cdefg"</code>，此時要重新標 index：<code>c d e f g</code> 是
+              <code>0 1 2 3 4</code>。第二行 <code>substring(1, 4)</code> 得到 <code>"def"</code>。
+            </p>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Errors</p>
+            <h2>String 題常見錯誤：compile、runtime、logic 都可能出現</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Error / Trap</th>
+                    <th>例子</th>
+                    <th>原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Compile-time error</td>
+                    <td><code>String s = 10;</code></td>
+                    <td>type 不相容。</td>
+                  </tr>
+                  <tr>
+                    <td><code>NullPointerException</code></td>
+                    <td><code>String s = null; s.length();</code></td>
+                    <td><code>s</code> 沒有指向 String object。</td>
+                  </tr>
+                  <tr>
+                    <td><code>StringIndexOutOfBoundsException</code></td>
+                    <td><code>"cat".substring(0, 4)</code></td>
+                    <td><code>to = 4</code> 大於 length <code>3</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>Logic / off-by-one error</td>
+                    <td><code>"computer".substring(0, 2)</code></td>
+                    <td>若本來想取前三個 characters，實際只取得 <code>"co"</code>。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="note-grid">
+              <div><strong><code>null</code></strong><span>沒有 String object，method call 會 error。</span></div>
+              <div><strong><code>""</code></strong><span>empty string，長度是 0。</span></div>
+              <div><strong><code>" "</code></strong><span>一個 space，長度是 1。</span></div>
+              <div><strong>Index trio</strong><span><code>length = 6</code>、last index <code>5</code>、full substring end <code>6</code>。</span></div>
+            </div>
+          </section>
+
+          <section id="ap-patterns" class="article-section">
+            <p class="eyebrow">AP Patterns</p>
+            <h2>AP CSA String 題解題 SOP</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Step</th>
+                    <th>做法</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>寫出目前的 String。</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>標 index，從 0 開始。</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>標 length，記住 last index 是 <code>length() - 1</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>一次只算一個 method call。</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>如果產生新 String，重新標 index。</td>
+                  </tr>
+                  <tr>
+                    <td>6</td>
+                    <td>檢查 return type 和 index 是否合法。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="question-list">
+              <article>
+                <h3>substring tracing</h3>
+                <pre><code>String str = "computer";
+System.out.println(str.substring(2, 6));</code></pre>
+                <p>取 index 2、3、4、5，結果是 <code>"mput"</code>。</p>
+              </article>
+              <article>
+                <h3>indexOf not found</h3>
+                <pre><code>String str = "banana";
+System.out.println(str.indexOf("x"));</code></pre>
+                <p>找不到回傳 <code>-1</code>，不是 runtime error。</p>
+              </article>
+              <article>
+                <h3>immutability</h3>
+                <pre><code>String s = "hello";
+s.substring(1);
+System.out.println(s);</code></pre>
+                <p>Output 是 <code>hello</code>，因為 result 沒有被保存。</p>
+              </article>
+              <article>
+                <h3>compareTo</h3>
+                <pre><code>String a = "apple";
+String b = "banana";
+int result = a.compareTo(b);</code></pre>
+                <p>一定可知 <code>result &lt; 0</code>，不要假設 <code>result == -1</code>。</p>
+              </article>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Final Trace Example</h3>
+                <button class="copy-button" type="button" data-copy="l5-code-final-trace">Copy</button>
+              </div>
+              <pre><code id="l5-code-final-trace">String str = "mississippi";
+
+int a = str.indexOf("iss");
+String b = str.substring(a, a + 4);
+int c = b.length();
+
+System.out.println(a);
+System.out.println(b);
+System.out.println(c);</code></pre>
+            </div>
+            <p>
+              <code>"iss"</code> 第一次出現在 index <code>1</code>，所以 <code>a = 1</code>。
+              <code>str.substring(1, 5)</code> 得到 <code>"issi"</code>，所以 <code>c = 4</code>。
+            </p>
+          </section>
+
+          <section id="practice" class="article-section">
+            <p class="eyebrow">Practice</p>
+            <h2>練習題與可完成的小程式</h2>
+            <p>
+              完整課後題本已整理成 String vocabulary、index tracing、substring、indexOf、equals/compareTo、
+              concatenation、immutability、runtime errors、method chaining 與 mini coding exercises。
+            </p>
+            <div class="inline-actions">
+              <a class="button primary" href="lesson-5-practice.html">開始 Lesson 5 課後練習</a>
+              <a class="button" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+            <div class="practice-set">
+              <article>
+                <h3>取得姓名縮寫</h3>
+                <p>使用 <code>substring(0, 1)</code> 取得 first name 和 last name 的第一個字母。</p>
+              </article>
+              <article>
+                <h3>取 Email Username</h3>
+                <p>用 <code>indexOf("@")</code> 找位置，再用 <code>substring(0, at)</code> 取帳號。</p>
+              </article>
+              <article>
+                <h3>取副檔名</h3>
+                <p>找 <code>"."</code> 的位置，再從 <code>dot + 1</code> 取到最後。</p>
+              </article>
+              <article>
+                <h3>綜合 tracing</h3>
+                <p>每次 <code>s = s.substring(...)</code> 後重新標 index，再處理下一行。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>String</strong><span><code>String</code> 是 class / reference type，不是 primitive。</span></div>
+              <div><strong>Literal</strong><span><code>"Hello"</code> 是 String literal；<code>'A'</code> 是 <code>char</code>。</span></div>
+              <div><strong>Index</strong><span>第一個 character 是 index <code>0</code>。</span></div>
+              <div><strong><code>length()</code></strong><span>回傳 character 數量；last index 是 <code>length() - 1</code>。</span></div>
+              <div><strong><code>substring(a,b)</code></strong><span>包含 <code>a</code>，不包含 <code>b</code>。</span></div>
+              <div><strong><code>substring(a)</code></strong><span>從 index <code>a</code> 取到最後；<code>a == length()</code> 合法。</span></div>
+              <div><strong><code>indexOf(x)</code></strong><span>找第一次出現的位置；找不到回傳 <code>-1</code>。</span></div>
+              <div><strong><code>equals()</code></strong><span>比較 String contents。</span></div>
+              <div><strong><code>==</code></strong><span>對 objects 比較 references 是否指向同一 object。</span></div>
+              <div><strong><code>compareTo()</code></strong><span><code>&lt; 0</code> 前面，<code>0</code> 相同，<code>&gt; 0</code> 後面。</span></div>
+              <div><strong>Immutable</strong><span>String methods 不會修改原 String object；要保存 return value。</span></div>
+              <div><strong>Tracing</strong><span>新 String 產生後，index 必須重新從 0 開始。</span></div>
+            </div>
+            <details>
+              <summary>考前必背六句</summary>
+              <p>String index starts at 0.</p>
+              <p>last index = length() - 1.</p>
+              <p>substring(a,b) includes a but excludes b.</p>
+              <p>indexOf returns -1 if not found.</p>
+              <p>Use equals() to compare String contents.</p>
+              <p>String objects are immutable.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 5｜String Methods。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

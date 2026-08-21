@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 8｜Compound Boolean &amp; De Morgan</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 8：compound boolean expressions、&amp;&amp;、||、!、truth tables、range conditions、short-circuit evaluation、De Morgan's Laws、equivalent expressions 與 AP-style Boolean tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 8</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第八堂課導覽">
+        <a href="lesson-8-presentation.html">投影模式</a>
+        <a href="lesson-8-practice.html">課後練習</a>
+        <a href="lesson-7.html">上一課</a>
+        <a href="lesson-9.html">下一課</a>
+        <a href="#and">AND</a>
+        <a href="#or">OR</a>
+        <a href="#not">NOT</a>
+        <a href="#range">Range</a>
+        <a href="#short-circuit">Short-Circuit</a>
+        <a href="#de-morgan">De Morgan</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 8</p>
+          <h1>Compound Boolean Expressions &amp; De Morgan's Laws</h1>
+          <p class="lead">
+            Lesson 7 讓程式根據單一 condition 選擇路徑。這一課把多個 condition 合成更精準的條件：
+            <code>&amp;&amp;</code>、<code>||</code>、<code>!</code>、truth table、range conditions、
+            short-circuit evaluation、De Morgan's Laws 與 equivalent Boolean expressions。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-8-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-8-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-7.html">回 Lesson 7</a>
+            <a class="button" href="lesson-9.html">前往 Lesson 9</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#compound">Compound Boolean</a>
+          <a href="#and"><code>&amp;&amp;</code> AND</a>
+          <a href="#or"><code>||</code> OR</a>
+          <a href="#not"><code>!</code> NOT</a>
+          <a href="#negation">Comparison Negation</a>
+          <a href="#range">Range Conditions</a>
+          <a href="#truth-table">Truth Tables</a>
+          <a href="#precedence">Precedence</a>
+          <a href="#short-circuit">Short-Circuit</a>
+          <a href="#de-morgan">De Morgan</a>
+          <a href="#equivalent">Equivalent Expressions</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>使用 <code>&amp;&amp;</code> 表示兩個或多個條件都必須成立。</div>
+              <div>使用 <code>||</code> 表示至少一個條件成立即可，並理解 Java 的 OR 是 inclusive OR。</div>
+              <div>使用 <code>!</code> 反轉 Boolean variable 或整個 Boolean expression。</div>
+              <div>閱讀 AND、OR、NOT 的 truth table，並用 truth table 判斷 equivalent expressions。</div>
+              <div>把數學範圍改寫成 Java：inside range 用 <code>&amp;&amp;</code>，outside range 用 <code>||</code>。</div>
+              <div>知道 Java 不支援 <code>0 &lt;= x &lt;= 100</code> 這種 chained comparison。</div>
+              <div>掌握 Boolean operator precedence：<code>!</code> 先於 <code>&amp;&amp;</code>，<code>&amp;&amp;</code> 先於 <code>||</code>。</div>
+              <div>理解 short-circuit evaluation：<code>false &amp;&amp; ...</code> 與 <code>true || ...</code> 會停止右側 evaluation。</div>
+              <div>用 short-circuit 避免 division by zero 或 <code>NullPointerException</code>。</div>
+              <div>使用 De Morgan's Laws：<code>!(A &amp;&amp; B)</code> 等價 <code>!A || !B</code>，<code>!(A || B)</code> 等價 <code>!A &amp;&amp; !B</code>。</div>
+              <div>正確翻轉 comparison：<code>&gt;</code> 變 <code>&lt;=</code>、<code>&gt;=</code> 變 <code>&lt;</code>、<code>==</code> 變 <code>!=</code>。</div>
+              <div>分辨 both、at least one、neither、not both，並用反例找出不 equivalent 的 expression。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson8-flow-0" /> <span><strong>三個 operators</strong>：<code>&amp;&amp;</code>、<code>||</code>、<code>!</code> 與 truth tables。</span></label>
+              <label><input type="checkbox" data-progress="lesson8-flow-1" /> <span><strong>Range</strong>：inside range、outside range、boundary 與 chained comparison。</span></label>
+              <label><input type="checkbox" data-progress="lesson8-flow-2" /> <span><strong>Precedence</strong>：<code>!</code>、<code>&amp;&amp;</code>、<code>||</code> 與 parentheses。</span></label>
+              <label><input type="checkbox" data-progress="lesson8-flow-3" /> <span><strong>Short-circuit</strong>：右側 condition 是否真的會被執行。</span></label>
+              <label><input type="checkbox" data-progress="lesson8-flow-4" /> <span><strong>De Morgan</strong>：NOT 穿過括號時，operator 交換且每個 condition 取反。</span></label>
+              <label><input type="checkbox" data-progress="lesson8-flow-5" /> <span><strong>AP 題型</strong>：equivalent expressions、反例、tautology、contradiction、Boolean return simplification。</span></label>
+            </div>
+          </section>
+
+          <section id="compound" class="article-section">
+            <p class="eyebrow">Compound Boolean</p>
+            <h2>Compound Boolean Expression 把多個 Boolean expressions 合在一起</h2>
+            <p>
+              單一 condition 像 <code>age &gt;= 18</code> 或 <code>hasTicket</code>，只能描述一件事。
+              實際條件常需要同時描述多件事：年齡至少 18 而且有票、不合法分數是小於 0 或大於 100、
+              不是 ready。Java 用三個 Boolean operators 來組合。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Operator</th>
+                    <th>名稱</th>
+                    <th>意思</th>
+                    <th>例子</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>&amp;&amp;</code></td><td>AND</td><td>而且；全部都要 true。</td><td><code>age &gt;= 18 &amp;&amp; hasTicket</code></td></tr>
+                  <tr><td><code>||</code></td><td>OR</td><td>或者；至少一個 true。</td><td><code>score &lt; 0 || score &gt; 100</code></td></tr>
+                  <tr><td><code>!</code></td><td>NOT</td><td>不是；取反。</td><td><code>!gameOver</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="and" class="article-section">
+            <p class="eyebrow">Logical AND</p>
+            <h2><code>&amp;&amp;</code>：兩邊都必須成立</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>AND Example</h3>
+                <button class="copy-button" type="button" data-copy="l8-code-and">Copy</button>
+              </div>
+              <pre><code id="l8-code-and">int age = 20;
+boolean hasTicket = true;
+
+if (age &gt;= 18 &amp;&amp; hasTicket)
+{
+    System.out.println("Enter");
+}</code></pre>
+            </div>
+            <p>
+              <code>age &gt;= 18</code> 是 <code>true</code>，<code>hasTicket</code> 也是 <code>true</code>，
+              所以 <code>true &amp;&amp; true</code> 得到 <code>true</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>A</th>
+                    <th>B</th>
+                    <th><code>A &amp;&amp; B</code></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>false</td><td>false</td><td>false</td></tr>
+                  <tr><td>false</td><td>true</td><td>false</td></tr>
+                  <tr><td>true</td><td>false</td><td>false</td></tr>
+                  <tr><td>true</td><td>true</td><td>true</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              <code>&amp;&amp;</code> 只有 <code>true &amp;&amp; true</code> 才是 true；其他全部 false。
+            </p>
+          </section>
+
+          <section id="or" class="article-section">
+            <p class="eyebrow">Logical OR</p>
+            <h2><code>||</code>：至少一邊成立即可</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>OR Example</h3>
+                <button class="copy-button" type="button" data-copy="l8-code-or">Copy</button>
+              </div>
+              <pre><code id="l8-code-or">int score = 120;
+
+if (score &lt; 0 || score &gt; 100)
+{
+    System.out.println("Invalid");
+}</code></pre>
+            </div>
+            <p>
+              <code>120 &lt; 0</code> 是 false，但 <code>120 &gt; 100</code> 是 true，所以
+              <code>false || true</code> 得到 <code>true</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>A</th>
+                    <th>B</th>
+                    <th><code>A || B</code></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>false</td><td>false</td><td>false</td></tr>
+                  <tr><td>false</td><td>true</td><td>true</td></tr>
+                  <tr><td>true</td><td>false</td><td>true</td></tr>
+                  <tr><td>true</td><td>true</td><td>true</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              Java 的 <code>||</code> 是 inclusive OR：兩邊都 true 時，整體仍然 true。
+            </p>
+          </section>
+
+          <section id="not" class="article-section">
+            <p class="eyebrow">Logical NOT</p>
+            <h2><code>!</code>：把 Boolean 結果反過來</h2>
+            <div class="question-list">
+              <article>
+                <h3>Boolean variable</h3>
+                <pre><code>boolean gameOver = false;
+
+if (!gameOver)
+{
+    System.out.println("Continue playing");
+}</code></pre>
+                <p><code>!false</code> 是 <code>true</code>，所以會執行。</p>
+              </article>
+              <article>
+                <h3>Whole expression</h3>
+                <pre><code>int x = 8;
+boolean result = !(x &gt; 5);</code></pre>
+                <p><code>x &gt; 5</code> 是 true，取反後 <code>result</code> 是 false。</p>
+              </article>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>A</th>
+                    <th><code>!A</code></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>true</td><td>false</td></tr>
+                  <tr><td>false</td><td>true</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              <code>if (isReady == true)</code> 通常可寫成 <code>if (isReady)</code>；
+              <code>if (isReady == false)</code> 通常可寫成 <code>if (!isReady)</code>。
+            </p>
+          </section>
+
+          <section id="negation" class="article-section">
+            <p class="eyebrow">Negation</p>
+            <h2>Comparison 取反時，邊界也要反過來</h2>
+            <p>
+              <code>!(x &gt; 5)</code> 不是 <code>x &lt; 5</code>，而是 <code>x &lt;= 5</code>。
+              因為「不大於 5」包含 <code>x == 5</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>原條件</th>
+                    <th>相反條件</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>x &gt; 5</code></td><td><code>x &lt;= 5</code></td></tr>
+                  <tr><td><code>x &gt;= 5</code></td><td><code>x &lt; 5</code></td></tr>
+                  <tr><td><code>x &lt; 5</code></td><td><code>x &gt;= 5</code></td></tr>
+                  <tr><td><code>x &lt;= 5</code></td><td><code>x &gt; 5</code></td></tr>
+                  <tr><td><code>x == 5</code></td><td><code>x != 5</code></td></tr>
+                  <tr><td><code>x != 5</code></td><td><code>x == 5</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="range" class="article-section">
+            <p class="eyebrow">Range Conditions</p>
+            <h2>範圍內通常用 <code>&amp;&amp;</code>；範圍外通常用 <code>||</code></h2>
+            <p>
+              數學可以寫 <code>0 &lt;= score &lt;= 100</code>，但 Java 不支援 chained comparison。
+              Java 要把上下界分成兩個 Boolean expressions。
+            </p>
+            <div class="definition-grid">
+              <article>
+                <h3>Inside range</h3>
+                <p><code>score &gt;= 0 &amp;&amp; score &lt;= 100</code></p>
+              </article>
+              <article>
+                <h3>Outside range</h3>
+                <p><code>score &lt; 0 || score &gt; 100</code></p>
+              </article>
+              <article>
+                <h3>Half-open range</h3>
+                <p><code>index &gt;= 0 &amp;&amp; index &lt; length</code></p>
+              </article>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Valid Score</h3>
+                <button class="copy-button" type="button" data-copy="l8-code-valid-score">Copy</button>
+              </div>
+              <pre><code id="l8-code-valid-score">int score = 87;
+
+if (score &gt;= 0 &amp;&amp; score &lt;= 100)
+{
+    System.out.println("Valid");
+}
+else
+{
+    System.out.println("Invalid");
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>想表達</th>
+                    <th>錯誤</th>
+                    <th>正確</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>score 在 0 到 100</td><td><code>score &gt;= 0 || score &lt;= 100</code></td><td><code>score &gt;= 0 &amp;&amp; score &lt;= 100</code></td></tr>
+                  <tr><td>score 不在 0 到 100</td><td><code>score &lt; 0 &amp;&amp; score &gt; 100</code></td><td><code>score &lt; 0 || score &gt; 100</code></td></tr>
+                  <tr><td>x 在 10 到 20，不含兩端</td><td><code>x &gt;= 10 &amp;&amp; x &lt;= 20</code></td><td><code>x &gt; 10 &amp;&amp; x &lt; 20</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="truth-table" class="article-section">
+            <p class="eyebrow">Truth Tables</p>
+            <h2>Truth table 把所有 Boolean 組合列出來</h2>
+            <p>
+              兩個 Boolean variables 有 <code>2 * 2 = 4</code> 種組合。三個 Boolean variables 有
+              <code>2 * 2 * 2 = 8</code> 種組合。AP 題常用 truth table 判斷兩個 expressions 是否 equivalent。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>A</th>
+                    <th>B</th>
+                    <th><code>A &amp;&amp; B</code></th>
+                    <th><code>A || B</code></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>false</td><td>false</td><td>false</td><td>false</td></tr>
+                  <tr><td>false</td><td>true</td><td>false</td><td>true</td></tr>
+                  <tr><td>true</td><td>false</td><td>false</td><td>true</td></tr>
+                  <tr><td>true</td><td>true</td><td>true</td><td>true</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="precedence" class="article-section">
+            <p class="eyebrow">Precedence</p>
+            <h2>Boolean operator precedence：<code>!</code>、<code>&amp;&amp;</code>、<code>||</code></h2>
+            <p>
+              Java 會先算 comparisons，再處理 Boolean operators。Boolean operators 之間的常用優先順序是
+              <code>!</code> 先，<code>&amp;&amp;</code> 再來，<code>||</code> 最後。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Precedence Example</h3>
+                <button class="copy-button" type="button" data-copy="l8-code-precedence">Copy</button>
+              </div>
+              <pre><code id="l8-code-precedence">boolean result = true &amp;&amp; false || true;</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>true &amp;&amp; false || true
+
+(true &amp;&amp; false) || true
+false || true
+true</code></pre>
+            </div>
+            <p class="callout">
+              即使 Java 有 precedence，遇到 <code>A || B &amp;&amp; C</code> 這類 expression，建議使用 parentheses 讓意圖清楚。
+            </p>
+          </section>
+
+          <section id="short-circuit" class="article-section">
+            <p class="eyebrow">Short-Circuit Evaluation</p>
+            <h2>右側 condition 不一定會被執行</h2>
+            <p>
+              Java 的 <code>&amp;&amp;</code> 和 <code>||</code> 會 short-circuit：如果左邊已經足以決定整個結果，
+              右邊完全不 evaluation。這是 AP CSA 很常考的行為。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Expression</th>
+                    <th>左邊</th>
+                    <th>右邊會算嗎？</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>A &amp;&amp; B</code></td><td><code>A == false</code></td><td>不會，整體已經 false。</td></tr>
+                  <tr><td><code>A &amp;&amp; B</code></td><td><code>A == true</code></td><td>會，需要 B 決定結果。</td></tr>
+                  <tr><td><code>A || B</code></td><td><code>A == true</code></td><td>不會，整體已經 true。</td></tr>
+                  <tr><td><code>A || B</code></td><td><code>A == false</code></td><td>會，需要 B 決定結果。</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="question-list">
+              <article>
+                <h3>Safe division</h3>
+                <pre><code>if (x != 0 &amp;&amp; 10 / x &gt; 2)
+{
+    System.out.println("Yes");
+}</code></pre>
+                <p>如果 <code>x == 0</code>，左邊 false，右邊 <code>10 / x</code> 不執行。</p>
+              </article>
+              <article>
+                <h3>Safe String method</h3>
+                <pre><code>if (name != null &amp;&amp; name.equals("Tom"))
+{
+    System.out.println("Hello Tom");
+}</code></pre>
+                <p>如果 <code>name == null</code>，右邊 <code>name.equals(...)</code> 不執行，因此安全。</p>
+              </article>
+              <article>
+                <h3>OR short-circuit</h3>
+                <pre><code>int x = 5;
+
+if (x == 5 || ++x &gt; 10)
+{
+    System.out.println(x);
+}</code></pre>
+                <p>左邊 true，右邊 <code>++x</code> 不執行，所以輸出仍是 <code>5</code>。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="de-morgan" class="article-section">
+            <p class="eyebrow">De Morgan's Laws</p>
+            <h2>NOT 穿過括號時，operator 交換且每個 condition 取反</h2>
+            <div class="definition-grid">
+              <article>
+                <h3><code>!(A &amp;&amp; B)</code></h3>
+                <p><code>!A || !B</code></p>
+              </article>
+              <article>
+                <h3><code>!(A || B)</code></h3>
+                <p><code>!A &amp;&amp; !B</code></p>
+              </article>
+              <article>
+                <h3>口訣</h3>
+                <p><code>&amp;&amp;</code> 變 <code>||</code>，<code>||</code> 變 <code>&amp;&amp;</code>，每個小條件都取反。</p>
+              </article>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>原式</th>
+                    <th>等價式</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>!(x &gt; 10 &amp;&amp; y &lt;= 5)</code></td><td><code>x &lt;= 10 || y &gt; 5</code></td></tr>
+                  <tr><td><code>!(x == 0 || y != 3)</code></td><td><code>x != 0 &amp;&amp; y == 3</code></td></tr>
+                  <tr><td><code>!(x &gt;= 1 &amp;&amp; x &lt;= 100)</code></td><td><code>x &lt; 1 || x &gt; 100</code></td></tr>
+                  <tr><td><code>!(age &lt; 18 || age &gt; 65)</code></td><td><code>age &gt;= 18 &amp;&amp; age &lt;= 65</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              常見錯誤：<code>!(A &amp;&amp; B)</code> 變成 <code>!A &amp;&amp; !B</code>。這少做了 operator 交換，錯。
+            </p>
+          </section>
+
+          <section id="equivalent" class="article-section">
+            <p class="eyebrow">Equivalent Expressions</p>
+            <h2>判斷 equivalent：用 De Morgan、boundary 或反例</h2>
+            <p>
+              AP CSA 常問「哪個 expression 等價」。不要只看它像不像，要用規則或找反例。
+            </p>
+            <div class="question-list">
+              <article>
+                <h3>Equivalent</h3>
+                <pre><code>!(x &lt; 10 || x &gt; 20)
+
+x &gt;= 10 &amp;&amp; x &lt;= 20</code></pre>
+                <p>兩者等價，都是 x 在 10 到 20 之間，包含兩端。</p>
+              </article>
+              <article>
+                <h3>Not equivalent</h3>
+                <pre><code>!(x &gt; 5 &amp;&amp; y &gt; 5)
+
+x &lt;= 5 &amp;&amp; y &lt;= 5</code></pre>
+                <p>第一個正確展開是 <code>x &lt;= 5 || y &lt;= 5</code>，第二個太嚴格。</p>
+              </article>
+              <article>
+                <h3>Counterexample</h3>
+                <pre><code>!(A &amp;&amp; B)  vs  !A &amp;&amp; !B
+
+A = true
+B = false</code></pre>
+                <p>左邊 true，右邊 false，所以不 equivalent。</p>
+              </article>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>英文</th>
+                    <th>Java</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>A and B / both</td><td><code>A &amp;&amp; B</code></td></tr>
+                  <tr><td>A or B / at least one</td><td><code>A || B</code></td></tr>
+                  <tr><td>neither A nor B</td><td><code>!A &amp;&amp; !B</code></td></tr>
+                  <tr><td>not both A and B</td><td><code>!A || !B</code></td></tr>
+                  <tr><td>not at least one</td><td><code>!A &amp;&amp; !B</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Errors</p>
+            <h2>Lesson 8 常見錯誤與 AP 陷阱</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>陷阱</th>
+                    <th>錯誤</th>
+                    <th>正確</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Range inside</td><td><code>x &gt;= 0 || x &lt;= 100</code></td><td><code>x &gt;= 0 &amp;&amp; x &lt;= 100</code></td></tr>
+                  <tr><td>Range outside</td><td><code>x &lt; 0 &amp;&amp; x &gt; 100</code></td><td><code>x &lt; 0 || x &gt; 100</code></td></tr>
+                  <tr><td>Chained comparison</td><td><code>0 &lt;= x &lt;= 10</code></td><td><code>x &gt;= 0 &amp;&amp; x &lt;= 10</code></td></tr>
+                  <tr><td>De Morgan</td><td><code>!(A &amp;&amp; B)</code> 變 <code>!A &amp;&amp; !B</code></td><td><code>!A || !B</code></td></tr>
+                  <tr><td>Negate <code>&gt;</code></td><td><code>&gt;</code> 變 <code>&lt;</code></td><td><code>&gt;</code> 變 <code>&lt;=</code></td></tr>
+                  <tr><td>Short-circuit</td><td>假設兩邊一定執行</td><td>右側可能完全不執行。</td></tr>
+                  <tr><td>String not equal</td><td><code>str != "A"</code></td><td><code>!str.equals("A")</code></td></tr>
+                  <tr><td>NOT scope</td><td><code>!A &amp;&amp; B</code> 當成整體取反</td><td><code>!</code> 只作用在緊接的 expression，整體取反要寫 <code>!(A &amp;&amp; B)</code>。</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="practice" class="article-section">
+            <p class="eyebrow">Practice</p>
+            <h2>練習題與可完成的小程式</h2>
+            <p>
+              完整課後題本已整理成 truth table、range、short-circuit、De Morgan、equivalent expressions、
+              English logic、Boolean return simplification 與 coding practice。
+            </p>
+            <div class="inline-actions">
+              <a class="button primary" href="lesson-8-practice.html">開始 Lesson 8 課後練習</a>
+              <a class="button" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+            <div class="practice-set">
+              <article>
+                <h3>Valid Score</h3>
+                <p>使用 <code>score &gt;= 0 &amp;&amp; score &lt;= 100</code>。</p>
+              </article>
+              <article>
+                <h3>Outside Range</h3>
+                <p>使用 <code>temperature &lt; 0 || temperature &gt; 40</code>。</p>
+              </article>
+              <article>
+                <h3>Login</h3>
+                <p>使用 <code>username.equals(...)</code> 搭配 <code>&amp;&amp;</code>。</p>
+              </article>
+              <article>
+                <h3>Boolean Method</h3>
+                <p>直接 <code>return score &gt;= 0 &amp;&amp; score &lt;= 100;</code>。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong><code>&amp;&amp;</code></strong><span>只有兩邊都 true 才 true。</span></div>
+              <div><strong><code>||</code></strong><span>只有兩邊都 false 才 false；Java OR 是 inclusive。</span></div>
+              <div><strong><code>!</code></strong><span>反轉 Boolean 結果。</span></div>
+              <div><strong>Inside range</strong><span><code>x &gt;= low &amp;&amp; x &lt;= high</code>。</span></div>
+              <div><strong>Outside range</strong><span><code>x &lt; low || x &gt; high</code>。</span></div>
+              <div><strong>Precedence</strong><span><code>!</code>，再 <code>&amp;&amp;</code>，再 <code>||</code>。</span></div>
+              <div><strong>Short-circuit AND</strong><span><code>false &amp;&amp; ...</code> 右邊不執行。</span></div>
+              <div><strong>Short-circuit OR</strong><span><code>true || ...</code> 右邊不執行。</span></div>
+              <div><strong>De Morgan 1</strong><span><code>!(A &amp;&amp; B)</code> 等價 <code>!A || !B</code>。</span></div>
+              <div><strong>De Morgan 2</strong><span><code>!(A || B)</code> 等價 <code>!A &amp;&amp; !B</code>。</span></div>
+              <div><strong>Negation</strong><span><code>&gt;</code> 變 <code>&lt;=</code>，<code>&gt;=</code> 變 <code>&lt;</code>。</span></div>
+              <div><strong>Equivalent</strong><span>用 truth table、De Morgan、boundary 或反例判斷。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十句</summary>
+              <p><code>A &amp;&amp; B</code> is true only when both are true.</p>
+              <p><code>A || B</code> is false only when both are false.</p>
+              <p><code>!</code> flips true and false.</p>
+              <p>Inside range usually uses <code>&amp;&amp;</code>.</p>
+              <p>Outside range usually uses <code>||</code>.</p>
+              <p><code>false &amp;&amp; ...</code> short-circuits.</p>
+              <p><code>true || ...</code> short-circuits.</p>
+              <p><code>!(A &amp;&amp; B)</code> becomes <code>!A || !B</code>.</p>
+              <p><code>!(A || B)</code> becomes <code>!A &amp;&amp; !B</code>.</p>
+              <p>When negating comparisons, do not lose the boundary.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 8｜Compound Boolean Expressions &amp; De Morgan's Laws。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

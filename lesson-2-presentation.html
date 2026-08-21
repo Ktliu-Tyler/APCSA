@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 2 投影模式｜Assignment、Input、Casting 與數值範圍</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 2 投影模式：assignment、Scanner input、casting、rounding、overflow、double round-off 與 compound assignment。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 2</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-2.html">文章版</a>
+        <a href="lesson-2-practice.html">課後練習</a>
+        <a href="lesson-1.html">上一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 2</p>
+          <h1>Assignment、Input、Casting 與數值範圍</h1>
+          <p class="slide-lead">
+            今天會把變數與運算推進成 AP CSA 常考的 trace 題型：assignment 執行順序、
+            Scanner input、casting、rounding、integer overflow、double round-off 與 compound assignment。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-2-practice.html">Lesson 2 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Opening Question</p>
+          <h2><code>x = x + 1;</code> 為什麼在 Java 裡合法？</h2>
+          <p class="slide-text">
+            在數學方程式裡，<code>x = x + 1</code> 看起來不可能成立。但在程式裡，這是一個非常常見的更新操作。
+          </p>
+          <div class="prompt-box">
+            <h3>先想一想</h3>
+            <p>Java 會先讀左邊的 <code>x</code>，還是先計算右邊的 <code>x + 1</code>？</p>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r1">揭曉概念</button>
+          <div class="reveal-panel" id="l2-r1">
+            <p>Assignment 會先計算右邊 expression，產生 value，再把結果存進左邊 variable。所以 <code>x = x + 1;</code> 是「把舊的 x 加 1 後存回 x」。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mental Model</p>
+          <h2>Assignment 的四步驟</h2>
+          <div class="big-flow">
+            <span>Evaluate RHS</span>
+            <span>Produce Value</span>
+            <span>Check Type</span>
+            <span>Store in LHS</span>
+          </div>
+          <p class="slide-text">
+            <strong>RHS</strong> 是 Right-Hand Side，右邊要先算。<strong>LHS</strong> 是 Left-Hand Side，左邊是最後要存入的目的地。
+          </p>
+          <button class="reveal-button" type="button" data-reveal="l2-r2">看例子</button>
+          <div class="reveal-panel" id="l2-r2">
+            <p><code>x = y + 5;</code> 會先取得 <code>y</code> 的 value，計算 <code>y + 5</code>，再把結果存進 <code>x</code>。出現在 RHS 的 <code>y</code> 不會因此被改變。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content split-slide">
+          <div>
+            <p class="slide-kicker">Declaration vs Initialization</p>
+            <h2>宣告變數，不等於可以讀取它</h2>
+            <p class="slide-text">
+              Local variable 必須先有 value 才能被讀取。只寫 <code>int x;</code> 是 declaration；
+              它建立變數，但還沒有初始化。
+            </p>
+          </div>
+          <div class="definition-grid">
+            <article>
+              <h3>Declaration</h3>
+              <p><code>int score;</code> 建立名稱與型別。</p>
+            </article>
+            <article>
+              <h3>Initialization</h3>
+              <p><code>int score = 80;</code> 第一次給 value。</p>
+            </article>
+            <article>
+              <h3>Reassignment</h3>
+              <p><code>score = 90;</code> 修改已存在的 variable。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Compile-time Error</p>
+          <h2>沒有初始化的 local variable 不能使用</h2>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Uninitialized Variable</h3>
+              <button class="copy-button" type="button" data-copy="l2-code-uninit">Copy</button>
+            </div>
+            <pre><code id="l2-code-uninit">public class Main {
+    public static void main(String[] args) {
+        int x;
+        int y = x + 5;
+
+        System.out.println(y);
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r3">錯誤原因</button>
+          <div class="reveal-panel" id="l2-r3">
+            <p><code>x + 5</code> 需要先讀取 <code>x</code> 的 value，但 <code>x</code> 還沒有初始化。這會在 compile-time 被抓到。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Sequential Execution</p>
+          <h2>逐行執行：每一行都使用最新 value</h2>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Trace This</h3>
+              <button class="copy-button" type="button" data-copy="l2-code-seq">Copy</button>
+            </div>
+            <pre><code id="l2-code-seq">int x = 5;
+
+x = x + 2;
+x = x * 3;
+x = x - 4;</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r4">揭曉 trace</button>
+          <div class="reveal-panel" id="l2-r4">
+            <p>初始 <code>x = 5</code>。第一行變 <code>7</code>，第二行使用新的 <code>7</code> 得到 <code>21</code>，第三行得到 <code>17</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Copy Value</p>
+          <h2>Primitive variable 不會永久連動</h2>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Copy or Link?</h3>
+              <button class="copy-button" type="button" data-copy="l2-code-copy">Copy</button>
+            </div>
+            <pre><code id="l2-code-copy">int a = 5;
+int b = a;
+
+a = 10;
+
+System.out.println(a);
+System.out.println(b);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r5">揭曉 output</button>
+          <div class="reveal-panel" id="l2-r5">
+            <pre><code>10
+5</code></pre>
+            <p><code>int b = a;</code> 只是把當下的 <code>5</code> 複製給 <code>b</code>。之後 <code>a</code> 變成 <code>10</code>，<code>b</code> 仍然是 <code>5</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Compatible Types</p>
+          <h2>Assignment 還要通過型別檢查</h2>
+          <div class="definition-grid">
+            <article>
+              <h3>合法</h3>
+              <p><code>int x = 5;</code></p>
+            </article>
+            <article>
+              <h3>合法</h3>
+              <p><code>double y = 5;</code></p>
+            </article>
+            <article>
+              <h3>不合法</h3>
+              <p><code>int z = 5.5;</code></p>
+            </article>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r6">為什麼</button>
+          <div class="reveal-panel" id="l2-r6">
+            <p><code>int</code> 可以安全放進 <code>double</code>，因為會變成 <code>5.0</code>。但 <code>double</code> 放進 <code>int</code> 可能失去小數部分，Java 不會自動做這件事。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Input</p>
+          <h2>Input 讓程式使用外部資料</h2>
+          <p class="slide-text">
+            程式可以接收 keyboard、file、sensor、network 等資料。Java 入門時最常用 <code>Scanner</code>
+            讀取鍵盤輸入，讓 value 在執行時才進入程式。
+          </p>
+          <div class="big-flow">
+            <span>Input</span>
+            <span>Produce value</span>
+            <span>Store in variable</span>
+            <span>Use in calculation</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Scanner Pattern</p>
+          <h2>Scanner 的基本架構</h2>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Read an int</h3>
+              <button class="copy-button" type="button" data-copy="l2-code-scanner">Copy</button>
+            </div>
+            <pre><code id="l2-code-scanner">import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+
+        System.out.print("Enter age: ");
+        int age = input.nextInt();
+
+        System.out.println("Age: " + age);
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r7">逐行說明</button>
+          <div class="reveal-panel" id="l2-r7">
+            <p><code>nextInt()</code> 讀取下一個整數。若要讀小數，使用 <code>nextDouble()</code>。讀到的 input value 會被 assignment 存入變數。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Input as Assignment</p>
+          <h2><code>int age = input.nextInt();</code> 仍然是 assignment</h2>
+          <div class="flow-strip">
+            <span><code>input.nextInt()</code></span>
+            <span>reads input</span>
+            <span>produces int value</span>
+            <span>stores in <code>age</code></span>
+          </div>
+          <p class="slide-text">
+            如果使用者輸入 <code>18</code>，這一行就像在執行 <code>int age = 18;</code>。
+          </p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP Focus on Input</p>
+          <h2>AP CSA 對 input 的重點：資料如何進入變數</h2>
+          <p class="slide-text">
+            Input 不只可能來自 keyboard，也可能來自 file、sensor、device 或 network。
+            本課用 <code>Scanner</code> 練習 keyboard input，是為了看懂「外部資料 → value → variable → calculation」這條路徑。
+          </p>
+          <div class="definition-grid">
+            <article>
+              <h3><code>nextInt()</code></h3>
+              <p>讀取下一個可以解析成整數的 input，產生 <code>int</code> value。</p>
+            </article>
+            <article>
+              <h3><code>nextDouble()</code></h3>
+              <p>讀取下一個可以解析成小數的 input，產生 <code>double</code> value。</p>
+            </article>
+            <article>
+              <h3>AP Reading</h3>
+              <p>重點是 input method 產生什麼型別，以及這個 value 如何參與 expression。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Casting</p>
+          <h2>Casting 是暫時改變 value 的型別</h2>
+          <div class="type-grid two-col">
+            <div><strong><code>(int)</code></strong><span>把 numerical value 轉成 int</span></div>
+            <div><strong><code>(double)</code></strong><span>把 numerical value 轉成 double</span></div>
+            <div><strong>Widening</strong><span><code>int</code> 到 <code>double</code> 通常自動允許</span></div>
+            <div><strong>Narrowing</strong><span><code>double</code> 到 <code>int</code> 需要 explicit casting</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Widening vs Narrowing</p>
+          <h2>型別轉換不是都能自動發生</h2>
+          <div class="comparison-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Conversion</th>
+                  <th>是否自動允許</th>
+                  <th>原因</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>int</code> 到 <code>double</code></td>
+                  <td>可以</td>
+                  <td><code>5</code> 可以安全表示成 <code>5.0</code>。</td>
+                </tr>
+                <tr>
+                  <td><code>double</code> 到 <code>int</code></td>
+                  <td>不可以</td>
+                  <td><code>5.8</code> 放進 <code>int</code> 會失去小數資訊。</td>
+                </tr>
+                <tr>
+                  <td><code>double</code> 到 <code>int</code> with casting</td>
+                  <td>可以</td>
+                  <td><code>(int) 5.8</code> 明確告訴 Java 你接受資訊被截掉。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r16">AP 判斷方式</button>
+          <div class="reveal-panel" id="l2-r16">
+            <p>看到 assignment 時先看 RHS 的型別，再看能不能放進 LHS。<code>double x = 5;</code> 合法；<code>int x = 5.8;</code> 不合法；<code>int x = (int) 5.8;</code> 合法但結果是 <code>5</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Truncation</p>
+          <h2><code>(int)</code> 不是四捨五入</h2>
+          <div class="multiple-choice">
+            <p>請先預測：</p>
+            <pre><code>System.out.println((int) 3.9);
+System.out.println((int) -3.9);</code></pre>
+            <div class="choices">
+              <span>A. 4 and -4</span>
+              <span>B. 3 and -3</span>
+              <span>C. 3 and -4</span>
+              <span>D. Compile Error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r8">揭曉答案</button>
+          <div class="reveal-panel" id="l2-r8">
+            <p>答案是 B。<code>(int)</code> 會 truncate toward zero，直接移除小數部分。<code>3.9</code> 變 <code>3</code>，<code>-3.9</code> 變 <code>-3</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Trap</p>
+          <h2><code>(int)</code> 也不是 floor function</h2>
+          <p class="slide-text">
+            正數時 <code>(int)</code> 和 floor 很容易看起來一樣；真正會暴露差異的是負數。
+          </p>
+          <div class="comparison-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Expression</th>
+                  <th>Java Casting</th>
+                  <th>Math floor</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>(int) 3.9</code></td>
+                  <td><code>3</code></td>
+                  <td><code>3</code></td>
+                </tr>
+                <tr>
+                  <td><code>(int) -3.9</code></td>
+                  <td><code>-3</code></td>
+                  <td><code>-4</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="slide-note">AP 題目常用負數確認你是否真的知道 casting 是 truncate toward zero。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Casting and Division</p>
+          <h2>Casting 的位置會改變結果</h2>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Compare</h3>
+              <button class="copy-button" type="button" data-copy="l2-code-cast-div">Copy</button>
+            </div>
+            <pre><code id="l2-code-cast-div">double a = (double) (7 / 2);
+double b = (double) 7 / 2;</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r9">揭曉 trace</button>
+          <div class="reveal-panel" id="l2-r9">
+            <p><code>a</code> 是 <code>3.0</code>，因為 <code>7 / 2</code> 先得到 <code>3</code>。<code>b</code> 是 <code>3.5</code>，因為 <code>7</code> 先變 <code>7.0</code>，再做 double division。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Average Calculation</p>
+          <h2>平均值最常見的錯誤：小數太晚出現</h2>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Average</h3>
+              <button class="copy-button" type="button" data-copy="l2-code-average">Copy</button>
+            </div>
+            <pre><code id="l2-code-average">int score1 = 80;
+int score2 = 90;
+int score3 = 95;
+
+double average = (score1 + score2 + score3) / 3;</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r10">問題在哪</button>
+          <div class="reveal-panel" id="l2-r10">
+            <p>右邊是 <code>int / int</code>，所以 <code>265 / 3</code> 先得到 <code>88</code>，最後才存進 double 成為 <code>88.0</code>。可以改成 <code>/ 3.0</code> 或 <code>(double) (score1 + score2 + score3) / 3</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Fixing Integer Division</p>
+          <h2>正確平均值：讓 division 發生前出現 double</h2>
+          <div class="definition-grid">
+            <article>
+              <h3>方法一</h3>
+              <p><code>(score1 + score2 + score3) / 3.0</code></p>
+            </article>
+            <article>
+              <h3>方法二</h3>
+              <p><code>(double) (score1 + score2 + score3) / 3</code></p>
+            </article>
+            <article>
+              <h3>容易錯</h3>
+              <p><code>(double) ((score1 + score2 + score3) / 3)</code></p>
+            </article>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r17">為什麼第三個容易錯</button>
+          <div class="reveal-panel" id="l2-r17">
+            <p>第三個寫法會先在括號內做 <code>int / int</code>，小數部分已經消失，再 cast 成 double。Casting 不能把已經消失的小數救回來。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Rounding</p>
+          <h2>用 casting 四捨五入：先加或減 <code>0.5</code></h2>
+          <div class="definition-grid">
+            <article>
+              <h3><code>x &gt;= 0</code></h3>
+              <p><code>(int) (x + 0.5)</code></p>
+            </article>
+            <article>
+              <h3><code>x &lt; 0</code></h3>
+              <p><code>(int) (x - 0.5)</code></p>
+            </article>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r11">看例子</button>
+          <div class="reveal-panel" id="l2-r11">
+            <p><code>4.8 + 0.5</code> 得到 <code>5.3</code>，再 cast 成 <code>5</code>。<code>-4.8 - 0.5</code> 得到 <code>-5.3</code>，再 cast 成 <code>-5</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content split-slide">
+          <div>
+            <p class="slide-kicker">int Range</p>
+            <h2><code>int</code> 有固定範圍</h2>
+            <p class="slide-text">
+              Java 的 <code>int</code> 使用 32 bits。它不是可以放任意大的整數。
+            </p>
+          </div>
+          <div class="stack-list">
+            <div><strong>Minimum</strong><span><code>Integer.MIN_VALUE</code> = -2147483648</span></div>
+            <div><strong>Maximum</strong><span><code>Integer.MAX_VALUE</code> = 2147483647</span></div>
+            <div><strong>Overflow</strong><span>expression 結果超過 range</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Integer Overflow</p>
+          <h2>Overflow 不一定會報錯</h2>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Overflow</h3>
+              <button class="copy-button" type="button" data-copy="l2-code-overflow-slide">Copy</button>
+            </div>
+            <pre><code id="l2-code-overflow-slide">int x = Integer.MAX_VALUE;
+
+System.out.println(x);
+x = x + 1;
+System.out.println(x);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r12">揭曉 output</button>
+          <div class="reveal-panel" id="l2-r12">
+            <pre><code>2147483647
+-2147483648</code></pre>
+            <p>程式可能繼續執行，但 value 已經不是數學上預期的結果。這是 logic risk，不一定是 runtime error。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Overflow in Expressions</p>
+          <h2>變數本身合法，不代表 expression 安全</h2>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Multiplication Overflow</h3>
+              <button class="copy-button" type="button" data-copy="l2-code-overflow-expression">Copy</button>
+            </div>
+            <pre><code id="l2-code-overflow-expression">int x = 1500000000;
+int y = 2;
+
+int result = x * y;</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r18">AP 重點</button>
+          <div class="reveal-panel" id="l2-r18">
+            <p><code>x</code> 和 <code>y</code> 都是合法 int，但 <code>x * y</code> 的數學結果是 <code>3000000000</code>，超過 <code>Integer.MAX_VALUE</code>。Overflow 看的是 expression result 是否超出範圍。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">double Precision</p>
+          <h2><code>double</code> 也有精度限制</h2>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Round-Off</h3>
+              <button class="copy-button" type="button" data-copy="l2-code-roundoff-slide">Copy</button>
+            </div>
+            <pre><code id="l2-code-roundoff-slide">double result = 0.1 + 0.2;
+System.out.println(result);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r13">可能的結果</button>
+          <div class="reveal-panel" id="l2-r13">
+            <p>可能印出 <code>0.30000000000000004</code>。原因是某些十進位小數無法用有限 binary bits 精確表示，這稱為 floating-point round-off error。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Round-Off Meaning</p>
+          <h2>這不是 Java 算錯，而是表示法有限</h2>
+          <p class="slide-text">
+            <code>double</code> 用有限的 binary bits 儲存 floating-point numbers。
+            有些十進位小數，例如 <code>0.1</code>，無法被有限二進位精確表示。
+          </p>
+          <div class="definition-grid">
+            <article>
+              <h3><code>int</code></h3>
+              <p>整數精確，但範圍有限；超出範圍可能 overflow。</p>
+            </article>
+            <article>
+              <h3><code>double</code></h3>
+              <p>可表示小數與較廣範圍數值，但可能有 tiny round-off error。</p>
+            </article>
+            <article>
+              <h3>AP View</h3>
+              <p>看懂為什麼 output 可能有很多尾數，而不是把它當成 syntax error。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Compound Assignment</p>
+          <h2>簡寫更新：compound assignment</h2>
+          <p class="slide-text">
+            這些 operator 都是在讀取原本的 <code>x</code>，完成右邊運算，再把結果存回 <code>x</code>。
+          </p>
+          <div class="type-grid operator-grid">
+            <div><strong><code>x += 5</code></strong><span><code>x = x + 5</code></span></div>
+            <div><strong><code>x -= 3</code></strong><span><code>x = x - 3</code></span></div>
+            <div><strong><code>x *= 2</code></strong><span><code>x = x * 2</code></span></div>
+            <div><strong><code>x /= 2</code></strong><span><code>x = x / 2</code></span></div>
+            <div><strong><code>x %= 3</code></strong><span><code>x = x % 3</code></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Increment and Decrement</p>
+          <h2><code>x++</code> 與 <code>x--</code></h2>
+          <p class="slide-text">
+            <code>x++</code> 可以先理解成 <code>x = x + 1;</code>。
+            <code>x--</code> 可以先理解成 <code>x = x - 1;</code>。
+            之後在 <code>for</code> loop 裡會大量看到這種寫法。
+          </p>
+          <p class="slide-note">
+            目前先把 <code>x++</code> 和 <code>x--</code> 當成獨立 statement 使用，不需要先鑽研 <code>int y = x++;</code> 這種 evaluation-order 題型。
+          </p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Trace Check</p>
+          <h2>快速檢核：compound trace</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 5;
+
+x += 3;
+x *= 2;
+x--;
+x %= 4;</code></pre>
+            <p>最後 <code>x</code> 是多少？</p>
+            <div class="choices">
+              <span>A. 0</span>
+              <span>B. 1</span>
+              <span>C. 2</span>
+              <span>D. 3</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r14">揭曉答案</button>
+          <div class="reveal-panel" id="l2-r14">
+            <p>答案是 D。<code>5</code> 到 <code>8</code>，到 <code>16</code>，再 <code>x--</code> 變 <code>15</code>，最後 <code>15 % 4</code> 得到 <code>3</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP-style Check</p>
+          <h2>快速檢核：casting position</h2>
+          <div class="multiple-choice">
+            <pre><code>int a = 7;
+int b = 3;
+
+double result = (double) (a / b);</code></pre>
+            <p>What value is stored in <code>result</code>?</p>
+            <div class="choices">
+              <span>A. 2</span>
+              <span>B. 2.0</span>
+              <span>C. 2.3333333333333335</span>
+              <span>D. 3.0</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r15">揭曉答案</button>
+          <div class="reveal-panel" id="l2-r15">
+            <p>答案是 B。括號內 <code>a / b</code> 先做 <code>int / int</code>，<code>7 / 3</code> 得到 <code>2</code>，再 cast 成 <code>2.0</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Misconceptions</p>
+          <h2>本課最容易被 AP 題目利用的迷思</h2>
+          <div class="stack-list">
+            <div><strong>Assignment</strong><span>不是左右相等；永遠先算 RHS，再存入 LHS。</span></div>
+            <div><strong>Casting</strong><span><code>(int)</code> 不是 rounding，也不是 floor；它是 truncate toward zero。</span></div>
+            <div><strong>Division</strong><span><code>double result = 5 / 2;</code> 仍然先做 integer division。</span></div>
+            <div><strong>Overflow</strong><span>不一定會 runtime error；可能只是得到錯的 int value。</span></div>
+            <div><strong>Compound Assignment</strong><span><code>x /= 2</code> 仍然遵守 <code>x</code> 的型別規則。</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Final Trace Challenge</p>
+          <h2>綜合追蹤：casting、modulo、compound、increment</h2>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Final Challenge</h3>
+              <button class="copy-button" type="button" data-copy="l2-code-final-slide">Copy</button>
+            </div>
+            <pre><code id="l2-code-final-slide">int a = 17;
+int b = 4;
+
+double x = (double) a / b;
+
+a %= b;
+b += 2;
+a *= b;
+a++;
+
+int y = (int) x;</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l2-r19">揭曉 trace</button>
+          <div class="reveal-panel" id="l2-r19">
+            <p><code>x = 4.25</code>。<code>a %= b</code> 讓 <code>a = 1</code>，<code>b += 2</code> 讓 <code>b = 6</code>，<code>a *= b</code> 讓 <code>a = 6</code>，<code>a++</code> 讓 <code>a = 7</code>，<code>y = (int) x</code> 讓 <code>y = 4</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Coding Practice</p>
+          <h2>今天可以完成的三個程式</h2>
+          <div class="exit-grid">
+            <div>Temperature Converter：輸入 Celsius，輸出 Fahrenheit。</div>
+            <div>Average Calculator：輸入三個整數分數，輸出小數平均。</div>
+            <div>Seconds Converter：把總秒數轉成 hours、minutes、seconds。</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-2-practice.html">開始 Lesson 2 課後練習</a>
+            <a class="button" href="lesson-2.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這五題</h2>
+          <div class="exit-grid">
+            <div><code>x = x + 1;</code> 的 RHS 與 LHS 分別是什麼？</div>
+            <div><code>double x = 7 / 2;</code> 為什麼是 <code>3.0</code>？</div>
+            <div><code>(int) -7.9</code> 為什麼是 <code>-7</code>？</div>
+            <div><code>Integer.MAX_VALUE + 1</code> 為什麼危險？</div>
+            <div><code>int x = 5; x /= 2;</code> 最後為什麼是 <code>2</code>？</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

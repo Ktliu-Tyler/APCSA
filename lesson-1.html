@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 1｜Java 基礎、變數、資料型別與運算</title>
+    <meta
+      name="description"
+      content="AP Computer Science A Lesson 1：從程式與演算法開始，介紹 Java 基本結構、變數、資料型別、運算、輸出與錯誤。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 1</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第一堂課導覽">
+        <a href="unit-1-presentation.html">投影模式</a>
+        <a href="lesson-1-practice.html">課後練習</a>
+        <a href="lesson-2.html">下一課</a>
+        <a href="#story">課程文章</a>
+        <a href="#examples">程式範例</a>
+        <a href="#practice">練習題</a>
+        <a href="#answers">答案</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 1</p>
+          <h1>Java 基礎、變數、資料型別與運算</h1>
+          <p class="lead">
+            程式設計的第一步，不是背語法，而是理解：我們如何把一個問題拆成步驟，
+            再用 Java 把這些步驟寫成可以執行、可以測試、可以修正的程式。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="unit-1-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-1-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-2.html">前往 Lesson 2</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#big-picture">從問題到程式</a>
+          <a href="#java-flow">Java 如何執行</a>
+          <a href="#program-shape">第一個 Java 程式</a>
+          <a href="#variables">變數與型別</a>
+          <a href="#assignment">指定與更新</a>
+          <a href="#arithmetic">運算與優先順序</a>
+          <a href="#division">整數除法與餘數</a>
+          <a href="#output">輸出與字串串接</a>
+          <a href="#errors">錯誤類型</a>
+          <a href="#practice">練習</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>說明 problem、algorithm、program 之間的關係。</div>
+              <div>看懂最基本的 Java 程式架構與 <code>main</code> 方法。</div>
+              <div>使用 <code>int</code>、<code>double</code>、<code>boolean</code>、<code>String</code> 建立變數。</div>
+              <div>分辨 declaration、initialization、assignment 與 reassignment。</div>
+              <div>理解 integer division、modulo 與 operator precedence。</div>
+              <div>預測 <code>print</code>、<code>println</code>、string concatenation 的輸出結果。</div>
+              <div>辨認 compile-time error、runtime error、logic error。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson1-flow-0" /> <span><strong>導入</strong>：什麼是問題、演算法與程式。</span></label>
+              <label><input type="checkbox" data-progress="lesson1-flow-1" /> <span><strong>執行流程</strong>：Java source code 如何經過 compiler 與 JVM 產生 output。</span></label>
+              <label><input type="checkbox" data-progress="lesson1-flow-2" /> <span><strong>閱讀</strong>：第一個 <code>public class Main</code> 程式與 <code>println</code>。</span></label>
+              <label><input type="checkbox" data-progress="lesson1-flow-3" /> <span><strong>建立概念</strong>：變數、資料型別、declaration、initialization、assignment。</span></label>
+              <label><input type="checkbox" data-progress="lesson1-flow-4" /> <span><strong>追蹤輸出</strong>：運算優先順序、整數除法、餘數、字串串接。</span></label>
+              <label><input type="checkbox" data-progress="lesson1-flow-5" /> <span><strong>練習</strong>：個人資訊、平均分數、三位數拆解、AP-style MCQ。</span></label>
+            </div>
+          </section>
+
+          <section id="big-picture" class="article-section">
+            <p class="eyebrow">Big Picture</p>
+            <h2>從問題到程式：電腦科學不是先從語法開始</h2>
+            <p>
+              在學 Java 之前，我們先把三個名詞分清楚。<strong>Problem</strong> 是我們想解決的事情，
+              <strong>Algorithm</strong> 是解決問題的一系列清楚步驟，<strong>Program</strong> 則是把演算法用程式語言寫出來，
+              讓電腦能夠執行。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>概念</th>
+                    <th>意思</th>
+                    <th>例子</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Problem</td>
+                    <td>想解決的事情</td>
+                    <td>找出兩個數字中較大的數字</td>
+                  </tr>
+                  <tr>
+                    <td>Algorithm</td>
+                    <td>解決問題的步驟</td>
+                    <td>比較 A 與 B，選出較大者</td>
+                  </tr>
+                  <tr>
+                    <td>Program</td>
+                    <td>用程式語言實作演算法</td>
+                    <td>使用 Java 的 <code>if</code> 寫出比較邏輯</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              因此，一段 Java 程式不是從空中掉下來的答案。它通常來自這條路徑：
+            </p>
+            <div class="flow-strip">
+              <span>Problem</span>
+              <span>Algorithm</span>
+              <span>Source Code</span>
+              <span>Program</span>
+              <span>Output</span>
+            </div>
+            <p class="callout">
+              AP CSA 很常考的不是「你有沒有背過某個語法」，而是你能不能讀懂一段程式、追蹤它的狀態，
+              並判斷最後輸出或變數值會是什麼。
+            </p>
+          </section>
+
+          <section id="java-flow" class="article-section">
+            <p class="eyebrow">Java Flow</p>
+            <h2>Java 如何把文字變成執行結果</h2>
+            <p>
+              我們在編輯器裡寫的 Java 程式稱為 <strong>source code</strong>。電腦不會直接把這些文字當成機器指令執行。
+              Java 會先透過 <strong>compiler</strong> 檢查語法與型別，產生 bytecode，最後由 JVM 執行。
+            </p>
+            <figure class="article-image">
+              <img src="assets/java-compile-flow.png" alt="Java source code, compiler, JVM output flow" />
+            </figure>
+            <div class="note-grid">
+              <div>
+                <h3>Compiler</h3>
+                <p>檢查程式碼是否符合 Java 語法與型別規則。少分號、型別不合、大小寫錯誤，都可能在這裡被抓出來。</p>
+              </div>
+              <div>
+                <h3>JVM</h3>
+                <p>JVM 是 Java Virtual Machine，負責執行編譯後的 bytecode，最後產生我們看到的 output。</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="program-shape" class="article-section">
+            <p class="eyebrow">First Program</p>
+            <h2>第一個完整 Java 程式</h2>
+            <p>
+              在線上 Java 執行器中，最常見的起手式是 <code>public class Main</code>。現在不需要一次理解每個關鍵字，
+              先記住：程式從 <code>main</code> 方法開始執行，我們的第一批指令會寫在它的大括號裡。
+            </p>
+            <div class="code-panel" id="examples">
+              <div class="code-head">
+                <h3>Hello World</h3>
+                <button class="copy-button" type="button" data-copy="code-hello">Copy</button>
+              </div>
+              <pre><code id="code-hello">public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>程式片段</th>
+                    <th>現在需要理解的意思</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>public class Main</code></td>
+                    <td>建立一個名為 <code>Main</code> 的 class。線上 Java 執行器通常要求 class 名稱是 <code>Main</code>。</td>
+                  </tr>
+                  <tr>
+                    <td><code>public static void main(String[] args)</code></td>
+                    <td>Java 程式開始執行的位置。第一階段先把它當作固定入口。</td>
+                  </tr>
+                  <tr>
+                    <td><code>{ }</code></td>
+                    <td>大括號包住一段程式區塊；我們目前的 statements 會寫在 <code>main</code> 的大括號裡。</td>
+                  </tr>
+                  <tr>
+                    <td><code>;</code></td>
+                    <td>大部分 Java statement 的結尾。少了分號通常會造成 compile-time error。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              <code>System.out.println()</code> 會輸出內容並換行。大部分 Java statement 的最後都需要分號。
+              如果少了分號，程式在 compiler 階段就會停下來。
+            </p>
+            <p class="callout">
+              第一堂課最重要的習慣：不要急著按 Run。先預測 output，再執行，再比較你的預測與真實結果。
+            </p>
+          </section>
+
+          <section id="variables" class="article-section">
+            <p class="eyebrow">Variables and Types</p>
+            <h2>變數：有名字、有型別、能存 value 的位置</h2>
+            <p>
+              Variable 可以想成一個有名字的儲存位置。Java 是 strongly typed language，建立變數時要說清楚它能存哪一種資料。
+            </p>
+            <div class="concept-card">
+              <pre><code>int age = 18;</code></pre>
+              <p><code>int</code> 是資料型別，<code>age</code> 是變數名稱，<code>18</code> 是存進去的 value。</p>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>概念</th>
+                    <th>範例</th>
+                    <th>重點</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Declaration</td>
+                    <td><code>int score;</code></td>
+                    <td>建立變數名稱與型別，但還沒有可讀取的 value。</td>
+                  </tr>
+                  <tr>
+                    <td>Initialization</td>
+                    <td><code>int score = 80;</code></td>
+                    <td>第一次把 value 放進變數。</td>
+                  </tr>
+                  <tr>
+                    <td>Assignment</td>
+                    <td><code>score = 90;</code></td>
+                    <td>把右邊 expression 的結果存進左邊變數。</td>
+                  </tr>
+                  <tr>
+                    <td>Reassignment</td>
+                    <td><code>score = 100;</code></td>
+                    <td>變數已經有值之後，再用新的 value 取代舊的 value。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Data type 和 data structure 不一樣。<strong>Data type</strong> 描述單一資料的種類，例如
+              <code>int</code>、<code>double</code>、<code>boolean</code>、<code>String</code>；
+              <strong>data structure</strong> 則描述多個資料如何被組織，例如之後會學的 array、ArrayList、2D array。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>可以存什麼</th>
+                    <th>範例</th>
+                    <th>AP CSA 提醒</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>int</code></td>
+                    <td>整數</td>
+                    <td><code>5</code>, <code>-3</code>, <code>100</code></td>
+                    <td><code>int</code> 不能直接存 <code>3.14</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>double</code></td>
+                    <td>小數或可轉成小數的整數</td>
+                    <td><code>3.14</code>, <code>5.0</code>, <code>5</code></td>
+                    <td><code>double x = 5;</code> 合法，結果是 <code>5.0</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>boolean</code></td>
+                    <td>真或假</td>
+                    <td><code>true</code>, <code>false</code></td>
+                    <td>Java 不用 <code>1</code> 或 <code>0</code> 表示 boolean</td>
+                  </tr>
+                  <tr>
+                    <td><code>String</code></td>
+                    <td>文字</td>
+                    <td><code>"Hello"</code>, <code>"5"</code></td>
+                    <td><code>String</code> 不是 primitive type</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              變數名稱稱為 identifier。AP CSA 題目通常使用 Java 命名慣例 <strong>camelCase</strong>，
+              例如 <code>studentAge</code>、<code>averageScore</code>、<code>numberOfStudents</code>。
+              變數名稱不能用數字開頭，也不能使用 Java keyword，例如 <code>class</code>。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Variables Demo</h3>
+                <button class="copy-button" type="button" data-copy="code-types">Copy</button>
+              </div>
+              <pre><code id="code-types">public class Main {
+    public static void main(String[] args) {
+        int age = 18;
+        double height = 175.5;
+        boolean isStudent = true;
+        String name = "Alex";
+
+        System.out.println(name);
+        System.out.println(age);
+        System.out.println(height);
+        System.out.println(isStudent);
+    }
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="assignment" class="article-section">
+            <p class="eyebrow">Assignment</p>
+            <h2><code>=</code> 在 Java 裡不是數學等號</h2>
+            <p>
+              在 Java 中，<code>=</code> 是 assignment operator。它的意思不是「左右永遠相等」，而是
+              <strong>先算右邊，再把結果存進左邊</strong>。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>x = x + 1</h3>
+                <button class="copy-button" type="button" data-copy="code-assignment">Copy</button>
+              </div>
+              <pre><code id="code-assignment">public class Main {
+    public static void main(String[] args) {
+        int x = 5;
+        System.out.println(x);
+
+        x = x + 1;
+        System.out.println(x);
+    }
+}</code></pre>
+            </div>
+            <p>
+              執行 <code>x = x + 1;</code> 時，Java 先讀取舊的 <code>x</code>，算出 <code>5 + 1</code>，得到 <code>6</code>，
+              再把 <code>6</code> 存回 <code>x</code>。這個思考方式會一路出現在 loops、arrays、FRQ 裡。
+            </p>
+            <p>
+              Primitive variable 的 copy 也要注意。<code>int b = a;</code> 是把 <code>a</code> 當下的 value 複製給 <code>b</code>，
+              之後 <code>a</code> 改變，不會自動改變 <code>b</code>。
+            </p>
+          </section>
+
+          <section id="arithmetic" class="article-section">
+            <p class="eyebrow">Arithmetic</p>
+            <h2>運算式與優先順序</h2>
+            <p>
+              Expression 是可以被計算出一個 value 的程式片段。AP CSA 中常見的 arithmetic operators 有
+              <code>+</code>、<code>-</code>、<code>*</code>、<code>/</code>、<code>%</code>。優先順序大致和數學相同：先括號，再乘除與餘數，最後加減。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Expression</th>
+                    <th>計算方式</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>2 + 3 * 4</code></td>
+                    <td>先 <code>3 * 4</code>，再加 <code>2</code></td>
+                    <td><code>14</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>(2 + 3) * 4</code></td>
+                    <td>括號先算</td>
+                    <td><code>20</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>10 - 3 - 2</code></td>
+                    <td>同優先順序由左到右</td>
+                    <td><code>5</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>20 / 5 * 2</code></td>
+                    <td><code>/</code> 與 <code>*</code> 同優先順序，由左到右</td>
+                    <td><code>8</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="division" class="article-section">
+            <p class="eyebrow">Division and Modulo</p>
+            <h2>整數除法與餘數：AP CSA 的高頻陷阱</h2>
+            <p>
+              如果除法的兩邊都是 <code>int</code>，Java 會做 integer division，結果仍然是 <code>int</code>。
+              小數部分會被直接移除，不是四捨五入。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Result</th>
+                    <th>原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>5 / 2</code></td>
+                    <td><code>2</code></td>
+                    <td><code>int / int</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>5.0 / 2</code></td>
+                    <td><code>2.5</code></td>
+                    <td>其中一邊是 <code>double</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>double x = 5 / 2;</code></td>
+                    <td><code>2.0</code></td>
+                    <td>右邊先做 integer division，再存進 <code>double</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>5 / 2 + 0.0</code></td>
+                    <td><code>2.0</code></td>
+                    <td><code>5 / 2</code> 先變 <code>2</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              <code>%</code> 是 modulo operator，意思是取餘數，不是百分比。它很常用來判斷奇偶數或拆解數字。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Digit Decomposition</h3>
+                <button class="copy-button" type="button" data-copy="code-digits">Copy</button>
+              </div>
+              <pre><code id="code-digits">public class Main {
+    public static void main(String[] args) {
+        int number = 583;
+
+        int hundreds = number / 100;
+        int tens = (number / 10) % 10;
+        int ones = number % 10;
+
+        System.out.println("Hundreds: " + hundreds);
+        System.out.println("Tens: " + tens);
+        System.out.println("Ones: " + ones);
+    }
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="output" class="article-section">
+            <p class="eyebrow">Output and Strings</p>
+            <h2><code>print</code>、<code>println</code> 與字串串接</h2>
+            <p>
+              <code>println()</code> 會輸出後換行，<code>print()</code> 不會自動換行。當 <code>+</code> 遇到 <code>String</code> 時，
+              它可能不再是數學加法，而是 string concatenation。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Concatenation Traps</h3>
+                <button class="copy-button" type="button" data-copy="code-concat">Copy</button>
+              </div>
+              <pre><code id="code-concat">public class Main {
+    public static void main(String[] args) {
+        System.out.println("Result: " + 2 + 3);
+        System.out.println(2 + 3 + " Result");
+        System.out.println("Result: " + (2 + 3));
+        System.out.println("A" + 2 * 3 + 4);
+    }
+}</code></pre>
+            </div>
+            <p>
+              第一行會印出 <code>Result: 23</code>，因為 Java 從左到右先把 <code>"Result: " + 2</code> 變成文字。
+              第三行用括號讓 <code>2 + 3</code> 先做數學加法，所以才會印出 <code>Result: 5</code>。
+            </p>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Errors</p>
+            <h2>錯誤不是結束，是下一步線索</h2>
+            <p>
+              初學 Java 一定會遇到錯誤。好的程式設計者不是不犯錯，而是能快速判斷錯誤類型，知道下一步該看哪裡。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Error Type</th>
+                    <th>意思</th>
+                    <th>例子</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Compile-time Error</td>
+                    <td>編譯前就不通過</td>
+                    <td>少分號、<code>int x = "Hello";</code></td>
+                  </tr>
+                  <tr>
+                    <td>Runtime Error</td>
+                    <td>可以編譯，但執行中出錯</td>
+                    <td>之後學 array 時取不存在的位置</td>
+                  </tr>
+                  <tr>
+                    <td>Logic Error</td>
+                    <td>可執行但答案錯</td>
+                    <td>面積應該乘法，卻寫成加法</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Intentional Compile Error</h3>
+                <button class="copy-button" type="button" data-copy="code-error">Copy</button>
+              </div>
+              <pre><code id="code-error">public class Main {
+    public static void main(String[] args) {
+        int score = 85
+        System.out.println("Score: " + score);
+    }
+}</code></pre>
+            </div>
+            <p class="callout">
+              除錯順序：先看 line number，再看該行與上一行，接著找分號、括號、引號、大小寫與型別。
+            </p>
+          </section>
+
+          <section id="practice" class="article-section">
+            <p class="eyebrow">Practice</p>
+            <h2>練習題</h2>
+            <p>
+              這一區是可以直接完成的小練習。完整的課後題本已另外整理成 35 題，
+              可以用來檢查輸出預測、錯誤判斷、整數除法、餘數與 AP-style 選擇題。
+            </p>
+            <div class="inline-actions">
+              <a class="button primary" href="lesson-1-practice.html">開始 Lesson 1 課後練習</a>
+              <a class="button" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+            <div class="practice-set">
+              <article>
+                <h3>個人資訊</h3>
+                <p>建立 <code>String name</code>、<code>int age</code>、<code>double height</code>、<code>boolean isStudent</code>，最後輸出四行個人資訊。</p>
+              </article>
+              <article>
+                <h3>平均分數</h3>
+                <p>有三個分數 <code>80</code>、<code>90</code>、<code>95</code>。計算平均時，請避免被 integer division 影響。</p>
+              </article>
+              <article>
+                <h3>三位數拆解</h3>
+                <p>設定 <code>int number = 742;</code>，輸出 hundreds、tens、ones。</p>
+              </article>
+              <article>
+                <h3>預測輸出</h3>
+                <p>先不要執行，預測 <code>"A" + 1 + 2</code>、<code>1 + 2 + "A"</code>、<code>"A" + (1 + 2)</code> 的結果。</p>
+              </article>
+            </div>
+
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Average Score Practice</h3>
+                <button class="copy-button" type="button" data-copy="code-average">Copy</button>
+              </div>
+              <pre><code id="code-average">public class Main {
+    public static void main(String[] args) {
+        int score1 = 80;
+        int score2 = 90;
+        int score3 = 95;
+
+        double average = (score1 + score2 + score3) / 3.0;
+        System.out.println("Average: " + average);
+    }
+}</code></pre>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">AP-style Check</p>
+            <h2>AP 風格檢核題</h2>
+            <div class="question-list">
+              <article>
+                <h3>Question A</h3>
+                <pre><code>int a = 7;
+int b = 2;
+double result = a / b;</code></pre>
+                <p><code>result</code> 儲存的值是多少？</p>
+                <p>A. <code>3</code>　B. <code>3.0</code>　C. <code>3.5</code>　D. <code>4.0</code></p>
+              </article>
+              <article>
+                <h3>Question B</h3>
+                <pre><code>System.out.println("Value: " + 3 + 4);</code></pre>
+                <p>輸出結果是什麼？</p>
+                <p>A. <code>Value: 7</code>　B. <code>Value: 34</code>　C. <code>7</code>　D. <code>34</code></p>
+              </article>
+              <article>
+                <h3>Question C</h3>
+                <pre><code>int number = 647;
+System.out.println((number / 10) % 10);</code></pre>
+                <p>輸出結果是什麼？</p>
+                <p>A. <code>6</code>　B. <code>4</code>　C. <code>7</code>　D. <code>64</code></p>
+              </article>
+            </div>
+          </section>
+
+          <section id="answers" class="article-section answer-section">
+            <p class="eyebrow">Answers</p>
+            <h2>練習答案與本課總結</h2>
+            <details>
+              <summary>AP-style answers</summary>
+              <p>Question A：B。<code>a / b</code> 先做 <code>int / int</code>，得到 <code>3</code>，再存進 <code>double</code>，所以是 <code>3.0</code>。</p>
+              <p>Question B：B。字串先出現後，後面的 <code>3</code> 與 <code>4</code> 會被串接成文字。</p>
+              <p>Question C：B。<code>647 / 10</code> 得到 <code>64</code>，<code>64 % 10</code> 得到 <code>4</code>。</p>
+            </details>
+            <div class="takeaway-grid">
+              <div><strong>Variable</strong><span>有名稱、有型別、可以存 value 的位置。</span></div>
+              <div><strong>Declaration</strong><span><code>int score;</code> 建立名稱與型別，但尚未放入可讀取的值。</span></div>
+              <div><strong>Assignment</strong><span>永遠先算右邊，再存進左邊。</span></div>
+              <div><strong>Integer Division</strong><span><code>5 / 2</code> 得到 <code>2</code>，不是 <code>2.5</code>。</span></div>
+              <div><strong>Modulo</strong><span><code>583 % 10</code> 可以取得個位數 <code>3</code>。</span></div>
+              <div><strong>Naming</strong><span>使用 <code>camelCase</code>，不能用數字開頭，也不能使用 Java keyword。</span></div>
+              <div><strong>String Concatenation</strong><span><code>"A" + 2 + 3</code> 得到 <code>A23</code>。</span></div>
+              <div><strong>Error Reading</strong><span>先看行號，再看分號、括號、引號、大小寫與型別。</span></div>
+            </div>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 1｜Java 基礎、變數、資料型別與運算。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

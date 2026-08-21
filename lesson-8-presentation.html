@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 8 投影模式｜Compound Boolean &amp; De Morgan</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 8 投影模式：&amp;&amp;、||、!、truth tables、range conditions、short-circuit evaluation、De Morgan's Laws 與 AP-style Boolean tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 8</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-8.html">文章版</a>
+        <a href="lesson-8-practice.html">課後練習</a>
+        <a href="lesson-7.html">上一課</a>
+        <a href="lesson-9.html">下一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 8</p>
+          <h1>Compound Boolean Expressions</h1>
+          <p class="slide-lead">
+            今天把多個條件合成完整判斷：<code>&amp;&amp;</code>、<code>||</code>、<code>!</code>、
+            range conditions、short-circuit evaluation、De Morgan's Laws 與 equivalent expressions。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-8-practice.html">Lesson 8 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">From Lesson 7</p>
+          <h2>單一 condition 不夠時，就需要 compound Boolean</h2>
+          <div class="big-flow">
+            <span><code>age &gt;= 18</code></span>
+            <span><code>hasTicket</code></span>
+            <span><code>&amp;&amp;</code></span>
+            <span>Enter</span>
+          </div>
+          <p class="slide-note">條件越像真實世界，就越常需要把多個 Boolean expressions 組合起來。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Three Operators</p>
+          <h2>本課三個主角</h2>
+          <div class="type-grid operator-grid">
+            <div><strong><code>&amp;&amp;</code></strong><span>AND：全部都要 true</span></div>
+            <div><strong><code>||</code></strong><span>OR：至少一個 true</span></div>
+            <div><strong><code>!</code></strong><span>NOT：取反</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AND</p>
+          <h2><code>&amp;&amp;</code> 只有 true / true 才 true</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead>
+                <tr>
+                  <th>A</th>
+                  <th>B</th>
+                  <th><code>A &amp;&amp; B</code></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>false</td><td>false</td><td>false</td></tr>
+                <tr><td>false</td><td>true</td><td>false</td></tr>
+                <tr><td>true</td><td>false</td><td>false</td></tr>
+                <tr><td>true</td><td>true</td><td>true</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AND Check</p>
+          <h2>兩個條件都必須成立</h2>
+          <div class="multiple-choice">
+            <pre><code>int age = 20;
+boolean hasTicket = false;
+
+System.out.println(age &gt;= 18 &amp;&amp; hasTicket);</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. true</span>
+              <span>B. false</span>
+              <span>C. 20</span>
+              <span>D. Compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l8-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l8-r1">
+            <p>答案是 B。左邊 true，但右邊 false；<code>true &amp;&amp; false</code> 是 false。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">OR</p>
+          <h2><code>||</code> 只有 false / false 才 false</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead>
+                <tr>
+                  <th>A</th>
+                  <th>B</th>
+                  <th><code>A || B</code></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>false</td><td>false</td><td>false</td></tr>
+                <tr><td>false</td><td>true</td><td>true</td></tr>
+                <tr><td>true</td><td>false</td><td>true</td></tr>
+                <tr><td>true</td><td>true</td><td>true</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="slide-note">Java OR 是 inclusive OR：兩邊都 true 時也 true。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">OR Check</p>
+          <h2>至少一個成立即可</h2>
+          <div class="multiple-choice">
+            <pre><code>int score = 120;
+
+System.out.println(score &lt; 0 || score &gt; 100);</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. true</span>
+              <span>B. false</span>
+              <span>C. 120</span>
+              <span>D. Compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l8-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l8-r2">
+            <p>答案是 A。左邊 false，右邊 true；<code>false || true</code> 是 true。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">NOT</p>
+          <h2><code>!</code> 把 Boolean 結果反過來</h2>
+          <div class="definition-grid">
+            <article><h3><code>!true</code></h3><p>false</p></article>
+            <article><h3><code>!false</code></h3><p>true</p></article>
+            <article><h3><code>if (!gameOver)</code></h3><p>遊戲還沒結束才執行</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Negation</p>
+          <h2>取反 comparison 時，不要丟掉邊界</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead>
+                <tr>
+                  <th>原條件</th>
+                  <th>相反條件</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><code>x &gt; 5</code></td><td><code>x &lt;= 5</code></td></tr>
+                <tr><td><code>x &gt;= 5</code></td><td><code>x &lt; 5</code></td></tr>
+                <tr><td><code>x &lt; 5</code></td><td><code>x &gt;= 5</code></td></tr>
+                <tr><td><code>x &lt;= 5</code></td><td><code>x &gt; 5</code></td></tr>
+                <tr><td><code>x == 5</code></td><td><code>x != 5</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Range</p>
+          <h2>範圍內用 <code>&amp;&amp;</code>，範圍外用 <code>||</code></h2>
+          <div class="definition-grid">
+            <article><h3>Inside</h3><p><code>score &gt;= 0 &amp;&amp; score &lt;= 100</code></p></article>
+            <article><h3>Outside</h3><p><code>score &lt; 0 || score &gt; 100</code></p></article>
+            <article><h3>Java rule</h3><p>不能寫 <code>0 &lt;= score &lt;= 100</code></p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Range Bug</p>
+          <h2>這個 valid score 條件錯在哪？</h2>
+          <div class="multiple-choice">
+            <pre><code>if (score &gt;= 0 || score &lt;= 100)
+{
+    System.out.println("Valid");
+}</code></pre>
+            <p>問題是什麼？</p>
+            <div class="choices">
+              <span>A. 應使用 &amp;&amp;</span>
+              <span>B. 應使用 !</span>
+              <span>C. 不能使用 score</span>
+              <span>D. 沒有錯</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l8-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l8-r3">
+            <p>答案是 A。範圍內要同時符合上下界，所以應寫 <code>score &gt;= 0 &amp;&amp; score &lt;= 100</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Precedence</p>
+          <h2><code>!</code> 先，<code>&amp;&amp;</code> 再，<code>||</code> 最後</h2>
+          <div class="multiple-choice">
+            <pre><code>boolean result = true &amp;&amp; false || true;</code></pre>
+            <p><code>result</code> 是什麼？</p>
+            <div class="choices">
+              <span>A. true</span>
+              <span>B. false</span>
+              <span>C. Compile error</span>
+              <span>D. 取決於 JVM</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l8-r4">揭曉 trace</button>
+          <div class="reveal-panel" id="l8-r4">
+            <p><code>true &amp;&amp; false</code> 先得 false，再 <code>false || true</code> 得 true。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Parentheses</p>
+          <h2>括號會改變結果</h2>
+          <div class="deck-code">
+            <pre><code>A = true
+B = false
+C = false
+
+(A || B) &amp;&amp; C  -> false
+A || (B &amp;&amp; C)  -> true</code></pre>
+          </div>
+          <p class="slide-note">遇到混合 <code>&amp;&amp;</code> 和 <code>||</code>，建議寫括號讓邏輯明確。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Short-Circuit</p>
+          <h2>右側 condition 不一定會執行</h2>
+          <div class="definition-grid">
+            <article><h3><code>false &amp;&amp; ...</code></h3><p>右邊不執行</p></article>
+            <article><h3><code>true || ...</code></h3><p>右邊不執行</p></article>
+            <article><h3>AP trap</h3><p>method call、<code>++x</code>、division、null method 可能不會執行</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Safe Division</p>
+          <h2>short-circuit 可以避免 division by zero</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 0;
+
+if (x != 0 &amp;&amp; 100 / x &gt; 1)
+{
+    System.out.println("Yes");
+}</code></pre>
+            <p><code>100 / x</code> 會執行嗎？</p>
+            <div class="choices">
+              <span>A. 會</span>
+              <span>B. 不會</span>
+              <span>C. 一定 compile error</span>
+              <span>D. 一定印 Yes</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l8-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l8-r5">
+            <p>答案是 B。<code>x != 0</code> false，AND 直接 short-circuit。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Safe String</p>
+          <h2>short-circuit 可以避免 NullPointerException</h2>
+          <div class="deck-code">
+            <pre><code>String name = null;
+
+if (name != null &amp;&amp; name.equals("Tom"))
+{
+    System.out.println("Tom");
+}</code></pre>
+          </div>
+          <p class="slide-note">先檢查 <code>name != null</code>，右側 method call 才安全。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Side Effect</p>
+          <h2>OR 左邊 true，右邊不執行</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 5;
+
+if (x == 5 || ++x &gt; 10)
+{
+    System.out.println(x);
+}</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. 5</span>
+              <span>B. 6</span>
+              <span>C. 7</span>
+              <span>D. 11</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l8-r6">揭曉答案</button>
+          <div class="reveal-panel" id="l8-r6">
+            <p>答案是 A。<code>x == 5</code> true，所以 <code>++x</code> 不執行。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">De Morgan</p>
+          <h2>兩條必背公式</h2>
+          <div class="definition-grid">
+            <article><h3><code>!(A &amp;&amp; B)</code></h3><p><code>!A || !B</code></p></article>
+            <article><h3><code>!(A || B)</code></h3><p><code>!A &amp;&amp; !B</code></p></article>
+            <article><h3>Rule</h3><p>operator 交換，每個 condition 取反</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">De Morgan Check</p>
+          <h2>化簡這個 expression</h2>
+          <div class="multiple-choice">
+            <pre><code>!(x &gt; 10 &amp;&amp; y &lt;= 5)</code></pre>
+            <p>等價於？</p>
+            <div class="choices">
+              <span>A. <code>x &lt;= 10 || y &gt; 5</code></span>
+              <span>B. <code>x &lt;= 10 &amp;&amp; y &gt; 5</code></span>
+              <span>C. <code>x &gt; 10 || y &lt;= 5</code></span>
+              <span>D. <code>x &lt; 10 || y &gt;= 5</code></span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l8-r7">揭曉答案</button>
+          <div class="reveal-panel" id="l8-r7">
+            <p>答案是 A。<code>&amp;&amp;</code> 變 <code>||</code>，<code>x &gt; 10</code> 變 <code>x &lt;= 10</code>，<code>y &lt;= 5</code> 變 <code>y &gt; 5</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Equivalent</p>
+          <h2>用反例快速找出不等價</h2>
+          <div class="deck-code">
+            <pre><code>!(A &amp;&amp; B)  vs  !A &amp;&amp; !B
+
+A = true
+B = false
+
+Left:  !(true &amp;&amp; false) -> true
+Right: false &amp;&amp; true    -> false</code></pre>
+          </div>
+          <p class="slide-note">結果不同，所以 not equivalent。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">English Logic</p>
+          <h2>both、at least one、neither、not both</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead>
+                <tr>
+                  <th>English</th>
+                  <th>Java</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>both A and B</td><td><code>A &amp;&amp; B</code></td></tr>
+                <tr><td>at least one</td><td><code>A || B</code></td></tr>
+                <tr><td>neither A nor B</td><td><code>!A &amp;&amp; !B</code></td></tr>
+                <tr><td>not both A and B</td><td><code>!A || !B</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Boolean Return</p>
+          <h2>Boolean expression 可以直接 return</h2>
+          <div class="deck-code">
+            <pre><code>public static boolean isValidScore(int score)
+{
+    return score &gt;= 0 &amp;&amp; score &lt;= 100;
+}</code></pre>
+          </div>
+          <p class="slide-note">不必寫 <code>if (...) return true; else return false;</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP-style Trace</p>
+          <h2>綜合追蹤</h2>
+          <div class="deck-code">
+            <pre><code>int x = 5;
+int y = 12;
+boolean ready = false;
+
+if ((x &gt;= 1 &amp;&amp; x &lt;= 10) &amp;&amp; (y &gt; 10 || !ready))
+{
+    System.out.println("A");
+}
+else
+{
+    System.out.println("B");
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l8-r8">揭曉結果</button>
+          <div class="reveal-panel" id="l8-r8">
+            <p><code>x</code> 在範圍內。<code>y &gt; 10</code> true，所以右半邊 true。Output 是 <code>A</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP SOP</p>
+          <h2>Compound Boolean tracing 固定流程</h2>
+          <div class="big-flow">
+            <span>Basic conditions</span>
+            <span>NOT scope</span>
+            <span>Short-circuit?</span>
+            <span>Parentheses</span>
+            <span>AND / OR</span>
+            <span>Final Boolean</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的五個小程式</h2>
+          <div class="exit-grid">
+            <div>Valid Score：<code>score &gt;= 0 &amp;&amp; score &lt;= 100</code></div>
+            <div>Outside Range：<code>temp &lt; 0 || temp &gt; 40</code></div>
+            <div>Login：username and password both match</div>
+            <div>Discount：<code>age &lt; 18 || age &gt;= 65</code></div>
+            <div>Door：<code>level &gt;= 10 &amp;&amp; hasKey &amp;&amp; !banned</code></div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-8-practice.html">開始 Lesson 8 課後練習</a>
+            <a class="button" href="lesson-8.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十句</h2>
+          <div class="exit-grid">
+            <div><code>&amp;&amp;</code> 只有 true / true 才 true。</div>
+            <div><code>||</code> 只有 false / false 才 false。</div>
+            <div><code>!</code> 會反轉 Boolean。</div>
+            <div>Inside range 用 <code>&amp;&amp;</code>。</div>
+            <div>Outside range 用 <code>||</code>。</div>
+            <div><code>false &amp;&amp; ...</code> 右邊不執行。</div>
+            <div><code>true || ...</code> 右邊不執行。</div>
+            <div><code>!(A &amp;&amp; B)</code> 是 <code>!A || !B</code>。</div>
+            <div><code>!(A || B)</code> 是 <code>!A &amp;&amp; !B</code>。</div>
+            <div>取反 comparison 時要保留 boundary。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

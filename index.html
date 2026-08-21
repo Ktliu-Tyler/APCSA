@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AP CSA｜Java 課程入口</title>
+    <meta
+      name="description"
+      content="AP Computer Science A Java 課程入口，整理課程目錄、文章版教材、投影模式、課後練習、Java 執行器與 AP 官方資料。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="AP CSA Java 課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 課程入口</strong>
+          <small>Computer Science A</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="主導覽">
+        <a href="#syllabus">課程目錄</a>
+        <a href="#runners">Java 執行器</a>
+        <a href="#resources">官方資料</a>
+        <a href="#official">課程介紹</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero-band course-hero">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">AP Computer Science A</p>
+            <h1>Java 課程入口</h1>
+            <p class="lead">
+              從這裡進入每一堂課的教材。上課時看投影模式，課後用文章版複習，
+              再用練習題確認自己是否真的能讀懂程式、預測輸出、修正錯誤。
+            </p>
+            <div class="hero-actions" aria-label="主要操作">
+              <a class="button primary" href="#syllabus">查看課程目錄</a>
+              <a class="button" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 Java 執行器</a>
+              <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            </div>
+          </div>
+          <figure class="flow-figure">
+            <img src="assets/java-compile-flow.png" alt="Java source code, compiler, JVM output flow" />
+          </figure>
+        </div>
+      </section>
+
+      <section class="summary-band" aria-label="學習方式">
+        <div class="summary-grid">
+          <article>
+            <span class="metric">Read</span>
+            <h2>文章版</h2>
+            <p>適合課後複習。每一課會把觀念、範例、常見錯誤與 AP 題型整理在同一頁。</p>
+          </article>
+          <article>
+            <span class="metric">Class</span>
+            <h2>投影模式</h2>
+            <p>適合上課一起看。投影片有提問、揭曉答案與重點整理。</p>
+          </article>
+          <article>
+            <span class="metric">Try</span>
+            <h2>課後練習</h2>
+            <p>先自己作答，再打開詳解。重點是練習推理，不只是看答案。</p>
+          </article>
+          <article>
+            <span class="metric">Run</span>
+            <h2>Java 執行器</h2>
+            <p>把範例貼進線上 Java 執行器，觀察 output 與錯誤訊息。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="syllabus" class="content-band syllabus-band">
+        <div class="section-heading">
+          <p class="eyebrow">Course Map</p>
+          <h2>課程目錄</h2>
+          <p>依照順序學習即可。每堂課如果有三個入口，通常代表：文章版用來讀、投影模式用來上課、課後練習用來檢查理解。</p>
+        </div>
+
+        <div class="syllabus-board" aria-label="AP CSA 課程目錄">
+          <section class="syllabus-phase">
+            <div class="phase-head">
+              <span>Phase 1</span>
+              <h3>Java 基礎與程式閱讀</h3>
+            </div>
+            <div class="syllabus-list">
+              <article class="syllabus-item">
+                <div>
+                  <span class="lesson-number">Lesson 1</span>
+                  <h4>Java 基礎、演算法、變數與資料型別</h4>
+                  <p>problem、algorithm、program、compiler、JVM、<code>main</code>、variables、primitive types、String、output、error types。</p>
+                </div>
+                <div class="lesson-links">
+                  <a href="lesson-1.html">文章</a>
+                  <a href="unit-1-presentation.html">投影</a>
+                  <a href="lesson-1-practice.html">練習</a>
+                </div>
+              </article>
+
+              <article class="syllabus-item">
+                <div>
+                  <span class="lesson-number">Lesson 2</span>
+                  <h4>Assignment、Input、Casting 與數值範圍</h4>
+                  <p>RHS/LHS、trace table、Scanner、widening、narrowing、rounding、overflow、round-off、compound assignment。</p>
+                </div>
+                <div class="lesson-links">
+                  <a href="lesson-2.html">文章</a>
+                  <a href="lesson-2-presentation.html">投影</a>
+                  <a href="lesson-2-practice.html">練習</a>
+                </div>
+              </article>
+
+              <article class="syllabus-item">
+                <div>
+                  <span class="lesson-number">Lesson 3</span>
+                  <h4>Methods、Math Class、Method Calls 與 API Reading</h4>
+                  <p>method name、arguments、parameters、return value、method signature、<code>Math.abs</code>、<code>Math.pow</code>、<code>Math.sqrt</code>、<code>Math.random</code>。</p>
+                </div>
+                <div class="lesson-links">
+                  <a href="lesson-3.html">文章</a>
+                  <a href="lesson-3-presentation.html">投影</a>
+                  <a href="lesson-3-practice.html">練習</a>
+                </div>
+              </article>
+
+              <article class="syllabus-item">
+                <div>
+                  <span class="lesson-number">Lesson 4</span>
+                  <h4>Objects &amp; References</h4>
+                  <p>class vs object、<code>new</code>、constructor call、reference variable、primitive copy vs reference copy、object state、<code>null</code>。</p>
+                </div>
+                <div class="lesson-links">
+                  <a href="lesson-4.html">文章</a>
+                  <a href="lesson-4-presentation.html">投影</a>
+                  <a href="lesson-4-practice.html">練習</a>
+                </div>
+              </article>
+
+              <article class="syllabus-item">
+                <div>
+                  <span class="lesson-number">Lesson 5</span>
+                  <h4>String Methods</h4>
+                  <p><code>length()</code>、<code>substring()</code>、<code>indexOf()</code>、<code>equals()</code>、<code>compareTo()</code>、immutability、<code>==</code> vs <code>.equals()</code>。</p>
+                </div>
+                <div class="lesson-links">
+                  <a href="lesson-5.html">文章</a>
+                  <a href="lesson-5-presentation.html">投影</a>
+                  <a href="lesson-5-practice.html">練習</a>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="syllabus-phase">
+            <div class="phase-head">
+              <span>Phase 2</span>
+              <h3>Boolean、Conditionals 與 Loops</h3>
+            </div>
+            <div class="syllabus-list compact">
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 6</span><h4>Boolean Expressions</h4><p>relational operators、<code>==</code>、<code>!=</code>、boolean expression evaluation、numeric comparison、String comparison。</p></div>
+                <div class="lesson-links">
+                  <a href="lesson-6.html">文章</a>
+                  <a href="lesson-6-presentation.html">投影</a>
+                  <a href="lesson-6-practice.html">練習</a>
+                </div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 7</span><h4>if / else</h4><p><code>if</code>、<code>else</code>、<code>else if</code>、nested if、execution path tracing、case analysis、常見邏輯錯誤。</p></div>
+                <div class="lesson-links">
+                  <a href="lesson-7.html">文章</a>
+                  <a href="lesson-7-presentation.html">投影</a>
+                  <a href="lesson-7-practice.html">練習</a>
+                </div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 8</span><h4>Compound Boolean / De Morgan</h4><p><code>&amp;&amp;</code>、<code>||</code>、<code>!</code>、short-circuit、truth table、De Morgan、range conditions。</p></div>
+                <div class="lesson-links">
+                  <a href="lesson-8.html">文章</a>
+                  <a href="lesson-8-presentation.html">投影</a>
+                  <a href="lesson-8-practice.html">練習</a>
+                </div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 9</span><h4>while Loops</h4><p>loop condition、initialization、update、termination、infinite loop、sentinel、input validation、digit algorithms。</p></div>
+                <div class="lesson-links">
+                  <a href="lesson-9.html">文章</a>
+                  <a href="lesson-9-presentation.html">投影</a>
+                  <a href="lesson-9-practice.html">練習</a>
+                </div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 10</span><h4>for Loops</h4><p>counted loop、loop bounds、<code>i &lt; n</code> vs <code>i &lt;= n</code>、off-by-one、accumulator。</p></div>
+                <div class="lesson-links">
+                  <a href="lesson-10.html">文章</a>
+                  <a href="lesson-10-presentation.html">投影</a>
+                  <a href="lesson-10-practice.html">練習</a>
+                </div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 11</span><h4>Loop Algorithms</h4><p>sum、count、average、min/max、find first、find any、flag variable、early exit、String traversal。</p></div>
+                <div class="lesson-links">
+                  <a href="lesson-11.html">文章</a>
+                  <a href="lesson-11-presentation.html">投影</a>
+                  <a href="lesson-11-practice.html">練習</a>
+                </div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 12</span><h4>Nested Loops</h4><p>nested loop execution、inner/outer variables、pattern output、row/column thinking、runtime intuition。</p></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="syllabus-phase">
+            <div class="phase-head">
+              <span>Phase 3</span>
+              <h3>Class Design</h3>
+            </div>
+            <div class="syllabus-list compact">
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 13</span><h4>Class Structure</h4><p>class anatomy、instance variables、<code>private</code>、<code>public</code>、encapsulation、accessor、mutator、method header。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 14</span><h4>Constructors &amp; Instance Methods</h4><p>constructor purpose、syntax、initialization、parameter shadowing、overloading、instance methods、method contracts。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 15</span><h4>Scope / static / this</h4><p>local variable、instance variable、scope rules、<code>this</code>、static variables、static methods、common compile errors。</p></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="syllabus-phase">
+            <div class="phase-head">
+              <span>Phase 4</span>
+              <h3>Data Collections 與 Algorithms</h3>
+            </div>
+            <div class="syllabus-list compact">
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 16</span><h4>Arrays</h4><p>array creation、initializer list、index、<code>.length</code>、default values、bounds error、array references。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 17</span><h4>Array Algorithms</h4><p>traversal、sum、count、average、min/max、copy、reverse、shift、parallel arrays。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 18</span><h4>ArrayList</h4><p><code>ArrayList&lt;E&gt;</code>、wrapper classes、<code>add</code>、<code>get</code>、<code>set</code>、<code>remove</code>、<code>size</code>、array vs ArrayList。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 19</span><h4>ArrayList Algorithms</h4><p>traversal、filter、remove while looping、index shift、backward traversal、enhanced for limitations。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 20</span><h4>2D Arrays</h4><p>2D creation、row、column、<code>arr.length</code>、<code>arr[0].length</code>、row-major traversal、nested loops。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 21</span><h4>2D Array Algorithms</h4><p>row sum、column sum、find max/min、count condition、grid data analysis、FRQ Q4 前置。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 22</span><h4>Searching</h4><p>linear search、return index / boolean / count、binary search、sorted precondition、failure cases。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 23</span><h4>Sorting</h4><p>selection sort、insertion sort、merge sort concept、swap、comparison tracing、partial sorted region。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Lesson 24</span><h4>Recursion</h4><p>base case、recursive case、call stack、return value、recursive tracing、factorial、sum digits、recursive search。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Bridge</span><h4>Mixed Algorithms</h4><p>methods、loops、arrays、ArrayList、2D array 與 helper methods 混合，從章節題轉成 AP-style 題。</p></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="syllabus-phase">
+            <div class="phase-head">
+              <span>Phase 5</span>
+              <h3>AP Exam Mode</h3>
+            </div>
+            <div class="syllabus-list compact">
+              <article class="syllabus-item">
+                <div><span class="lesson-number">FRQ Q1</span><h4>Methods &amp; Control Structures</h4><p>rubric、partial credit、condition、loop、helper method、timed writing。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">FRQ Q2</span><h4>Class Design</h4><p>fields、constructors、methods、state consistency、method contracts、rubric scoring。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">FRQ Q3</span><h4>ArrayList Data Analysis</h4><p>traversal、remove/filter、index shift、data analysis、rubric scoring。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">FRQ Q4</span><h4>2D Array</h4><p>row/column traversal、nested loops、helper methods、edge cases、rubric scoring。</p></div>
+              </article>
+              <article class="syllabus-item">
+                <div><span class="lesson-number">Mock</span><h4>MCQ / FRQ Mock Exam</h4><p>Bluebook-style timing、42 MCQ 節奏、4 FRQ 限時、Java Quick Reference、錯題補強清單。</p></div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="runners" class="content-band tinted">
+        <div class="section-heading">
+          <p class="eyebrow">Java Online Runners</p>
+          <h2>線上 Java 程式執行器</h2>
+          <p>上課與練習先用 OneCompiler。若網路環境無法開啟，再切換 Programiz、JDoodle 或 OnlineGDB。</p>
+        </div>
+        <div class="runner-grid">
+          <article class="runner-card">
+            <h3>OneCompiler</h3>
+            <p>適合寫 <code>public class Main</code>、<code>Scanner</code>、stdin 與簡單除錯，是本課最順手的起點。</p>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟</a>
+          </article>
+          <article class="runner-card">
+            <h3>Programiz</h3>
+            <p>畫面簡潔，適合初學者第一次看 Java output。</p>
+            <a class="button" href="https://www.programiz.com/java-programming/online-compiler/" target="_blank" rel="noreferrer">開啟</a>
+          </article>
+          <article class="runner-card">
+            <h3>JDoodle</h3>
+            <p>可作為備援，也適合快速分享簡短程式碼。</p>
+            <a class="button" href="https://www.jdoodle.com/online-java-compiler" target="_blank" rel="noreferrer">開啟</a>
+          </article>
+          <article class="runner-card">
+            <h3>OnlineGDB</h3>
+            <p>功能較完整，適合展示編譯錯誤與執行錯誤。</p>
+            <a class="button" href="https://www.onlinegdb.com/online_java_compiler" target="_blank" rel="noreferrer">開啟</a>
+          </article>
+        </div>
+      </section>
+
+      <section id="resources" class="content-band">
+        <div class="section-heading">
+          <p class="eyebrow">Official Resources</p>
+          <h2>官方資料</h2>
+          <p>考試規則與 Java Quick Reference 以 College Board/AP Central 的最新公告為準。</p>
+        </div>
+
+        <div class="resource-grid student-resource-grid" aria-label="官方資料連結">
+          <a class="resource-card highlight" data-kind="official" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">
+            <span>官方 PDF</span>
+            <strong>Java Quick Reference</strong>
+            <small>AP CSA 常用 Java 類別與方法表，練習 FRQ 時很重要。</small>
+          </a>
+          <a class="resource-card" data-kind="official" href="apcsa_teacher_resources/official_pdfs/ap-csa-course-and-exam-description-fall-2025.pdf">
+            <span>官方 PDF</span>
+            <strong>Course and Exam Description</strong>
+            <small>課程範圍、考試形式與題型說明。</small>
+          </a>
+          <a class="resource-card" data-kind="official" href="apcsa_teacher_resources/official_pdfs/ap-csa-course-at-a-glance.pdf">
+            <span>官方 PDF</span>
+            <strong>Course at a Glance</strong>
+            <small>快速查看 AP CSA 的單元與學習重點。</small>
+          </a>
+          <a class="resource-card" data-kind="official" href="https://apcentral.collegeboard.org/courses/ap-computer-science-a/exam" target="_blank" rel="noreferrer">
+            <span>Online</span>
+            <strong>AP CSA Exam</strong>
+            <small>考試日期、格式與官方說明頁。</small>
+          </a>
+        </div>
+      </section>
+
+      <section id="official" class="content-band intro-band">
+        <div class="section-heading">
+          <p class="eyebrow">Course Context</p>
+          <h2>這門課在學什麼</h2>
+        </div>
+        <div class="article-preview">
+          <p>
+            AP Computer Science A 是一門以 Java 為核心的大學入門電腦科學課程。你不只是學語法，
+            更重要的是學會如何把問題拆成清楚的步驟，將步驟轉成可執行的程式，並用測試與除錯確認程式是否符合預期。
+          </p>
+          <p>
+            這門課會一路從 Java 基礎、method calls、objects、String、boolean、loops，
+            走到 class design、arrays、ArrayList、2D arrays、searching、sorting、recursion 與 AP 題型訓練。
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>AP CSA Java 課程入口。官方規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

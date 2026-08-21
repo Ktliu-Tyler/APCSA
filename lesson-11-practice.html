@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 11 課後練習｜Loop Algorithms</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 11 課後練習：loop algorithms、sum、count、average、min/max、find any、find first、early exit、String traversal、substring search 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 11 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-11-presentation.html">投影模式</a>
+        <a href="lesson-11.html">文章版</a>
+        <a href="lesson-10-practice.html">上一課練習</a>
+        <a href="#sum-count">Sum / Count</a>
+        <a href="#average">Average</a>
+        <a href="#min-max">Min / Max</a>
+        <a href="#search">Search</a>
+        <a href="#string">String</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 11</p>
+          <h1>課後練習：Loop Algorithms</h1>
+          <p class="lead">
+            這份題本練習用 loop 保存狀態：<code>sum</code>、<code>count</code>、
+            <code>average</code>、<code>max</code>、<code>min</code>、<code>found</code>、
+            <code>first</code>、<code>result</code>。先自己 trace，再打開詳解。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>State</strong><span>狀態追蹤</span></div>
+            <div><strong>AP-style</strong><span>演算法陷阱</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#sum-count">B. Sum / Count</a>
+          <a href="#average">C. Average</a>
+          <a href="#min-max">D. Min / Max</a>
+          <a href="#search">E. Search</a>
+          <a href="#string">F. String Algorithms</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先確認 loop algorithm 不是只會寫 loop，而是會維護正確狀態。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Structure</span></div>
+              <h3>大多數 loop algorithm 可以拆成哪三個部分？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p1">詳解</button>
+              <div class="reveal-panel" id="l11p1">
+                <p>Initialization、repeated processing、final result。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>State</span></div>
+              <h3>在 loop algorithm 中，<code>sum</code>、<code>count</code>、<code>found</code> 這類變數的角色是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p2">詳解</button>
+              <div class="reveal-panel" id="l11p2">
+                <p>它們保存 loop 目前已知的狀態，例如已處理資料的總和、已找到幾個、是否已找到目標。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Sum vs Count</span></div>
+              <h3><code>sum += value</code> 和 <code>count++</code> 差在哪？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p3">詳解</button>
+              <div class="reveal-panel" id="l11p3">
+                <p><code>sum += value</code> 是把數值加進總和；<code>count++</code> 是表示又找到一個符合項目。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Initialization</span></div>
+              <h3>為什麼 initialization 往往決定演算法正確性？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p4">詳解</button>
+              <div class="reveal-panel" id="l11p4">
+                <p>因為 loop 的每次更新都建立在初始狀態上。像 <code>sum</code> 應從 0、<code>product</code> 應從 1、<code>found</code> 應從 false、min/max 通常應從第一筆真實資料開始。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Invariant</span></div>
+              <h3>Loop invariant 是什麼意思？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p5">詳解</button>
+              <div class="reveal-panel" id="l11p5">
+                <p>每次 iteration 開始時都維持正確的一個敘述，例如 <code>sum</code> 是已處理資料的總和。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Trace</span></div>
+              <h3>Loop algorithm trace 時，除了 loop variable，還要追蹤什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p6">詳解</button>
+              <div class="reveal-panel" id="l11p6">
+                <p>所有 state variables，例如 <code>sum</code>、<code>count</code>、<code>max</code>、<code>min</code>、<code>found</code>、<code>result</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="sum-count" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Sum / Count</p>
+              <h2>Sum、Count、Conditional Processing</h2>
+              <p>分辨「把值加進去」和「符合項目數量加一」。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Sum</span></div>
+              <h3>最後 <code>sum</code> 是多少？</h3>
+              <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 4; i++)
+{
+    sum += i;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p7">詳解</button>
+              <div class="reveal-panel" id="l11p7">
+                <p><code>1 + 2 + 3 + 4 = 10</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Square sum</span></div>
+              <h3>最後 <code>sum</code> 是多少？</h3>
+              <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 5; i++)
+{
+    sum += i * i;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p8">詳解</button>
+              <div class="reveal-panel" id="l11p8">
+                <p><code>1 + 4 + 9 + 16 + 25 = 55</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Conditional sum</span></div>
+              <h3>最後 <code>sum</code> 是多少？</h3>
+              <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 10; i++)
+{
+    if (i % 2 == 0)
+    {
+        sum += i;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p9">詳解</button>
+              <div class="reveal-panel" id="l11p9">
+                <p><code>2 + 4 + 6 + 8 + 10 = 30</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Count</span></div>
+              <h3>最後 <code>count</code> 是多少？</h3>
+              <pre><code>int count = 0;
+
+for (int i = 1; i &lt;= 20; i++)
+{
+    if (i % 3 == 0)
+    {
+        count++;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p10">詳解</button>
+              <div class="reveal-panel" id="l11p10">
+                <p>3、6、9、12、15、18，共 6 個。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Sum and count</span></div>
+              <h3>最後 <code>sum</code> 和 <code>count</code> 是多少？</h3>
+              <pre><code>int sum = 0;
+int count = 0;
+
+for (int i = 1; i &lt;= 20; i++)
+{
+    if (i % 5 == 0)
+    {
+        sum += i;
+        count++;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p11">詳解</button>
+              <div class="reveal-panel" id="l11p11">
+                <p>符合的是 5、10、15、20，所以 <code>sum = 50</code>，<code>count = 4</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Bug</span></div>
+              <h3>想計算偶數有幾個，這段錯在哪？</h3>
+              <pre><code>int count = 0;
+
+for (int i = 1; i &lt;= 10; i++)
+{
+    if (i % 2 == 0)
+    {
+        count += i;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p12">詳解</button>
+              <div class="reveal-panel" id="l11p12">
+                <p>這是在加總偶數，不是在計數。計數應寫 <code>count++</code>。目前結果會是 30，而不是 5。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Bug</span></div>
+              <h3>想加總 1 到 5，這段錯在哪？</h3>
+              <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 5; i++)
+{
+    sum++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p13">詳解</button>
+              <div class="reveal-panel" id="l11p13">
+                <p><code>sum++</code> 只是在每輪加 1，最後是 5。若要加總 1 到 5，應寫 <code>sum += i</code>，結果是 15。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Trace</span></div>
+              <h3>最後 <code>sum</code> 是多少？</h3>
+              <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 5; i++)
+{
+    if (i % 2 == 1)
+    {
+        sum += i * 2;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p14">詳解</button>
+              <div class="reveal-panel" id="l11p14">
+                <p>奇數是 1、3、5，加入 2、6、10，所以 <code>sum = 18</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="average" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Average</p>
+              <h2>Average / Casting / Count Check</h2>
+              <p>平均通常在 loop 後計算，並要避開 integer division 和除以 0。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Average</span></div>
+              <h3>若 <code>sum = 17</code>、<code>count = 4</code>，<code>double avg = sum / count;</code> 的值是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p15">詳解</button>
+              <div class="reveal-panel" id="l11p15">
+                <p><code>4.0</code>。兩邊都是 int，所以先做 integer division：<code>17 / 4 = 4</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Casting</span></div>
+              <h3>要得到 <code>4.25</code>，應怎麼寫？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p16">詳解</button>
+              <div class="reveal-panel" id="l11p16">
+                <p><code>double avg = (double) sum / count;</code>。只要其中一邊先變 double，就會做 floating-point division。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Average</span></div>
+              <h3>最後 average 是多少？</h3>
+              <pre><code>int sum = 0;
+int count = 0;
+
+for (int i = 1; i &lt;= 100; i++)
+{
+    if (i % 10 == 0)
+    {
+        sum += i;
+        count++;
+    }
+}
+
+double average = (double) sum / count;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p17">詳解</button>
+              <div class="reveal-panel" id="l11p17">
+                <p>10、20、...、100 的總和是 550，count 是 10，所以 average 是 <code>55.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Safety</span></div>
+              <h3>為什麼 conditional average 常需要 <code>if (count &gt; 0)</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p18">詳解</button>
+              <div class="reveal-panel" id="l11p18">
+                <p>如果沒有任何 value 符合條件，<code>count</code> 會是 0，直接 <code>sum / count</code> 會出問題。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Bug</span></div>
+              <h3>這個 average algorithm 的概念錯在哪？</h3>
+              <pre><code>double average = 0;
+
+for (int i = 1; i &lt;= 5; i++)
+{
+    average += i / 5;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p19">詳解</button>
+              <div class="reveal-panel" id="l11p19">
+                <p>平均通常不應每輪這樣加。且 <code>i / 5</code> 是 int division，1 到 4 都是 0。標準做法是先 sum，再 loop 後除。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="min-max" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Min / Max</p>
+              <h2>Running Minimum / Maximum</h2>
+              <p>最重要是比較方向與 initialization。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Max</span></div>
+              <h3>找 maximum 時，看到新值 <code>value</code> 應使用哪個 condition？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p20">詳解</button>
+              <div class="reveal-panel" id="l11p20">
+                <p><code>if (value &gt; max)</code>，若新值更大就更新 <code>max = value</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Min</span></div>
+              <h3>找 minimum 時，看到新值 <code>value</code> 應使用哪個 condition？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p21">詳解</button>
+              <div class="reveal-panel" id="l11p21">
+                <p><code>if (value &lt; min)</code>，若新值更小就更新 <code>min = value</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Initialization</span></div>
+              <h3>為什麼 <code>int max = 0;</code> 不一定正確？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p22">詳解</button>
+              <div class="reveal-panel" id="l11p22">
+                <p>如果所有資料都是負數，例如 -8、-3、-20，真正最大是 -3，但 <code>max = 0</code> 會錯誤保留 0。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Initialization</span></div>
+              <h3>找 min/max 最常見且安全的 initialization 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p23">詳解</button>
+              <div class="reveal-panel" id="l11p23">
+                <p>用第一個真實資料初始化，例如 <code>int max = input.nextInt();</code> 或 <code>int min = firstValue;</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Trace max</span></div>
+              <h3>資料依序是 8、3、12、5、9，最後 <code>max</code> 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p24">詳解</button>
+              <div class="reveal-panel" id="l11p24">
+                <p>先設 <code>max = 8</code>，看到 12 時更新，後面 5、9 不更新，所以最後 <code>max = 12</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Trace min</span></div>
+              <h3>資料依序是 8、3、12、-2、9，最後 <code>min</code> 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p25">詳解</button>
+              <div class="reveal-panel" id="l11p25">
+                <p>先設 <code>min = 8</code>，看到 3 更新，看到 -2 再更新，所以最後 <code>min = -2</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Bug</span></div>
+              <h3>這段想找 max，錯在哪？</h3>
+              <pre><code>if (value &lt; max)
+{
+    max = value;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p26">詳解</button>
+              <div class="reveal-panel" id="l11p26">
+                <p>比較方向反了。這會往較小的值更新，接近 minimum。找 max 應使用 <code>value &gt; max</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="search" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Search</p>
+              <h2>Find Any、Find First、Early Exit</h2>
+              <p>搜尋題要先看題目問「有沒有、第一個、最後一個、還是幾個」。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Find any</span></div>
+              <h3>Find any 問題通常使用什麼變數？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p27">詳解</button>
+              <div class="reveal-panel" id="l11p27">
+                <p><code>boolean found = false;</code>。找到 match 時設成 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Find any</span></div>
+              <h3>最後 <code>found</code> 是什麼？</h3>
+              <pre><code>boolean found = false;
+
+for (int i = 1; i &lt;= 20; i++)
+{
+    if (i % 4 == 0 &amp;&amp; i % 6 == 0)
+    {
+        found = true;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p28">詳解</button>
+              <div class="reveal-panel" id="l11p28">
+                <p><code>true</code>，因為 12 同時是 4 和 6 的倍數。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Flag bug</span></div>
+              <h3>這段最後 <code>found</code> 是什麼？為什麼這是錯誤 find-any pattern？</h3>
+              <pre><code>boolean found = false;
+
+for (int i = 1; i &lt;= 5; i++)
+{
+    if (i == 3)
+    {
+        found = true;
+    }
+    else
+    {
+        found = false;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p29">詳解</button>
+              <div class="reveal-panel" id="l11p29">
+                <p>最後是 <code>false</code>，因為 i = 5 時 else 把 found 改回 false。Find any 中，找到後通常不要改回 false。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Early exit</span></div>
+              <h3>這段找到 7 後，loop 結束時 <code>i</code> 是多少？</h3>
+              <pre><code>int i = 1;
+boolean found = false;
+
+while (i &lt;= 20 &amp;&amp; !found)
+{
+    if (i % 7 == 0)
+    {
+        found = true;
+    }
+    i++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p30">詳解</button>
+              <div class="reveal-panel" id="l11p30">
+                <p>找到時 <code>i = 7</code>，但 body 最後還會 <code>i++</code>，所以 loop 結束時 <code>i = 8</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Find first</span></div>
+              <h3>找 1 到 100 第一個同時是 7 和 9 的倍數，結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p31">詳解</button>
+              <div class="reveal-panel" id="l11p31">
+                <p>63。它是 7 和 9 的最小共同倍數。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Find first bug</span></div>
+              <h3>這段找的是 first 還是 last？</h3>
+              <pre><code>int first = -1;
+
+for (int i = 1; i &lt;= 100; i++)
+{
+    if (i % 10 == 0)
+    {
+        first = i;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p32">詳解</button>
+              <div class="reveal-panel" id="l11p32">
+                <p>它最後得到 <code>100</code>，其實是 last matching value，不是 first。要找 first 應 early exit 或只在尚未找到時更新。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Early exit</span></div>
+              <h3>哪些題型通常適合 early exit？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p33">詳解</button>
+              <div class="reveal-panel" id="l11p33">
+                <p>Find any、find first、boolean existence check。Sum、count all、average、min/max 通常要掃完整份資料。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="string" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. String</p>
+              <h2>String Traversal / Substring Search</h2>
+              <p>特別注意 bounds、<code>substring</code> end exclusive、overlapping matches。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Bounds</span></div>
+              <h3>String traversal 為什麼通常用 <code>i &lt; str.length()</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p34">詳解</button>
+              <div class="reveal-panel" id="l11p34">
+                <p>合法 index 是 0 到 <code>length() - 1</code>。若寫 <code>i &lt;= str.length()</code>，最後會跑到非法 index。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Substring</span></div>
+              <h3><code>substring(i, i + 1)</code> 取得什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p35">詳解</button>
+              <div class="reveal-panel" id="l11p35">
+                <p>取得 index <code>i</code> 的單一字元字串。End index 是 exclusive。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Count chars</span></div>
+              <h3><code>"MISSISSIPPI"</code> 裡 <code>"I"</code> 出現幾次？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p36">詳解</button>
+              <div class="reveal-panel" id="l11p36">
+                <p>4 次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>First char</span></div>
+              <h3><code>"MISSISSIPPI"</code> 第一個 <code>"S"</code> 的 index 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p37">詳解</button>
+              <div class="reveal-panel" id="l11p37">
+                <p>2。Index 0 是 M，1 是 I，2 是 S。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Reverse</span></div>
+              <h3>最後 <code>result</code> 是什麼？</h3>
+              <pre><code>String s = "CODE";
+String result = "";
+
+for (int i = s.length() - 1; i &gt;= 0; i--)
+{
+    result += s.substring(i, i + 1);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p38">詳解</button>
+              <div class="reveal-panel" id="l11p38">
+                <p><code>"EDOC"</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Filter</span></div>
+              <h3>最後 <code>result</code> 是什麼？</h3>
+              <pre><code>String s = "ABACADA";
+String result = "";
+
+for (int i = 0; i &lt; s.length(); i++)
+{
+    String letter = s.substring(i, i + 1);
+
+    if (!letter.equals("A"))
+    {
+        result += letter;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p39">詳解</button>
+              <div class="reveal-panel" id="l11p39">
+                <p><code>"BCD"</code>。所有 A 被過濾掉。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Pair bounds</span></div>
+              <h3>使用 <code>substring(i, i + 2)</code> 檢查長度 2 的 pair 時，condition 通常是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p40">詳解</button>
+              <div class="reveal-panel" id="l11p40">
+                <p><code>i &lt; s.length() - 1</code>。最後起點是 <code>length() - 2</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Pairs</span></div>
+              <h3><code>"ABABAB"</code> 中 <code>"AB"</code> 出現幾次？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p41">詳解</button>
+              <div class="reveal-panel" id="l11p41">
+                <p>3 次：index 0~1、2~3、4~5。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Overlapping</span></div>
+              <h3><code>"AAAA"</code> 中，overlapping 的 <code>"AA"</code> 有幾個？</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p42">詳解</button>
+              <div class="reveal-panel" id="l11p42">
+                <p>3 個：index 0~1、1~2、2~3。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding</p>
+              <h2>程式練習</h2>
+              <p>把常見 loop algorithm pattern 寫成可執行 Java 片段。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>Coding</span></div>
+              <h3>寫程式求 1 到 50 的總和。</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p43">參考解法</button>
+              <div class="reveal-panel" id="l11p43">
+                <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 50; i++)
+{
+    sum += i;
+}
+
+System.out.println(sum);</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Coding</span></div>
+              <h3>求 1 到 100 所有 5 的倍數總和。</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p44">參考解法</button>
+              <div class="reveal-panel" id="l11p44">
+                <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 100; i++)
+{
+    if (i % 5 == 0)
+    {
+        sum += i;
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Coding</span></div>
+              <h3>求 1 到 100 中有多少個奇數。</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p45">參考解法</button>
+              <div class="reveal-panel" id="l11p45">
+                <pre><code>int count = 0;
+
+for (int i = 1; i &lt;= 100; i++)
+{
+    if (i % 2 != 0)
+    {
+        count++;
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Coding</span></div>
+              <h3>輸入 5 個整數並找最大值。</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p46">參考解法</button>
+              <div class="reveal-panel" id="l11p46">
+                <pre><code>int max = input.nextInt();
+
+for (int i = 1; i &lt; 5; i++)
+{
+    int value = input.nextInt();
+
+    if (value &gt; max)
+    {
+        max = value;
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Coding</span></div>
+              <h3>找 50 到 100 第一個 13 的倍數。</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p47">參考解法</button>
+              <div class="reveal-panel" id="l11p47">
+                <pre><code>int first = -1;
+boolean found = false;
+int i = 50;
+
+while (i &lt;= 100 &amp;&amp; !found)
+{
+    if (i % 13 == 0)
+    {
+        first = i;
+        found = true;
+    }
+    i++;
+}</code></pre>
+                <p>答案是 52。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Coding</span></div>
+              <h3>計算 <code>"MISSISSIPPI"</code> 中 <code>"I"</code> 出現幾次。</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p48">參考解法</button>
+              <div class="reveal-panel" id="l11p48">
+                <pre><code>String word = "MISSISSIPPI";
+int count = 0;
+
+for (int i = 0; i &lt; word.length(); i++)
+{
+    if (word.substring(i, i + 1).equals("I"))
+    {
+        count++;
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Coding</span></div>
+              <h3>把 <code>"CODE"</code> 反轉成新字串。</h3>
+              <button class="reveal-button" type="button" data-reveal="l11p49">參考解法</button>
+              <div class="reveal-panel" id="l11p49">
+                <pre><code>String s = "CODE";
+String result = "";
+
+for (int i = s.length() - 1; i &gt;= 0; i--)
+{
+    result += s.substring(i, i + 1);
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>預測 <code>sum</code>、<code>count</code> 和 average。</h3>
+              <pre><code>int sum = 0;
+int count = 0;
+
+for (int i = 1; i &lt;= 8; i++)
+{
+    if (i % 3 != 0)
+    {
+        sum += i;
+        count++;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l11p50">詳解</button>
+              <div class="reveal-panel" id="l11p50">
+                <p>排除 3 和 6，加入 1、2、4、5、7、8。<code>sum = 27</code>，<code>count = 6</code>，average 是 <code>4.5</code>。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 11 課後練習。先判斷題目需要哪個狀態變數，再逐輪 trace。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

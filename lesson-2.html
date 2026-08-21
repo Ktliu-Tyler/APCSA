@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 2｜Assignment、Input、Casting 與數值範圍</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 2：assignment statement、Scanner input、casting、rounding、int range、overflow、double round-off 與 compound assignment。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 2</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第二堂課導覽">
+        <a href="lesson-2-presentation.html">投影模式</a>
+        <a href="lesson-2-practice.html">課後練習</a>
+        <a href="lesson-1.html">上一課</a>
+        <a href="#assignment-model">Assignment</a>
+        <a href="#scanner">Input</a>
+        <a href="#casting">Casting</a>
+        <a href="#numbers">數值範圍</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 2</p>
+          <h1>Assignment、Input、Casting 與數值範圍</h1>
+          <p class="lead">
+            這一課把 Lesson 1 的變數與運算往前推進：你會學會如何追蹤一連串 assignment，
+            如何讓程式讀取 input，如何正確使用 casting，以及為什麼數字在電腦裡不是無限大、也不總是完全精確。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-2-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-2-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-1.html">回 Lesson 1</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#assignment-model">Assignment 模型</a>
+          <a href="#initialization">初始化與重新指定</a>
+          <a href="#trace">逐行追蹤</a>
+          <a href="#scanner">Scanner input</a>
+          <a href="#casting">Casting</a>
+          <a href="#rounding">Rounding</a>
+          <a href="#numbers">數值範圍與精度</a>
+          <a href="#compound">Compound assignment</a>
+          <a href="#ap-patterns">AP 常見題型</a>
+          <a href="#practice">練習題</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>用 RHS、LHS 說明 assignment statement 的執行順序。</div>
+              <div>分辨 declaration、initialization 與 reassignment。</div>
+              <div>建立 trace table，追蹤多個變數的 value 如何改變。</div>
+              <div>使用 <code>Scanner</code> 讀取 <code>int</code> 與 <code>double</code> input。</div>
+              <div>判斷 widening、narrowing、explicit casting 是否合法。</div>
+              <div>預測 integer division、casting position、rounding、<code>Integer.MIN_VALUE</code> / <code>MAX_VALUE</code>、overflow 與 compound assignment 的結果。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson2-flow-0" /> <span><strong>回顧</strong>：變數、型別、右邊先算再存入左邊。</span></label>
+              <label><input type="checkbox" data-progress="lesson2-flow-1" /> <span><strong>追蹤</strong>：assignment、copy value、sequential execution、trace table。</span></label>
+              <label><input type="checkbox" data-progress="lesson2-flow-2" /> <span><strong>Input</strong>：用 <code>Scanner</code> 讀取鍵盤輸入。</span></label>
+              <label><input type="checkbox" data-progress="lesson2-flow-3" /> <span><strong>Casting</strong>：<code>(int)</code>、<code>(double)</code>、widening、narrowing。</span></label>
+              <label><input type="checkbox" data-progress="lesson2-flow-4" /> <span><strong>數值限制</strong>：<code>Integer.MIN_VALUE</code>、<code>Integer.MAX_VALUE</code>、integer overflow、double round-off error。</span></label>
+              <label><input type="checkbox" data-progress="lesson2-flow-5" /> <span><strong>簡寫更新</strong>：<code>+=</code>、<code>/=</code>、<code>%=</code>、<code>x++</code>、<code>x--</code>。</span></label>
+            </div>
+          </section>
+
+          <section id="assignment-model" class="article-section">
+            <p class="eyebrow">Assignment Statement</p>
+            <h2><code>=</code> 不是「左右相等」，而是「把結果存進去」</h2>
+            <p>
+              Java 的 assignment statement 通常長這樣：<code>variable = expression;</code>。
+              左邊稱為 <strong>LHS</strong>，也就是要被存入的目的地；右邊稱為 <strong>RHS</strong>，
+              也就是會先被計算的 expression。
+            </p>
+            <div class="flow-strip">
+              <span>Evaluate RHS</span>
+              <span>Produce value</span>
+              <span>Check type</span>
+              <span>Store in LHS</span>
+            </div>
+            <p>
+              這四步驟是 AP CSA 很常用來設計選擇題的地方。題目通常不會只問「這段程式能不能跑」，
+              而是要求你追蹤每個 statement 執行後，某個 variable 目前儲存的 value 是什麼。
+              只要你先把 RHS 算完，再把結果放進 LHS，就能避免把 assignment 誤解成數學等式。
+            </p>
+            <p>
+              看到 <code>x = x + 3;</code> 時，不要把它想成數學方程式。它的意思是：
+              先讀取目前的 <code>x</code>，把右邊的 <code>x + 3</code> 算完，再把新的 value 存回 <code>x</code>。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Assignment Trace</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-assignment">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-assignment">public class Main {
+    public static void main(String[] args) {
+        int x = 5;
+
+        x = x + 3;
+        System.out.println(x);
+    }
+}</code></pre>
+            </div>
+            <p>
+              Output 是 <code>8</code>。因為右邊先算：舊的 <code>x</code> 是 <code>5</code>，
+              <code>5 + 3</code> 得到 <code>8</code>，最後才存回 <code>x</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Statement</th>
+                    <th>RHS 如何計算</th>
+                    <th>LHS 存入什麼</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>x = y + 5;</code></td>
+                    <td>讀取目前的 <code>y</code>，再加 <code>5</code></td>
+                    <td>把結果存入 <code>x</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>average = total / 3.0;</code></td>
+                    <td>先計算 <code>total / 3.0</code></td>
+                    <td>把 double 結果存入 <code>average</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>x = x + y * 2;</code></td>
+                    <td>先做 <code>y * 2</code>，再加目前的 <code>x</code></td>
+                    <td>把新結果覆蓋舊的 <code>x</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="initialization" class="article-section">
+            <p class="eyebrow">Declaration, Initialization, Reassignment</p>
+            <h2>變數不是宣告後就自動有可用的值</h2>
+            <p>
+              <strong>Declaration</strong> 是建立變數名稱與型別，例如 <code>int score;</code>。
+              <strong>Initialization</strong> 是第一次給它 value，例如 <code>int score = 80;</code>。
+              之後再次修改，稱為 <strong>Reassignment</strong>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>概念</th>
+                    <th>意思</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>int score;</code></td>
+                    <td>Declaration</td>
+                    <td>建立一個 int 變數名稱，但還沒有可讀取的 value。</td>
+                  </tr>
+                  <tr>
+                    <td><code>int score = 80;</code></td>
+                    <td>Initialization</td>
+                    <td>宣告並第一次存入 value。</td>
+                  </tr>
+                  <tr>
+                    <td><code>score = 90;</code></td>
+                    <td>Reassignment</td>
+                    <td>把新的 value 存入已存在的變數。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Uninitialized Variable</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-uninitialized">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-uninitialized">public class Main {
+    public static void main(String[] args) {
+        int x;
+        int y = x + 5;
+
+        System.out.println(y);
+    }
+}</code></pre>
+            </div>
+            <p class="callout">
+              這段程式會產生 compile-time error。Local variable <code>x</code> 還沒有被初始化，
+              Java 不能拿一個沒有 value 的變數去計算 <code>x + 5</code>。
+            </p>
+          </section>
+
+          <section id="trace" class="article-section">
+            <p class="eyebrow">Sequential Execution</p>
+            <h2>AP CSA 很重視逐行追蹤</h2>
+            <p>
+              Java statement 通常會由上到下執行。當同一個變數被更新多次，每一行都要使用「當下最新」的 value。
+              Trace table 可以把這件事變得很清楚。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Trace Table Example</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-trace">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-trace">int x = 4;
+int y = 2;
+
+x = x + y;
+y = x * 2;
+x = y - x;</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Statement</th>
+                    <th><code>x</code></th>
+                    <th><code>y</code></th>
+                    <th>說明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Initial</td>
+                    <td>4</td>
+                    <td>2</td>
+                    <td>初始值。</td>
+                  </tr>
+                  <tr>
+                    <td><code>x = x + y;</code></td>
+                    <td>6</td>
+                    <td>2</td>
+                    <td>右邊是 <code>4 + 2</code>。</td>
+                  </tr>
+                  <tr>
+                    <td><code>y = x * 2;</code></td>
+                    <td>6</td>
+                    <td>12</td>
+                    <td>這一行使用新的 <code>x</code>，所以是 <code>6 * 2</code>。</td>
+                  </tr>
+                  <tr>
+                    <td><code>x = y - x;</code></td>
+                    <td>6</td>
+                    <td>12</td>
+                    <td>右邊是 <code>12 - 6</code>，所以 <code>x</code> 仍是 <code>6</code>。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              另一個常見陷阱是「變數會不會永久連動」。<code>int b = a;</code> 只是在當下把
+              <code>a</code> 的 value 複製給 <code>b</code>。之後 <code>a</code> 改變，<code>b</code> 不會自動跟著改。
+            </p>
+            <p>
+              如果想交換兩個 primitive variables 的值，不能只寫 <code>a = b;</code> 再寫 <code>b = a;</code>。
+              第一行會先覆蓋掉 <code>a</code> 原本的 value，所以你需要第三個暫存變數保存舊值。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Swap with a Temporary Variable</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-swap">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-swap">int a = 3;
+int b = 8;
+
+int temp = a;
+a = b;
+b = temp;</code></pre>
+            </div>
+          </section>
+
+          <section id="scanner" class="article-section">
+            <p class="eyebrow">Input and Scanner</p>
+            <h2>Input 讓程式不只使用寫死的資料</h2>
+            <p>
+              到目前為止，很多 value 都直接寫在程式裡，例如 <code>int age = 18;</code>。
+              真正的程式通常會接收 input，再依照輸入內容計算。Input 可以來自鍵盤、檔案、感測器或網路；
+              在 Java 入門階段，最常見的是使用 <code>Scanner</code> 讀取鍵盤輸入。
+            </p>
+            <div class="note-grid">
+              <div><strong>Keyboard</strong><span>輸入年齡、分數、溫度等文字或數字。</span></div>
+              <div><strong>File</strong><span>之後可能從文字檔讀取資料，AP CSA 新版內容也更重視資料處理。</span></div>
+              <div><strong>Sensor / Device</strong><span>滑鼠、觸控、麥克風、相機或其他裝置也都能是 input 來源。</span></div>
+              <div><strong>Network</strong><span>網站或伺服器傳來的資料，也可以成為程式處理的 input。</span></div>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Scanner Age Input</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-scanner-age">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-scanner-age">import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+
+        System.out.print("Enter your age: ");
+        int age = input.nextInt();
+
+        System.out.println("Your age is " + age);
+    }
+}</code></pre>
+            </div>
+            <p>
+              <code>import java.util.Scanner;</code> 讓程式可以使用 Scanner 這個 class。
+              <code>Scanner input = new Scanner(System.in);</code> 建立一個從鍵盤讀取資料的物件。
+              <code>input.nextInt()</code> 會讀取下一個整數，並產生一個 <code>int</code> value。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>讀取的資料</th>
+                    <th>產生的型別</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>nextInt()</code></td>
+                    <td>下一個可以解析成整數的 input</td>
+                    <td><code>int</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>nextDouble()</code></td>
+                    <td>下一個可以解析成小數的 input</td>
+                    <td><code>double</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>System.in</code></td>
+                    <td>標準輸入來源</td>
+                    <td>通常可以先理解為鍵盤輸入</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Rectangle Calculator</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-rectangle">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-rectangle">import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+
+        System.out.print("Enter length: ");
+        double length = input.nextDouble();
+
+        System.out.print("Enter width: ");
+        double width = input.nextDouble();
+
+        double area = length * width;
+        System.out.println("Area = " + area);
+    }
+}</code></pre>
+            </div>
+            <p class="callout">
+              Input 也是 assignment。<code>int age = input.nextInt();</code> 的右邊會先產生一個 int value，
+              再存進左邊的 <code>age</code>。
+            </p>
+            <p>
+              AP CSA 需要你理解 program 可以取得 input，並把 input 轉成 variable value 後進行 calculation。
+              考試通常不會要求你背大量輸入裝置的特殊 API；更重要的是看懂 input method 產生什麼型別，
+              以及這個 value 之後如何參與 expression。
+            </p>
+          </section>
+
+          <section id="casting" class="article-section">
+            <p class="eyebrow">Casting</p>
+            <h2>Casting 是暫時把 value 轉成另一種型別</h2>
+            <p>
+              AP CSA 最常見的 casting 是 <code>(int)</code> 與 <code>(double)</code>。
+              <code>int</code> 轉成 <code>double</code> 通常可以自動完成，稱為 <strong>widening conversion</strong>。
+              <code>double</code> 轉成 <code>int</code> 可能失去小數資訊，所以需要明確寫出 casting，稱為 <strong>narrowing conversion</strong>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Conversion</th>
+                    <th>是否自動允許</th>
+                    <th>Example</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>int</code> 到 <code>double</code></td>
+                    <td>可以</td>
+                    <td><code>double x = 5;</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>double</code> 到 <code>int</code></td>
+                    <td>不可以</td>
+                    <td><code>int x = 5.5;</code> 會 compile error</td>
+                  </tr>
+                  <tr>
+                    <td><code>double</code> 到 <code>int</code> with casting</td>
+                    <td>可以</td>
+                    <td><code>int x = (int) 5.5;</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              <code>(int)</code> 不是四捨五入，而是直接移除小數點右側的部分。這個動作稱為
+              <strong>truncate toward zero</strong>，所以 <code>(int) 3.9</code> 是 <code>3</code>，
+              <code>(int) -3.9</code> 是 <code>-3</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Expression</th>
+                    <th>Result</th>
+                    <th>原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>(int) 3.9</code></td>
+                    <td><code>3</code></td>
+                    <td>移除小數部分。</td>
+                  </tr>
+                  <tr>
+                    <td><code>(int) 3.1</code></td>
+                    <td><code>3</code></td>
+                    <td>不是四捨五入。</td>
+                  </tr>
+                  <tr>
+                    <td><code>(int) -3.9</code></td>
+                    <td><code>-3</code></td>
+                    <td>朝 0 truncate，不是 floor。</td>
+                  </tr>
+                  <tr>
+                    <td><code>(int) -3.1</code></td>
+                    <td><code>-3</code></td>
+                    <td>小數部分被截掉。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Casting Position</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-casting-position">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-casting-position">public class Main {
+    public static void main(String[] args) {
+        double a = (double) (7 / 2);
+        double b = (double) 7 / 2;
+
+        System.out.println(a);
+        System.out.println(b);
+    }
+}</code></pre>
+            </div>
+            <p>
+              第一個 expression 先做括號裡的 <code>7 / 2</code>，得到 <code>3</code>，再轉成 <code>3.0</code>。
+              第二個 expression 先把 <code>7</code> 轉成 <code>7.0</code>，接著做 double division，得到 <code>3.5</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Result</th>
+                    <th>AP CSA 要看的重點</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>double r = 5 / 2;</code></td>
+                    <td><code>2.0</code></td>
+                    <td>右邊先做 <code>int / int</code>，小數先消失。</td>
+                  </tr>
+                  <tr>
+                    <td><code>double r = (double) 5 / 2;</code></td>
+                    <td><code>2.5</code></td>
+                    <td>先讓其中一邊變成 double。</td>
+                  </tr>
+                  <tr>
+                    <td><code>double r = (double) (5 / 2);</code></td>
+                    <td><code>2.0</code></td>
+                    <td>括號裡的 integer division 已經先完成。</td>
+                  </tr>
+                  <tr>
+                    <td><code>double r = 5 / 2 + 0.0;</code></td>
+                    <td><code>2.0</code></td>
+                    <td><code>5 / 2</code> 先變成 <code>2</code>，之後才加 double。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="rounding" class="article-section">
+            <p class="eyebrow">Rounding with Casting</p>
+            <h2>要四捨五入，必須先調整 value 再 casting</h2>
+            <p>
+              因為 <code>(int)</code> 只是 truncation，所以 <code>(int) 4.8</code> 會得到 <code>4</code>。
+              如果要把非負數四捨五入到最接近的整數，可以先加 <code>0.5</code>，再轉成 <code>int</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Value</th>
+                    <th>Technique</th>
+                    <th>Example</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>x &gt;= 0</code></td>
+                    <td><code>(int) (x + 0.5)</code></td>
+                    <td><code>4.8 + 0.5</code> 變 <code>5.3</code>，再得到 <code>5</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>x &lt; 0</code></td>
+                    <td><code>(int) (x - 0.5)</code></td>
+                    <td><code>-4.8 - 0.5</code> 變 <code>-5.3</code>，再得到 <code>-5</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Round a Score</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-rounding">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-rounding">public class Main {
+    public static void main(String[] args) {
+        double score = 87.6;
+
+        int roundedScore = (int) (score + 0.5);
+        System.out.println(roundedScore);
+    }
+}</code></pre>
+            </div>
+            <p>
+              這個技巧只是在 AP CSA 基礎範圍中幫你理解 casting 與 arithmetic 的組合。
+              它的核心不是背公式，而是理解：先透過 <code>+ 0.5</code> 或 <code>- 0.5</code> 把 value 推過整數邊界，
+              再用 <code>(int)</code> truncate toward zero。
+            </p>
+          </section>
+
+          <section id="numbers" class="article-section">
+            <p class="eyebrow">Range and Precision</p>
+            <h2><code>int</code> 不是無限大，<code>double</code> 也不是完全精確</h2>
+            <p>
+              Java 的 <code>int</code> 使用 32 bits 儲存整數，範圍是
+              <code>-2147483648</code> 到 <code>2147483647</code>。Java 提供
+              <code>Integer.MIN_VALUE</code> 與 <code>Integer.MAX_VALUE</code> 表示這兩個邊界。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Print int Range</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-range">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-range">public class Main {
+    public static void main(String[] args) {
+        System.out.println(Integer.MIN_VALUE);
+        System.out.println(Integer.MAX_VALUE);
+    }
+}</code></pre>
+            </div>
+            <p>
+              這兩個常數本身也是合法的 <code>int</code> value。AP CSA 題目常用它們檢查你是否知道：
+              <code>int</code> 不是數學上的無限整數，而是有固定範圍的資料型別。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Integer Overflow</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-overflow">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-overflow">public class Main {
+    public static void main(String[] args) {
+        int x = Integer.MAX_VALUE;
+
+        System.out.println(x);
+        x = x + 1;
+        System.out.println(x);
+    }
+}</code></pre>
+            </div>
+            <p>
+              數學上最大值加 1 應該變更大，但 <code>int</code> 已經沒有空間表示這個結果，所以會發生
+              <strong>integer overflow</strong>。它不一定是 compile-time error 或 runtime error；程式可能繼續執行，
+              只是得到一個合法但不符合數學直覺的 <code>int</code> value。
+            </p>
+            <p>
+              Overflow 不只發生在 <code>Integer.MAX_VALUE + 1</code>。只要某個 expression 的結果超過 int range，
+              就可能 overflow。即使每個 variable 自己都在合法範圍內，expression 的計算結果仍然可能超出範圍。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Overflow in an Expression</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-overflow-multiply">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-overflow-multiply">public class Main {
+    public static void main(String[] args) {
+        int x = 1500000000;
+        int y = 2;
+
+        int result = x * y;
+        System.out.println(result);
+    }
+}</code></pre>
+            </div>
+            <p class="callout">
+              兩個變數 <code>x</code> 和 <code>y</code> 都是合法的 int，但 <code>x * y</code> 的數學結果是
+              <code>3000000000</code>，超過 <code>Integer.MAX_VALUE</code>。AP CSA 題目常用這種方式檢查你是否理解
+              overflow 是 expression result 超出型別範圍。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Floating-Point Round-Off</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-roundoff">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-roundoff">public class Main {
+    public static void main(String[] args) {
+        double result = 0.1 + 0.2;
+        System.out.println(result);
+    }
+}</code></pre>
+            </div>
+            <p>
+              <code>double</code> 使用有限的 binary bits 表示小數，像 <code>0.1</code> 這種十進位小數無法永遠被精確表示。
+              所以 <code>0.1 + 0.2</code> 可能印出 <code>0.30000000000000004</code>。這不是 Java 算錯，
+              而是 floating-point representation 的限制。
+            </p>
+            <p>
+              這件事在 AP CSA 中通常不是要你深入研究二進位浮點標準，而是要知道：
+              <code>double</code> 的計算可能出現 very small round-off error。當程式需要非常精確的 decimal，
+              例如金額，有些系統會改用整數單位儲存，例如用 cents 儲存 <code>1099</code>，而不是用 dollars 儲存 <code>10.99</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Concept</th>
+                    <th>重點</th>
+                    <th>常見判斷</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>int</code></td>
+                    <td>精確表示整數，但範圍有限。</td>
+                    <td>可能 overflow。</td>
+                  </tr>
+                  <tr>
+                    <td><code>double</code></td>
+                    <td>可以表示小數與更大範圍的數值，但不是所有 decimal 都精確。</td>
+                    <td>可能 round-off error。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="compound" class="article-section">
+            <p class="eyebrow">Compound Assignment</p>
+            <h2>常見更新可以寫得更短，但規則沒有改變</h2>
+            <p>
+              <code>x += 5;</code> 可以理解成 <code>x = x + 5;</code>。
+              <code>x -= 3;</code>、<code>x *= 2;</code>、<code>x /= 4;</code>、<code>x %= 3;</code>
+              也都是同樣的更新概念。注意：如果 <code>x</code> 是 <code>int</code>，<code>x /= 2;</code>
+              仍然會做 integer division。
+            </p>
+            <p>
+              這些簡寫看起來像新的語法，但它們沒有取消 assignment 的核心規則：仍然要讀取舊 value、
+              計算新的 expression、遵守型別規則，最後把結果存回原本的 variable。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Short Form</th>
+                    <th>基本意義</th>
+                    <th>例子</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>x += y</code></td>
+                    <td><code>x = x + y</code></td>
+                    <td><code>10 += 5</code> 會變成 <code>15</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>x /= y</code></td>
+                    <td><code>x = x / y</code></td>
+                    <td><code>int x = 5; x /= 2;</code> 會讓 <code>x</code> 變 <code>2</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>x %= y</code></td>
+                    <td><code>x = x % y</code></td>
+                    <td><code>10 % 3</code> 的結果是 <code>1</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>x++</code></td>
+                    <td><code>x = x + 1</code></td>
+                    <td>常出現在 loops。</td>
+                  </tr>
+                  <tr>
+                    <td><code>x--</code></td>
+                    <td><code>x = x - 1</code></td>
+                    <td>讓數值減少 1。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Compound Trace</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-compound">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-compound">public class Main {
+    public static void main(String[] args) {
+        int x = 10;
+
+        x += 5;
+        x -= 3;
+        x *= 2;
+        x /= 4;
+        x %= 3;
+
+        System.out.println(x);
+    }
+}</code></pre>
+            </div>
+            <p>
+              Trace：<code>10</code> 到 <code>15</code>，到 <code>12</code>，到 <code>24</code>，
+              到 <code>6</code>，最後 <code>6 % 3</code> 得到 <code>0</code>。
+            </p>
+            <p>
+              <code>x++</code> 與 <code>x--</code> 在本課先當作獨立 statement 使用。
+              之後在 <code>for</code> loop 會常看到 <code>i++</code>，代表每次 iteration 後讓 <code>i</code> 增加 1。
+              目前不需要先深入 <code>int y = x++;</code> 這類 evaluation order 較複雜的寫法。
+            </p>
+          </section>
+
+          <section id="ap-patterns" class="article-section">
+            <p class="eyebrow">AP Patterns</p>
+            <h2>AP CSA 常見迷思與題型</h2>
+            <p>
+              Lesson 2 的題目常常不是考單一語法，而是把 assignment、integer division、casting、
+              type compatibility、overflow 與 compound assignment 混在一起。下面這張表可以當作本課的檢核地圖。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>迷思</th>
+                    <th>正確觀念</th>
+                    <th>典型題型</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Assignment 是從左邊算到右邊。</td>
+                    <td>先計算 RHS，再存入 LHS。</td>
+                    <td>Trace variable value after several statements.</td>
+                  </tr>
+                  <tr>
+                    <td>宣告 variable 後就可以直接使用。</td>
+                    <td>Local variable 必須先初始化。</td>
+                    <td>判斷 compile-time error。</td>
+                  </tr>
+                  <tr>
+                    <td><code>(int)</code> 是四捨五入或 floor。</td>
+                    <td><code>(int)</code> 是 truncate toward zero。</td>
+                    <td>預測 <code>(int) -7.9</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>Casting 放在哪裡都一樣。</td>
+                    <td>Casting position 會改變 division 的型別。</td>
+                    <td>比較 <code>(double) (a / b)</code> 與 <code>(double) a / b</code>。</td>
+                  </tr>
+                  <tr>
+                    <td><code>double result = 5 / 2;</code> 一定是 <code>2.5</code>。</td>
+                    <td>右邊先做 integer division，結果是 <code>2.0</code>。</td>
+                    <td>修正 average calculation。</td>
+                  </tr>
+                  <tr>
+                    <td><code>int</code> 可以儲存任意大的 integer。</td>
+                    <td><code>int</code> 有固定 range。</td>
+                    <td>判斷 overflow 是否可能發生。</td>
+                  </tr>
+                  <tr>
+                    <td>Overflow 一定會 runtime error。</td>
+                    <td>程式可能繼續執行，但 value 不符合預期。</td>
+                    <td>預測 <code>Integer.MAX_VALUE + 1</code>。</td>
+                  </tr>
+                  <tr>
+                    <td><code>double</code> 可以精確表示所有 decimal。</td>
+                    <td><code>double</code> 可能有 round-off error。</td>
+                    <td>解釋 <code>0.1 + 0.2</code> 的結果。</td>
+                  </tr>
+                  <tr>
+                    <td><code>x /= 2</code> 永遠會得到小數。</td>
+                    <td>如果 <code>x</code> 是 int，仍然是 integer division。</td>
+                    <td>Trace compound assignment。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Final Trace Challenge</h3>
+                <button class="copy-button" type="button" data-copy="lesson2-code-final-challenge">Copy</button>
+              </div>
+              <pre><code id="lesson2-code-final-challenge">public class Main {
+    public static void main(String[] args) {
+        int a = 17;
+        int b = 4;
+
+        double x = (double) a / b;
+
+        a %= b;
+        b += 2;
+        a *= b;
+        a++;
+
+        int y = (int) x;
+
+        System.out.println(a);
+        System.out.println(b);
+        System.out.println(x);
+        System.out.println(y);
+    }
+}</code></pre>
+            </div>
+            <p>
+              這個 challenge 同時檢查 casting position、modulo、compound assignment、increment 與 truncation。
+              正確 trace 是：<code>x = 4.25</code>，<code>a</code> 先變成 <code>1</code>，<code>b</code> 變成 <code>6</code>，
+              <code>a *= b</code> 後變成 <code>6</code>，<code>a++</code> 後變成 <code>7</code>，最後 <code>y = 4</code>。
+              Output 是 <code>7</code>、<code>6</code>、<code>4.25</code>、<code>4</code>。
+            </p>
+          </section>
+
+          <section id="practice" class="article-section">
+            <p class="eyebrow">Practice</p>
+            <h2>練習題</h2>
+            <p>
+              完整課後題本已整理成多個分區：assignment trace、Scanner、casting、rounding、overflow、
+              round-off error、compound assignment 與 coding practice。
+            </p>
+            <div class="inline-actions">
+              <a class="button primary" href="lesson-2-practice.html">開始 Lesson 2 課後練習</a>
+              <a class="button" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+            <div class="practice-set">
+              <article>
+                <h3>Trace</h3>
+                <p>先追蹤 <code>x += 3;</code>、<code>x *= 2;</code>、<code>x--;</code>、<code>x %= 4;</code>。</p>
+              </article>
+              <article>
+                <h3>Input</h3>
+                <p>使用 <code>Scanner</code> 讀取三個整數分數，算出真正的小數平均。</p>
+              </article>
+              <article>
+                <h3>Casting</h3>
+                <p>比較 <code>(double) (7 / 2)</code> 與 <code>(double) 7 / 2</code>。</p>
+              </article>
+              <article>
+                <h3>Debugging</h3>
+                <p>找出為什麼 <code>double answer = 5 / 2;</code> 不是 <code>2.5</code>。</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="article-section answer-section">
+            <p class="eyebrow">Takeaways</p>
+            <h2>本課核心觀念</h2>
+            <div class="takeaway-grid">
+              <div><strong>Assignment</strong><span>先計算 RHS，再檢查型別，最後存入 LHS。</span></div>
+              <div><strong>Initialization</strong><span>Local variable 必須先有 value 才能被讀取。</span></div>
+              <div><strong>Scanner</strong><span><code>nextInt()</code> 與 <code>nextDouble()</code> 會產生可存入變數的 value。</span></div>
+              <div><strong>Casting</strong><span><code>(int)</code> 是 truncate toward zero，不是四捨五入。</span></div>
+              <div><strong>int Range</strong><span><code>Integer.MIN_VALUE</code> 與 <code>Integer.MAX_VALUE</code> 是 int 的邊界。</span></div>
+              <div><strong>Overflow</strong><span>Expression 超過 int range 時，程式可能繼續執行但 value 錯誤。</span></div>
+              <div><strong>Round-Off</strong><span><code>double</code> 小數計算可能出現極小誤差。</span></div>
+              <div><strong>Compound</strong><span><code>+=</code>、<code>/=</code>、<code>%=</code> 是簡寫，型別規則仍存在。</span></div>
+            </div>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 2｜Assignment、Input、Casting、數值範圍與 Compound Assignment。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

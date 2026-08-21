@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 10｜for Loops</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 10：for loops、counted loops、initialization、condition、update、execution order、loop bounds、i &lt; n vs i &lt;= n、off-by-one、accumulators、scope、for vs while 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 10</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第十堂課導覽">
+        <a href="lesson-10-presentation.html">投影模式</a>
+        <a href="lesson-10-practice.html">課後練習</a>
+        <a href="lesson-9.html">上一課</a>
+        <a href="lesson-11.html">下一課</a>
+        <a href="#syntax">Syntax</a>
+        <a href="#bounds">Bounds</a>
+        <a href="#off-by-one">Off-by-One</a>
+        <a href="#accumulator">Accumulator</a>
+        <a href="#scope">Scope</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 10</p>
+          <h1><code>for</code> Loops：明確次數的迴圈與 Counted Loops</h1>
+          <p class="lead">
+            Lesson 9 的 <code>while</code> 把 initialization、condition、update 分散在三個地方。
+            這堂課學 <code>for</code> loop 如何把 counted loop 的三個控制元素集中在同一行，
+            並處理 execution order、loop bounds、<code>i &lt; n</code> vs <code>i &lt;= n</code>、
+            off-by-one、scope、accumulator、String index pattern 與 AP-style tracing。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-10-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-10-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-9.html">回 Lesson 9</a>
+            <a class="button" href="lesson-11.html">前往 Lesson 11</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#counted">Counted Loop</a>
+          <a href="#syntax"><code>for</code> 語法</a>
+          <a href="#order">執行順序</a>
+          <a href="#while-map">for / while 對應</a>
+          <a href="#patterns">常見 Pattern</a>
+          <a href="#bounds">Loop Bounds</a>
+          <a href="#off-by-one">Off-by-One</a>
+          <a href="#accumulator">Accumulator</a>
+          <a href="#for-vs-while">for vs while</a>
+          <a href="#scope">Loop Variable Scope</a>
+          <a href="#index">Index Pattern</a>
+          <a href="#tracing">AP Tracing</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>理解 counted loop：事先知道或能清楚描述 iteration count 的 loop。</div>
+              <div>寫出 <code>for (initialization; condition; update)</code> 的基本結構。</div>
+              <div>正確描述 <code>for</code> 的執行順序：initialization 一次，condition，body，update，再回 condition。</div>
+              <div>把 counted <code>while</code> loop 改寫成 equivalent <code>for</code> loop。</div>
+              <div>熟悉 <code>for (int i = 0; i &lt; n; i++)</code> 正好執行 n 次。</div>
+              <div>分辨 <code>i &lt; n</code>、<code>i &lt;= n</code>、<code>i = 1</code>、<code>i = 0</code> 對 iteration count 的影響。</div>
+              <div>判斷 inclusive / exclusive loop bounds，並避免 off-by-one errors。</div>
+              <div>寫 counting up、counting down、custom step 的 loops。</div>
+              <div>使用 <code>for</code> 搭配 accumulator、counter 與 conditional counting。</div>
+              <div>理解 loop variable scope：<code>for (int i = ...)</code> 中的 <code>i</code> 通常只存在於 loop 內。</div>
+              <div>知道 String / Array index pattern 為什麼通常是 <code>i &lt; length</code>，不是 <code>i &lt;= length</code>。</div>
+              <div>處理 body 修改 loop variable、bound 被改變、statement count 和 infinite <code>for</code> loop 的 AP trace 題。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson10-flow-0" /> <span><strong>語法</strong>：<code>for (init; condition; update)</code> 三個控制元素。</span></label>
+              <label><input type="checkbox" data-progress="lesson10-flow-1" /> <span><strong>執行順序</strong>：initialization 只做一次，update 在 body 後。</span></label>
+              <label><input type="checkbox" data-progress="lesson10-flow-2" /> <span><strong>Bounds</strong>：<code>i &lt; n</code>、<code>i &lt;= n</code>、inclusive / exclusive。</span></label>
+              <label><input type="checkbox" data-progress="lesson10-flow-3" /> <span><strong>Patterns</strong>：0-based、1-based、countdown、step by 2、index traversal。</span></label>
+              <label><input type="checkbox" data-progress="lesson10-flow-4" /> <span><strong>Algorithms</strong>：sum、product、count matches、random trials、counted input。</span></label>
+              <label><input type="checkbox" data-progress="lesson10-flow-5" /> <span><strong>AP traps</strong>：scope、body modifies <code>i</code>、bound changes、statement count。</span></label>
+            </div>
+          </section>
+
+          <section id="counted" class="article-section">
+            <p class="eyebrow">Counted Loop</p>
+            <h2><code>for</code> 最適合「明確次數」的重複工作</h2>
+            <p>
+              Counted loop 是事先知道或可以清楚描述執行次數的 loop。例如印 1 到 10、重複 100 次、
+              從 10 倒數到 1、處理 String 的每一個 index、把 1 到 n 加總、執行 n 次模擬。
+            </p>
+            <div class="definition-grid">
+              <article>
+                <h3>Repeat n times</h3>
+                <p><code>for (int i = 0; i &lt; n; i++)</code></p>
+              </article>
+              <article>
+                <h3>1 through n</h3>
+                <p><code>for (int i = 1; i &lt;= n; i++)</code></p>
+              </article>
+              <article>
+                <h3>All indexes</h3>
+                <p><code>for (int i = 0; i &lt; length; i++)</code></p>
+              </article>
+            </div>
+          </section>
+
+          <section id="syntax" class="article-section">
+            <p class="eyebrow">Syntax</p>
+            <h2><code>for</code> 把 initialization、condition、update 放在同一行</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Basic for Pattern</h3>
+                <button class="copy-button" type="button" data-copy="l10-code-syntax">Copy</button>
+              </div>
+              <pre><code id="l10-code-syntax">for (initialization; condition; update)
+{
+    // loop body
+}</code></pre>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Print 1 to 5</h3>
+                <button class="copy-button" type="button" data-copy="l10-code-first">Copy</button>
+              </div>
+              <pre><code id="l10-code-first">for (int i = 1; i &lt;= 5; i++)
+{
+    System.out.println(i);
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Header part</th>
+                    <th>例子</th>
+                    <th>作用</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Initialization</td><td><code>int i = 1</code></td><td>從哪裡開始，只執行一次。</td></tr>
+                  <tr><td>Condition</td><td><code>i &lt;= 5</code></td><td>每輪 body 前檢查，true 才繼續。</td></tr>
+                  <tr><td>Update</td><td><code>i++</code></td><td>每輪 body 後執行，改變 loop variable。</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="order" class="article-section">
+            <p class="eyebrow">Execution Order</p>
+            <h2><code>for</code> 的 update 不是一開始執行，而是在 body 之後</h2>
+            <div class="concept-card">
+              <pre><code>1. initialization
+2. condition
+3. body
+4. update
+5. 回到 condition
+6. condition false 時離開 loop</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Step</th>
+                    <th>i</th>
+                    <th>condition</th>
+                    <th>body</th>
+                    <th>update</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>1</td><td><code>1 &lt;= 3</code> true</td><td>print 1</td><td><code>i++</code> → 2</td></tr>
+                  <tr><td>2</td><td>2</td><td><code>2 &lt;= 3</code> true</td><td>print 2</td><td><code>i++</code> → 3</td></tr>
+                  <tr><td>3</td><td>3</td><td><code>3 &lt;= 3</code> true</td><td>print 3</td><td><code>i++</code> → 4</td></tr>
+                  <tr><td>stop</td><td>4</td><td><code>4 &lt;= 3</code> false</td><td>-</td><td>-</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              第一次進 body 前不會先 update，所以 <code>for (int i = 1; i &lt;= 3; i++)</code> 的第一個 output 是 1，不是 2。
+            </p>
+          </section>
+
+          <section id="while-map" class="article-section">
+            <p class="eyebrow">Equivalent Loops</p>
+            <h2><code>for</code> 可以看成 counted <code>while</code> 的集中寫法</h2>
+            <div class="question-list">
+              <article>
+                <h3>while version</h3>
+                <pre><code>int i = 1;
+
+while (i &lt;= 5)
+{
+    System.out.println(i);
+    i++;
+}</code></pre>
+              </article>
+              <article>
+                <h3>for version</h3>
+                <pre><code>for (int i = 1; i &lt;= 5; i++)
+{
+    System.out.println(i);
+}</code></pre>
+              </article>
+            </div>
+            <p>
+              轉成 <code>while</code> 時最容易忘記 update。少了 <code>i++</code>，
+              <code>i</code> 永遠不變，就可能變成 infinite loop。
+            </p>
+          </section>
+
+          <section id="patterns" class="article-section">
+            <p class="eyebrow">Common Patterns</p>
+            <h2>四個最重要的 <code>for</code> loop pattern</h2>
+            <div class="definition-grid">
+              <article>
+                <h3>0-based n 次</h3>
+                <pre><code>for (int i = 0; i &lt; n; i++)</code></pre>
+                <p><code>i = 0, 1, ..., n - 1</code>，共 n 次。</p>
+              </article>
+              <article>
+                <h3>1-based n 次</h3>
+                <pre><code>for (int i = 1; i &lt;= n; i++)</code></pre>
+                <p><code>i = 1, 2, ..., n</code>，共 n 次。</p>
+              </article>
+              <article>
+                <h3>Countdown</h3>
+                <pre><code>for (int i = n; i &gt;= 1; i--)</code></pre>
+                <p>從 n 倒數到 1。</p>
+              </article>
+              <article>
+                <h3>Step by 2</h3>
+                <pre><code>for (int i = 0; i &lt; n; i += 2)</code></pre>
+                <p>走 0, 2, 4, ...；次數取決於 n。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="bounds" class="article-section">
+            <p class="eyebrow">Loop Bounds</p>
+            <h2>Loop bounds 決定 loop variable 會經過哪些值</h2>
+            <p>
+              若 step 是 1，<code>for (int i = a; i &lt;= b; i++)</code> 包含 b，執行次數是
+              <code>b - a + 1</code>。<code>for (int i = a; i &lt; b; i++)</code> 不包含 b，執行次數是
+              <code>b - a</code>。前提是 <code>a &lt;= b</code> 且 body 沒有修改控制變數或 bound。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Loop</th>
+                    <th>i 的值</th>
+                    <th>次數</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>for (int i = 0; i &lt; n; i++)</code></td><td><code>0 ... n - 1</code></td><td>n</td></tr>
+                  <tr><td><code>for (int i = 0; i &lt;= n; i++)</code></td><td><code>0 ... n</code></td><td>n + 1</td></tr>
+                  <tr><td><code>for (int i = 1; i &lt; n; i++)</code></td><td><code>1 ... n - 1</code></td><td>n - 1</td></tr>
+                  <tr><td><code>for (int i = 1; i &lt;= n; i++)</code></td><td><code>1 ... n</code></td><td>n</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              看到題目寫 through 或 inclusive，通常想到 <code>&lt;=</code>。看到 up to but not including，通常想到 <code>&lt;</code>。
+            </p>
+          </section>
+
+          <section id="off-by-one" class="article-section">
+            <p class="eyebrow">Off-by-One</p>
+            <h2>Off-by-one：loop 比預期多一次或少一次</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>目標</th>
+                    <th>錯誤</th>
+                    <th>正確</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>執行 10 次</td><td><code>for (int i = 0; i &lt;= 10; i++)</code></td><td><code>for (int i = 0; i &lt; 10; i++)</code></td></tr>
+                  <tr><td>印 1 到 5</td><td><code>for (int i = 0; i &lt; 5; i++)</code></td><td><code>for (int i = 1; i &lt;= 5; i++)</code></td></tr>
+                  <tr><td>處理 n 個 index</td><td><code>for (int i = 0; i &lt;= n; i++)</code></td><td><code>for (int i = 0; i &lt; n; i++)</code></td></tr>
+                  <tr><td>倒數 10 到 1</td><td><code>for (int i = 10; i &gt;= 1; i++)</code></td><td><code>for (int i = 10; i &gt;= 1; i--)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Boundary test 的方法很簡單：列出第一個值、最後一個允許進 body 的值，再問自己是否多包含了一個不該出現的值。
+            </p>
+          </section>
+
+          <section id="accumulator" class="article-section">
+            <p class="eyebrow">Accumulator</p>
+            <h2><code>for</code> 很常搭配 accumulator、counter 與 nested <code>if</code></h2>
+            <div class="question-list">
+              <article>
+                <h3>Sum 1 to 5</h3>
+                <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 5; i++)
+{
+    sum += i;
+}
+
+System.out.println(sum);  // 15</code></pre>
+              </article>
+              <article>
+                <h3>Product 1 to 5</h3>
+                <pre><code>int product = 1;
+
+for (int i = 1; i &lt;= 5; i++)
+{
+    product *= i;
+}
+
+System.out.println(product);  // 120</code></pre>
+              </article>
+              <article>
+                <h3>Count Multiples of 7</h3>
+                <pre><code>int count = 0;
+
+for (int i = 1; i &lt;= 100; i++)
+{
+    if (i % 7 == 0)
+    {
+        count++;
+    }
+}</code></pre>
+              </article>
+            </div>
+            <p class="callout">
+              Loop body 執行次數和某個 statement 的執行次數不一定相同。若 statement 在 <code>if</code> 裡，要另外計算。
+            </p>
+          </section>
+
+          <section id="for-vs-while" class="article-section">
+            <p class="eyebrow">for vs while</p>
+            <h2>知道次數通常用 <code>for</code>；不知道次數通常用 <code>while</code></h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>情況</th>
+                    <th>通常較適合</th>
+                    <th>例子</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>重複固定 n 次</td><td><code>for</code></td><td><code>for (int i = 0; i &lt; n; i++)</code></td></tr>
+                  <tr><td>處理每個 index</td><td><code>for</code></td><td><code>for (int i = 0; i &lt; length; i++)</code></td></tr>
+                  <tr><td>從 1 through n</td><td><code>for</code></td><td><code>for (int i = 1; i &lt;= n; i++)</code></td></tr>
+                  <tr><td>輸入直到 -1</td><td><code>while</code></td><td>sentinel loop</td></tr>
+                  <tr><td>直到密碼正確</td><td><code>while</code></td><td>condition-controlled loop</td></tr>
+                  <tr><td>input validation</td><td><code>while</code></td><td><code>while (score &lt; 0 || score &gt; 100)</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="scope" class="article-section">
+            <p class="eyebrow">Scope</p>
+            <h2>Loop variable 的 scope：在 header 宣告，通常 loop 外不能用</h2>
+            <div class="question-list">
+              <article>
+                <h3>Compile error</h3>
+                <pre><code>for (int i = 0; i &lt; 5; i++)
+{
+    System.out.println(i);
+}
+
+System.out.println(i);  // compile error</code></pre>
+                <p><code>i</code> 是在 <code>for</code> header 宣告，只存在於這個 loop 的範圍內。</p>
+              </article>
+              <article>
+                <h3>Loop 後還需要 i</h3>
+                <pre><code>int i;
+
+for (i = 0; i &lt; 5; i++)
+{
+    System.out.println(i);
+}
+
+System.out.println(i);  // 5</code></pre>
+                <p>如果真的需要在 loop 外使用，可以先在外面宣告。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="index" class="article-section">
+            <p class="eyebrow">Index Pattern</p>
+            <h2>處理 index 時，最常見 pattern 是 <code>i = 0; i &lt; length; i++</code></h2>
+            <p>
+              Java 的 index 通常是 0 到 length - 1。String 還沒全面進入 traversal，但從現在開始要建立：
+              length 不是最後 index，最後 index 是 <code>length - 1</code>。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>String Index Preview</h3>
+                <button class="copy-button" type="button" data-copy="l10-code-string">Copy</button>
+              </div>
+              <pre><code id="l10-code-string">String word = "JAVA";
+
+for (int i = 0; i &lt; word.length(); i++)
+{
+    String letter = word.substring(i, i + 1);
+    System.out.println(i + ": " + letter);
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>word</th>
+                    <th>length</th>
+                    <th>合法 index</th>
+                    <th>正確 condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>"JAVA"</code></td><td>4</td><td>0, 1, 2, 3</td><td><code>i &lt; word.length()</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              若寫 <code>i &lt;= word.length()</code>，最後會讓 <code>i</code> 等於 length，通常造成 index out of bounds。
+            </p>
+          </section>
+
+          <section id="tracing" class="article-section">
+            <p class="eyebrow">AP Tracing</p>
+            <h2>不要只看 header 猜次數：body 可能修改 <code>i</code> 或 bound</h2>
+            <div class="question-list">
+              <article>
+                <h3>Body modifies i</h3>
+                <pre><code>for (int i = 0; i &lt; 10; i++)
+{
+    i++;
+}</code></pre>
+                <p>每輪 body 中 <code>i++</code>，header update 又 <code>i++</code>，所以實際每輪 +2，body 執行 5 次。</p>
+              </article>
+              <article>
+                <h3>Bound changes</h3>
+                <pre><code>int n = 8;
+
+for (int i = 0; i &lt; n; i++)
+{
+    n -= 2;
+}</code></pre>
+                <p>不能直接說 8 次。Trace：<code>(i,n)</code> 是 (0,8)、(1,6)、(2,4)，接著 (3,2) 停止，共 3 次。</p>
+              </article>
+              <article>
+                <h3>Statement count</h3>
+                <pre><code>int count = 0;
+
+for (int i = 0; i &lt; 10; i++)
+{
+    if (i % 3 == 0)
+    {
+        count++;
+    }
+}</code></pre>
+                <p>Loop body 10 次，但 <code>count++</code> 只在 <code>i = 0, 3, 6, 9</code> 執行，共 4 次。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Errors</p>
+            <h2>Lesson 10 常見錯誤與 AP 陷阱</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>陷阱</th>
+                    <th>錯誤想法</th>
+                    <th>正確觀念</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>i &lt; n</code></td><td>跑到 n</td><td>最後是 <code>n - 1</code>。</td></tr>
+                  <tr><td><code>i &lt;= n</code></td><td>從 0 開始是 n 次</td><td>從 0 開始是 <code>n + 1</code> 次。</td></tr>
+                  <tr><td>Initialization</td><td>每輪執行</td><td>只執行一次。</td></tr>
+                  <tr><td>Update</td><td>body 前執行</td><td>body 後執行。</td></tr>
+                  <tr><td>Countdown</td><td>仍使用 <code>i++</code></td><td>通常要 <code>i--</code>。</td></tr>
+                  <tr><td>Scope</td><td>loop 外一定能用 <code>i</code></td><td>在 header 宣告的 <code>i</code> 通常只在 loop 中有效。</td></tr>
+                  <tr><td>Body 修改 <code>i</code></td><td>不影響 header update</td><td>body 修改和 header update 都會發生。</td></tr>
+                  <tr><td>Semicolon</td><td><code>for (...);</code> 沒差</td><td>會造成 empty loop body。</td></tr>
+                  <tr><td>Same iterations</td><td>程式就 equivalent</td><td><code>i</code> 的值不同，body 結果可能不同。</td></tr>
+                  <tr><td>Length</td><td>最後 index 是 length</td><td>最後 index 是 <code>length - 1</code>。</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="practice" class="article-section">
+            <p class="eyebrow">Practice</p>
+            <h2>練習題與可完成的小程式</h2>
+            <p>
+              完整課後題本已整理成概念題、execution order、iteration count、bounds、off-by-one、
+              accumulator、scope、for/while conversion、statement count 與 AP-style trace。
+            </p>
+            <div class="inline-actions">
+              <a class="button primary" href="lesson-10-practice.html">開始 Lesson 10 課後練習</a>
+              <a class="button" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+            <div class="practice-set">
+              <article>
+                <h3>Print Ranges</h3>
+                <p>印 1 到 10、10 到 1、偶數、3 的倍數。</p>
+              </article>
+              <article>
+                <h3>Count Iterations</h3>
+                <p>列出 <code>i</code> 會經過哪些值，判斷 body 執行幾次。</p>
+              </article>
+              <article>
+                <h3>Accumulator</h3>
+                <p>使用 <code>sum</code>、<code>product</code>、<code>count</code> 搭配 <code>for</code>。</p>
+              </article>
+              <article>
+                <h3>AP Traps</h3>
+                <p>body 修改 <code>i</code>、bound 被改、scope 與 statement count。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Syntax</strong><span><code>for (initialization; condition; update)</code>。</span></div>
+              <div><strong>Order</strong><span>init → condition → body → update → condition。</span></div>
+              <div><strong>Init</strong><span>只執行一次。</span></div>
+              <div><strong>Update</strong><span>每輪 body 後才執行。</span></div>
+              <div><strong>0-based</strong><span><code>i = 0; i &lt; n</code> 是 n 次。</span></div>
+              <div><strong>1-based</strong><span><code>i = 1; i &lt;= n</code> 是 n 次。</span></div>
+              <div><strong>Off-by-one</strong><span>檢查 start、end、<code>&lt;</code> / <code>&lt;=</code>。</span></div>
+              <div><strong>Countdown</strong><span>方向通常是 <code>i--</code>。</span></div>
+              <div><strong>Accumulator</strong><span><code>sum = 0</code>、<code>product = 1</code>、<code>count = 0</code>。</span></div>
+              <div><strong>Scope</strong><span>header 宣告的 <code>i</code> 通常 loop 外不能用。</span></div>
+              <div><strong>Index</strong><span>合法 index 是 <code>0 ... length - 1</code>。</span></div>
+              <div><strong>Trace</strong><span>body 改 <code>i</code> 或 bound 時一定逐輪追蹤。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十二句</summary>
+              <p><code>for</code> is best for counted loops.</p>
+              <p>The initialization runs once.</p>
+              <p>The condition is checked before every iteration.</p>
+              <p>The update runs after the body.</p>
+              <p><code>for (int i = 0; i &lt; n; i++)</code> executes n times.</p>
+              <p><code>for (int i = 0; i &lt;= n; i++)</code> executes n + 1 times.</p>
+              <p><code>for (int i = 1; i &lt;= n; i++)</code> executes n times.</p>
+              <p>Inclusive bounds usually use <code>&lt;=</code>.</p>
+              <p>Exclusive upper bounds usually use <code>&lt;</code>.</p>
+              <p>The last valid index is <code>length - 1</code>.</p>
+              <p>Loop iterations and statement executions can be different.</p>
+              <p>If the body modifies <code>i</code> or the bound, trace carefully.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 10｜for Loops。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 7 課後練習｜if / else 條件判斷</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 7 課後練習：if、else、else if、nested if、execution tracing、range checking、boundary、獨立 if、unreachable branch 與 coding practice。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 7 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-7-presentation.html">投影模式</a>
+        <a href="lesson-7.html">文章版</a>
+        <a href="lesson-6-practice.html">上一課練習</a>
+        <a href="lesson-8-practice.html">下一課練習</a>
+        <a href="#concepts">Concepts</a>
+        <a href="#basic">if / else</a>
+        <a href="#else-if">else if</a>
+        <a href="#nested">Nested</a>
+        <a href="#errors">錯誤</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 7</p>
+          <h1>課後練習：<code>if / else</code> 條件判斷</h1>
+          <p class="lead">
+            先自己算 condition、決定 execution path、更新變數，再打開詳解。
+            這份題本會練習 <code>if</code>、<code>else</code>、<code>else if</code>、nested if、
+            range checking、boundary、獨立 <code>if</code>、unreachable branch 與 AP-style output tracing。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>Branch</strong><span>路徑追蹤</span></div>
+            <div><strong>AP-style</strong><span>輸出與除錯</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#basic">B. if / else tracing</a>
+          <a href="#else-if">C. else if / range</a>
+          <a href="#independent">D. 獨立 if</a>
+          <a href="#nested">E. Nested if</a>
+          <a href="#errors">F. 錯誤與陷阱</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先確認 selection、condition、branch、execution path 的語意。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Selection</span></div>
+              <h3>Selection / conditional execution 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p1">詳解</button>
+              <div class="reveal-panel" id="l7p1">
+                <p>根據 condition 的 <code>true</code> / <code>false</code> 決定要執行哪一段程式。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Condition</span></div>
+              <h3><code>if</code> 括號裡的 expression 必須是什麼 type？</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p2">詳解</button>
+              <div class="reveal-panel" id="l7p2">
+                <p>必須是 <code>boolean</code>。也就是最後要得到 <code>true</code> 或 <code>false</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Java Rule</span></div>
+              <h3>如果 <code>x</code> 是 <code>int</code>，<code>if (x)</code> 合法嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p3">詳解</button>
+              <div class="reveal-panel" id="l7p3">
+                <p>不合法。Java 不會把 <code>0</code> 當 false 或把非零數字當 true。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Legal Condition</span></div>
+              <h3>哪一個 condition 合法？</h3>
+              <div class="choices">
+                <span>A. <code>if (score)</code></span>
+                <span>B. <code>if (score &gt;= 60)</code></span>
+                <span>C. <code>if ("true")</code></span>
+                <span>D. <code>if (5)</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l7p4">詳解</button>
+              <div class="reveal-panel" id="l7p4">
+                <p>答案是 B。<code>score &gt;= 60</code> 是 Boolean expression。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>False Condition</span></div>
+              <h3>當 <code>if</code> condition 是 false，程式會怎樣？</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p5">詳解</button>
+              <div class="reveal-panel" id="l7p5">
+                <p>只會跳過該 <code>if</code> body，並繼續執行後面的程式。不是停止整個程式。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>if / else</span></div>
+              <h3><code>if / else</code> 一次最多會執行幾個 branch？</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p6">詳解</button>
+              <div class="reveal-panel" id="l7p6">
+                <p>只會執行一個 branch。<code>if</code> 和對應的 <code>else</code> 是互斥路徑。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>else if</span></div>
+              <h3><code>else if</code> chain 如何判斷？</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p7">詳解</button>
+              <div class="reveal-panel" id="l7p7">
+                <p>從上往下檢查，第一個為 <code>true</code> 的 branch 執行後，後面全部跳過。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="basic" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Basic Tracing</p>
+              <h2><code>if / else</code> 追蹤</h2>
+              <p>每題先算 condition，再只執行被選到的 branch。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>if</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int temperature = 35;
+
+if (temperature &gt; 30)
+{
+    System.out.println("Hot");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p8">詳解</button>
+              <div class="reveal-panel" id="l7p8">
+                <p><code>35 &gt; 30</code> 是 <code>true</code>，所以 output 是 <code>Hot</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>if false</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 3;
+
+if (x &gt; 10)
+{
+    System.out.println("Large");
+}
+
+System.out.println("Done");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p9">詳解</button>
+              <div class="reveal-panel" id="l7p9">
+                <pre><code>Done</code></pre>
+                <p><code>x &gt; 10</code> 是 false，所以跳過 <code>Large</code>，但後面的 <code>Done</code> 仍然執行。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Trace</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 8;
+
+System.out.println("A");
+
+if (x &gt; 5)
+{
+    System.out.println("B");
+}
+
+System.out.println("C");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p10">詳解</button>
+              <div class="reveal-panel" id="l7p10">
+                <pre><code>A
+B
+C</code></pre>
+                <p><code>8 &gt; 5</code> 是 true，所以 <code>B</code> 會印。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Trace</span></div>
+              <h3>如果上一題改成 <code>x = 3</code>，output 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p11">詳解</button>
+              <div class="reveal-panel" id="l7p11">
+                <pre><code>A
+C</code></pre>
+                <p><code>3 &gt; 5</code> 是 false，所以跳過 <code>B</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>if / else</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int age = 16;
+
+if (age &gt;= 18)
+{
+    System.out.println("Adult");
+}
+else
+{
+    System.out.println("Minor");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p12">詳解</button>
+              <div class="reveal-panel" id="l7p12">
+                <p><code>16 &gt;= 18</code> 是 false，所以走 <code>else</code>，output 是 <code>Minor</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Path</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 7;
+
+if (x &gt; 5)
+{
+    x += 2;
+}
+else
+{
+    x -= 2;
+}
+
+x *= 3;
+
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p13">詳解</button>
+              <div class="reveal-panel" id="l7p13">
+                <p><code>7 &gt; 5</code> true，<code>x</code> 變 <code>9</code>；最後 <code>x *= 3</code>，output 是 <code>27</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Path</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 4;
+
+if (x &gt; 5)
+{
+    x = x * 2;
+}
+else
+{
+    x = x + 3;
+}
+
+x--;
+
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p14">詳解</button>
+              <div class="reveal-panel" id="l7p14">
+                <p><code>4 &gt; 5</code> false，走 <code>else</code>：<code>x = 7</code>，再 <code>x--</code>，output 是 <code>6</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>String condition</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>String password = "abc123";
+
+if (password.equals("abc123"))
+{
+    System.out.println("Correct");
+}
+else
+{
+    System.out.println("Wrong");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p15">詳解</button>
+              <div class="reveal-panel" id="l7p15">
+                <p><code>equals()</code> 回傳 true，所以 output 是 <code>Correct</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="else-if" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. else if / Range</p>
+              <h2><code>else if</code> 與範圍分類</h2>
+              <p>從上往下檢查。第一個 true 執行後，其餘 branch 不再檢查。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Grade</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int score = 85;
+
+if (score &gt;= 90)
+{
+    System.out.println("A");
+}
+else if (score &gt;= 80)
+{
+    System.out.println("B");
+}
+else if (score &gt;= 70)
+{
+    System.out.println("C");
+}
+else
+{
+    System.out.println("F");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p16">詳解</button>
+              <div class="reveal-panel" id="l7p16">
+                <p><code>85 &gt;= 90</code> false，<code>85 &gt;= 80</code> true，所以 output 是 <code>B</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>First true wins</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int score = 95;
+
+if (score &gt;= 90)
+{
+    System.out.println("A");
+}
+else if (score &gt;= 80)
+{
+    System.out.println("B");
+}
+else
+{
+    System.out.println("C");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p17">詳解</button>
+              <div class="reveal-panel" id="l7p17">
+                <p>Output 是 <code>A</code>。雖然 <code>95 &gt;= 80</code> 也 true，但前面已經成立，後面不再檢查。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Wrong order</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int score = 95;
+
+if (score &gt;= 60)
+{
+    System.out.println("D");
+}
+else if (score &gt;= 70)
+{
+    System.out.println("C");
+}
+else if (score &gt;= 80)
+{
+    System.out.println("B");
+}
+else if (score &gt;= 90)
+{
+    System.out.println("A");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p18">詳解</button>
+              <div class="reveal-panel" id="l7p18">
+                <p>Output 是 <code>D</code>。第一個條件 <code>95 &gt;= 60</code> 已經 true，後面全部跳過。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Boundary</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int score = 80;
+
+if (score &gt; 90)
+{
+    System.out.println("A");
+}
+else if (score &gt; 80)
+{
+    System.out.println("B");
+}
+else if (score &gt; 70)
+{
+    System.out.println("C");
+}
+else
+{
+    System.out.println("D");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p19">詳解</button>
+              <div class="reveal-panel" id="l7p19">
+                <p><code>80 &gt; 80</code> 是 false，但 <code>80 &gt; 70</code> 是 true，所以 output 是 <code>C</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>English</span></div>
+              <h3>「at least 18」應該寫成哪個 Java condition？</h3>
+              <div class="choices">
+                <span>A. <code>age &gt; 18</code></span>
+                <span>B. <code>age &gt;= 18</code></span>
+                <span>C. <code>age &lt; 18</code></span>
+                <span>D. <code>age == 18</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l7p20">詳解</button>
+              <div class="reveal-panel" id="l7p20">
+                <p>答案是 B。at least 表示至少，包含邊界。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Age classifier</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int age = 16;
+
+if (age &lt;= 12)
+{
+    System.out.println("Child");
+}
+else if (age &lt;= 17)
+{
+    System.out.println("Teen");
+}
+else
+{
+    System.out.println("Adult");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p21">詳解</button>
+              <div class="reveal-panel" id="l7p21">
+                <p><code>16 &lt;= 12</code> false，<code>16 &lt;= 17</code> true，所以 output 是 <code>Teen</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Temperature</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int temperature = 24;
+
+if (temperature &gt;= 30)
+{
+    System.out.println("Hot");
+}
+else if (temperature &gt;= 20)
+{
+    System.out.println("Warm");
+}
+else if (temperature &gt;= 10)
+{
+    System.out.println("Cool");
+}
+else
+{
+    System.out.println("Cold");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p22">詳解</button>
+              <div class="reveal-panel" id="l7p22">
+                <p><code>24 &gt;= 30</code> false，<code>24 &gt;= 20</code> true，所以 output 是 <code>Warm</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Sign</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 0;
+
+if (x &gt; 0)
+{
+    System.out.println("Positive");
+}
+else if (x == 0)
+{
+    System.out.println("Zero");
+}
+else
+{
+    System.out.println("Negative");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p23">詳解</button>
+              <div class="reveal-panel" id="l7p23">
+                <p>Output 是 <code>Zero</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Invalid first</span></div>
+              <h3>為什麼 score invalid check 通常要放在 grade classifier 前面？</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p24">詳解</button>
+              <div class="reveal-panel" id="l7p24">
+                <p>如果先檢查 <code>score &gt;= 90</code>，那 <code>score = 150</code> 會被判成 A，根本到不了 <code>score &gt; 100</code> 的 invalid branch。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Case analysis</span></div>
+              <h3>對整數 <code>x</code> 分成 positive、zero、negative，最後的 <code>else</code> 需要寫條件嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p25">詳解</button>
+              <div class="reveal-panel" id="l7p25">
+                <p>不需要。前面如果已經排除 <code>x &gt; 0</code> 和 <code>x == 0</code>，剩下唯一可能就是 <code>x &lt; 0</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="independent" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Independent if</p>
+              <h2>獨立 <code>if</code> vs <code>else if</code></h2>
+              <p>先確認它是不是同一條 chain。獨立 if 可能多個都執行。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Independent if</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 10;
+
+if (x &gt;= 5)
+{
+    System.out.print("A");
+}
+
+if (x &gt;= 10)
+{
+    System.out.print("B");
+}
+
+if (x &gt;= 15)
+{
+    System.out.print("C");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p26">詳解</button>
+              <div class="reveal-panel" id="l7p26">
+                <p>Output 是 <code>AB</code>。三個都是獨立 <code>if</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>else if</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 15;
+
+if (x &gt; 5)
+{
+    System.out.print("A");
+}
+else if (x &gt; 10)
+{
+    System.out.print("B");
+}
+else
+{
+    System.out.print("C");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p27">詳解</button>
+              <div class="reveal-panel" id="l7p27">
+                <p>Output 是 <code>A</code>。第一個 condition 已經 true，後面的 <code>else if</code> 不檢查。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Two decisions</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 6;
+
+if (x &gt; 3)
+{
+    x += 2;
+}
+
+if (x &gt; 7)
+{
+    x *= 2;
+}
+
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p28">詳解</button>
+              <div class="reveal-panel" id="l7p28">
+                <p>第一個 if 讓 <code>x</code> 變 <code>8</code>，第二個 if 用新值判斷並成立，最後 output 是 <code>16</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Variable update</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 3;
+
+if (x &lt; 5)
+{
+    x += 4;
+}
+
+if (x &lt; 5)
+{
+    x += 10;
+}
+else
+{
+    x -= 2;
+}
+
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p29">詳解</button>
+              <div class="reveal-panel" id="l7p29">
+                <p><code>x</code> 先從 <code>3</code> 變 <code>7</code>。第二個 <code>x &lt; 5</code> false，走 else，最後 output 是 <code>5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Mixed structure</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 5;
+
+if (x &gt; 0)
+{
+    System.out.print("A");
+}
+
+if (x &gt; 10)
+{
+    System.out.print("B");
+}
+else
+{
+    System.out.print("C");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p30">詳解</button>
+              <div class="reveal-panel" id="l7p30">
+                <p>Output 是 <code>AC</code>。第一個 <code>if</code> 獨立成立；第二個 <code>if / else</code> 走 else。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="nested" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Nested if</p>
+              <h2>Nested if 追蹤</h2>
+              <p>先處理 outer condition。只有 outer branch 進入，inner 才有機會被判斷。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Nested</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 12;
+
+if (x &gt; 0)
+{
+    System.out.println("Positive");
+
+    if (x &gt; 10)
+    {
+        System.out.println("Large");
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p31">詳解</button>
+              <div class="reveal-panel" id="l7p31">
+                <pre><code>Positive
+Large</code></pre>
+                <p>外層和內層 condition 都是 true。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Outer false</span></div>
+              <h3>如果上一題 <code>x = -20</code>，會輸出什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p32">詳解</button>
+              <div class="reveal-panel" id="l7p32">
+                <p>沒有輸出。外層 <code>-20 &gt; 0</code> false，內層根本不會判斷。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Nested if / else</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int score = 75;
+
+if (score &gt;= 60)
+{
+    if (score &gt;= 90)
+    {
+        System.out.println("Excellent");
+    }
+    else
+    {
+        System.out.println("Pass");
+    }
+}
+else
+{
+    System.out.println("Fail");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p33">詳解</button>
+              <div class="reveal-panel" id="l7p33">
+                <p>Output 是 <code>Pass</code>。外層 true，內層 <code>75 &gt;= 90</code> false，走 inner else。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Nested trace</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 4;
+
+if (x &gt; 0)
+{
+    System.out.print("A");
+
+    if (x &gt; 5)
+    {
+        System.out.print("B");
+    }
+    else
+    {
+        System.out.print("C");
+    }
+}
+
+System.out.print("D");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p34">詳解</button>
+              <div class="reveal-panel" id="l7p34">
+                <p>Output 是 <code>ACD</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Nested update</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 5;
+int y = 10;
+
+if (x &lt; y)
+{
+    x += 5;
+
+    if (x == y)
+    {
+        y++;
+    }
+}
+
+System.out.println(x + " " + y);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p35">詳解</button>
+              <div class="reveal-panel" id="l7p35">
+                <p><code>x</code> 先變 <code>10</code>，內層 <code>x == y</code> true，所以 <code>y</code> 變 <code>11</code>。Output 是 <code>10 11</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="errors" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Errors</p>
+              <h2>錯誤與陷阱</h2>
+              <p>有些題目不是單純算 output，而是要找 bug、unreachable branch 或錯誤的 case order。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>= vs ==</span></div>
+              <h3>這行為什麼不對？</h3>
+              <pre><code>if (x = 5)
+{
+    System.out.println("Five");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p36">詳解</button>
+              <div class="reveal-panel" id="l7p36">
+                <p><code>=</code> 是 assignment，不是 comparison。檢查相等要寫 <code>x == 5</code>。如果 <code>x</code> 是 <code>int</code>，<code>x = 5</code> 也不是 boolean condition。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>String</span></div>
+              <h3>比較 String contents 時，這行有什麼問題？</h3>
+              <pre><code>if (password == "abc123")
+{
+    System.out.println("Correct");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p37">詳解</button>
+              <div class="reveal-panel" id="l7p37">
+                <p>String contents 應使用 <code>password.equals("abc123")</code>。<code>==</code> 對 objects 比較 reference。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Semicolon</span></div>
+              <h3>這段程式的陷阱是什麼？</h3>
+              <pre><code>if (x &gt; 5);
+{
+    System.out.println("Large");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p38">詳解</button>
+              <div class="reveal-panel" id="l7p38">
+                <p><code>if (x &gt; 5);</code> 後面多了一個分號，表示 <code>if</code> 控制 empty statement。後面的 block 不是 if body。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Missing braces</span></div>
+              <h3>如果 <code>x = 3</code>，這段輸出什麼？</h3>
+              <pre><code>if (x &gt; 5)
+    System.out.println("A");
+    System.out.println("B");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p39">詳解</button>
+              <div class="reveal-panel" id="l7p39">
+                <p>只輸出 <code>B</code>。沒有 braces 時，<code>if</code> 只控制下一個 statement。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Unreachable</span></div>
+              <h3>哪個 branch 永遠不會執行？</h3>
+              <pre><code>if (x &gt;= 50)
+{
+    System.out.println("A");
+}
+else if (x &gt;= 70)
+{
+    System.out.println("B");
+}
+else
+{
+    System.out.println("C");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p40">詳解</button>
+              <div class="reveal-panel" id="l7p40">
+                <p><code>B</code> 永遠不會執行。任何 <code>x &gt;= 70</code> 的值也都符合前面的 <code>x &gt;= 50</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Wrong order</span></div>
+              <h3>這段想分類 90+ A、80+ B、70+ C，bug 是什麼？</h3>
+              <pre><code>if (score &gt;= 70)
+{
+    System.out.println("C");
+}
+else if (score &gt;= 80)
+{
+    System.out.println("B");
+}
+else if (score &gt;= 90)
+{
+    System.out.println("A");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p41">詳解</button>
+              <div class="reveal-panel" id="l7p41">
+                <p>threshold 順序錯。用 <code>&gt;=</code> 分類時應從高到低：<code>90</code>、<code>80</code>、<code>70</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Boundary testing</span></div>
+              <h3>分類邊界是 <code>60</code>、<code>70</code>、<code>80</code>、<code>90</code>，應該特別測哪些值？</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p42">詳解</button>
+              <div class="reveal-panel" id="l7p42">
+                <p>至少測每個 boundary 附近，例如 <code>59</code>、<code>60</code>、<code>69</code>、<code>70</code>、<code>79</code>、<code>80</code>、<code>89</code>、<code>90</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>Boolean variable</span></div>
+              <h3>這樣寫是否多餘？</h3>
+              <pre><code>boolean isReady = true;
+
+if (isReady == true)
+{
+    System.out.println("Go");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p43">詳解</button>
+              <div class="reveal-panel" id="l7p43">
+                <p>合法但多餘。<code>isReady</code> 本身已經是 Boolean expression，通常寫 <code>if (isReady)</code> 更清楚。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding</p>
+              <h2>程式練習</h2>
+              <p>把 Boolean expressions 放進 <code>if / else</code>，完成小型分類器。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Coding</span></div>
+              <h3>Odd / Even：判斷 <code>number</code> 是偶數或奇數。</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p44">參考解法</button>
+              <div class="reveal-panel" id="l7p44">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int number = 7;
+
+        if (number % 2 == 0) {
+            System.out.println("Even");
+        } else {
+            System.out.println("Odd");
+        }
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Coding</span></div>
+              <h3>Sign Classifier：判斷 positive、zero、negative。</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p45">參考解法</button>
+              <div class="reveal-panel" id="l7p45">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int number = -5;
+
+        if (number &gt; 0) {
+            System.out.println("Positive");
+        } else if (number == 0) {
+            System.out.println("Zero");
+        } else {
+            System.out.println("Negative");
+        }
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Coding</span></div>
+              <h3>Age Classifier：<code>0~12</code> Child、<code>13~17</code> Teen、<code>18+</code> Adult。</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p46">參考解法</button>
+              <div class="reveal-panel" id="l7p46">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int age = 16;
+
+        if (age &lt;= 12) {
+            System.out.println("Child");
+        } else if (age &lt;= 17) {
+            System.out.println("Teen");
+        } else {
+            System.out.println("Adult");
+        }
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Coding</span></div>
+              <h3>Ticket Price：依 age 決定票價。</h3>
+              <p>規則：<code>age &lt; 6</code> 免費、<code>age &lt; 18</code> 100、<code>age &lt; 65</code> 200、否則 120。</p>
+              <button class="reveal-button" type="button" data-reveal="l7p47">參考解法</button>
+              <div class="reveal-panel" id="l7p47">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int age = 20;
+        int price;
+
+        if (age &lt; 6) {
+            price = 0;
+        } else if (age &lt; 18) {
+            price = 100;
+        } else if (age &lt; 65) {
+            price = 200;
+        } else {
+            price = 120;
+        }
+
+        System.out.println(price);
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Coding</span></div>
+              <h3>Grade + Invalid：先處理不合法輸入。</h3>
+              <button class="reveal-button" type="button" data-reveal="l7p48">參考解法</button>
+              <div class="reveal-panel" id="l7p48">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int score = 85;
+
+        if (score &lt; 0) {
+            System.out.println("Invalid");
+        } else if (score &gt; 100) {
+            System.out.println("Invalid");
+        } else if (score &gt;= 90) {
+            System.out.println("A");
+        } else if (score &gt;= 80) {
+            System.out.println("B");
+        } else if (score &gt;= 70) {
+            System.out.println("C");
+        } else if (score &gt;= 60) {
+            System.out.println("D");
+        } else {
+            System.out.println("F");
+        }
+    }
+}</code></pre>
+                <p>還沒學 <code>||</code>，所以可以先用兩個 invalid branches。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Challenge</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 10;
+int y = 5;
+
+if (x &gt; y)
+{
+    x -= 5;
+
+    if (x == y)
+    {
+        y *= 2;
+    }
+}
+else
+{
+    x += 10;
+}
+
+System.out.println(x + " " + y);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p49">詳解</button>
+              <div class="reveal-panel" id="l7p49">
+                <p>Output 是 <code>5 10</code>。外層 true，<code>x</code> 變 <code>5</code>；內層 true，<code>y</code> 變 <code>10</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>預測完整 output。</h3>
+              <pre><code>int score = 72;
+String status;
+
+if (score &lt; 0)
+{
+    status = "Invalid";
+}
+else if (score &gt;= 90)
+{
+    status = "A";
+}
+else if (score &gt;= 80)
+{
+    status = "B";
+}
+else if (score &gt;= 70)
+{
+    status = "C";
+    score += 5;
+}
+else if (score &gt;= 60)
+{
+    status = "D";
+}
+else
+{
+    status = "F";
+}
+
+if (score &gt;= 75)
+{
+    System.out.println(status + "+");
+}
+else
+{
+    System.out.println(status);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l7p50">詳解</button>
+              <div class="reveal-panel" id="l7p50">
+                <p><code>72</code> 走 <code>score &gt;= 70</code> branch，所以 <code>status = "C"</code>，接著 <code>score</code> 變 <code>77</code>。第二個獨立 <code>if</code> 使用新 score，所以 output 是 <code>C+</code>。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 7 課後練習。先算 condition、決定 execution path、更新變數，再打開詳解檢查推理。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

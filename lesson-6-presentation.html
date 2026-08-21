@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 6 投影模式｜Boolean Expressions</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 6 投影模式：boolean values、relational operators、= vs ==、numeric comparison、reference comparison、null、String Boolean expressions 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 6</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-6.html">文章版</a>
+        <a href="lesson-6-practice.html">課後練習</a>
+        <a href="lesson-5.html">上一課</a>
+        <a href="lesson-7.html">下一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 6</p>
+          <h1>Boolean Expressions</h1>
+          <p class="slide-lead">
+            今天要把程式中的判斷變成可追蹤的結果：<code>true</code> / <code>false</code>、
+            relational operators、primitive vs reference comparison、<code>null</code> 與 String Boolean expressions。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-6-practice.html">Lesson 6 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Why It Matters</p>
+          <h2>Boolean expressions 是控制流程的地基</h2>
+          <div class="big-flow">
+            <span>if</span>
+            <span>else</span>
+            <span>while</span>
+            <span>for</span>
+            <span>search</span>
+            <span>validation</span>
+          </div>
+          <p class="slide-note">下一堂開始學 <code>if / else</code>；本堂先練會產生條件結果。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">boolean</p>
+          <h2><code>boolean</code> 只有兩種值</h2>
+          <div class="type-grid">
+            <div><strong><code>true</code></strong><span>Boolean value</span></div>
+            <div><strong><code>false</code></strong><span>Boolean value</span></div>
+            <div><strong><code>"true"</code></strong><span>String，不是 boolean</span></div>
+          </div>
+          <p class="slide-note">Java 不使用 <code>0</code> / <code>1</code> 代替 Boolean。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Boolean Expression</p>
+          <h2>執行後得到 <code>true</code> 或 <code>false</code></h2>
+          <div class="definition-grid">
+            <article><h3><code>5 &gt; 3</code></h3><p><code>true</code></p></article>
+            <article><h3><code>10 == 4</code></h3><p><code>false</code></p></article>
+            <article><h3><code>"cat".equals("cat")</code></h3><p><code>true</code></p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Operators</p>
+          <h2>六個 relational operators</h2>
+          <div class="type-grid operator-grid">
+            <div><strong><code>==</code></strong><span>equal to</span></div>
+            <div><strong><code>!=</code></strong><span>not equal to</span></div>
+            <div><strong><code>&lt;</code></strong><span>less than</span></div>
+            <div><strong><code>&gt;</code></strong><span>greater than</span></div>
+            <div><strong><code>&lt;=</code></strong><span>less than or equal</span></div>
+            <div><strong><code>&gt;=</code></strong><span>greater than or equal</span></div>
+          </div>
+          <p class="slide-note">每一個 relational expression 的結果都是 <code>boolean</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Boundary Check</p>
+          <h2><code>&lt;</code> 和 <code>&lt;=</code> 差在邊界</h2>
+          <div class="multiple-choice">
+            <pre><code>int score = 80;
+System.out.println(score &gt; 80);
+System.out.println(score &gt;= 80);</code></pre>
+            <p>兩行 output 是什麼？</p>
+            <div class="choices">
+              <span>A. true / true</span>
+              <span>B. true / false</span>
+              <span>C. false / true</span>
+              <span>D. false / false</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l6-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l6-r1">
+            <p>答案是 C。<code>&gt;</code> 不包含等於；<code>&gt;=</code> 包含等於。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">= vs ==</p>
+          <h2><code>=</code> 是 assignment，<code>==</code> 是 comparison</h2>
+          <div class="definition-grid">
+            <article><h3><code>x = 5;</code></h3><p>修改 <code>x</code></p></article>
+            <article><h3><code>x == 5</code></h3><p>產生 <code>true</code> / <code>false</code></p></article>
+            <article><h3>AP rule</h3><p>看到等號先問：改值還是比較？</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Evaluation Order</p>
+          <h2>先算左右 expression，再比較</h2>
+          <div class="multiple-choice">
+            <pre><code>int x = 4;
+int y = 5;
+
+boolean result = x + 3 &lt; y * 2;</code></pre>
+            <p><code>result</code> 是什麼？</p>
+            <div class="choices">
+              <span>A. true</span>
+              <span>B. false</span>
+              <span>C. 7</span>
+              <span>D. Compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l6-r2">揭曉 trace</button>
+          <div class="reveal-panel" id="l6-r2">
+            <pre><code>x + 3 = 7
+y * 2 = 10
+7 &lt; 10 -> true</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Not Auto Update</p>
+          <h2>Boolean variable 不會自動重新計算</h2>
+          <div class="deck-code">
+            <pre><code>int x = 5;
+boolean result = x &gt; 3;
+
+x = 1;
+
+System.out.println(result);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l6-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l6-r3">
+            <p>Output 是 <code>true</code>。<code>result</code> 在第二行已經被計算並保存。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Primitive</p>
+          <h2>Primitive <code>==</code> 比較 value</h2>
+          <div class="deck-code">
+            <pre><code>int a = 10;
+int b = 10;
+
+System.out.println(a == b);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l6-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l6-r4">
+            <p>Output 是 <code>true</code>，因為 primitive 比較實際值：<code>10 == 10</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Integer Division</p>
+          <h2>Boolean 題常混入 integer division</h2>
+          <div class="multiple-choice">
+            <pre><code>System.out.println(5 / 2 == 2.5);</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. true</span>
+              <span>B. false</span>
+              <span>C. 2.5</span>
+              <span>D. Compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l6-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l6-r5">
+            <p>答案是 B。<code>5 / 2</code> 是 <code>2</code>，所以 <code>2 == 2.5</code> 是 <code>false</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Casting</p>
+          <h2>Casting 會改變比較結果</h2>
+          <div class="multiple-choice">
+            <pre><code>System.out.println((double) 5 / 2 == 2.5);</code></pre>
+            <p>Output 是什麼？</p>
+            <div class="choices">
+              <span>A. true</span>
+              <span>B. false</span>
+              <span>C. 2</span>
+              <span>D. Compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l6-r6">揭曉答案</button>
+          <div class="reveal-panel" id="l6-r6">
+            <p>答案是 A。<code>(double) 5 / 2</code> 是 <code>2.5</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Modulo</p>
+          <h2><code>%</code> 常用來做整除與奇偶判斷</h2>
+          <div class="definition-grid">
+            <article><h3><code>x % 2 == 0</code></h3><p>通常表示偶數</p></article>
+            <article><h3><code>x % 2 != 0</code></h3><p>通常表示奇數</p></article>
+            <article><h3><code>x % 5 == 0</code></h3><p>可以被 5 整除</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Reference</p>
+          <h2>Object <code>==</code> 比較 reference</h2>
+          <div class="deck-code">
+            <pre><code>String a = new String("cat");
+String b = new String("cat");
+
+System.out.println(a == b);
+System.out.println(a.equals(b));</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l6-r7">揭曉答案</button>
+          <div class="reveal-panel" id="l6-r7">
+            <pre><code>false
+true</code></pre>
+            <p>兩次 <code>new</code> 是不同 objects；<code>equals()</code> 比較 contents。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Alias</p>
+          <h2>Reference copy 後，<code>==</code> 通常是 true</h2>
+          <div class="deck-code">
+            <pre><code>String a = new String("cat");
+String b = a;
+
+System.out.println(a == b);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l6-r8">揭曉 diagram</button>
+          <div class="reveal-panel" id="l6-r8">
+            <pre><code>a --+
+    +--> "cat"
+b --+
+
+a == b -> true</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">null</p>
+          <h2><code>== null</code> 是安全比較</h2>
+          <div class="definition-grid">
+            <article><h3><code>name == null</code></h3><p>合法；安全</p></article>
+            <article><h3><code>name != null</code></h3><p>合法；安全</p></article>
+            <article><h3><code>name.equals(...)</code></h3><p>如果 <code>name</code> 是 <code>null</code>，runtime error</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">null Check</p>
+          <h2>判斷是安全比較還是 runtime error</h2>
+          <div class="multiple-choice">
+            <pre><code>String name = null;
+System.out.println(name == null);</code></pre>
+            <p>結果是什麼？</p>
+            <div class="choices">
+              <span>A. true</span>
+              <span>B. false</span>
+              <span>C. NullPointerException</span>
+              <span>D. Compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l6-r9">揭曉答案</button>
+          <div class="reveal-panel" id="l6-r9">
+            <p>答案是 A。<code>== null</code> 不需要呼叫 object method，所以安全。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">String Boolean</p>
+          <h2>String methods + relational operators</h2>
+          <div class="definition-grid">
+            <article><h3><code>s.length() &gt;= 8</code></h3><p><code>int</code> 比較</p></article>
+            <article><h3><code>s.indexOf("AP") &gt;= 0</code></h3><p>找得到</p></article>
+            <article><h3><code>s.equals("yes")</code></h3><p>直接是 Boolean</p></article>
+            <article><h3><code>s.compareTo("cat") &lt; 0</code></h3><p>排序在前面</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">String Check</p>
+          <h2><code>indexOf()</code> 找不到回傳 <code>-1</code></h2>
+          <div class="multiple-choice">
+            <pre><code>String s = "computer";
+boolean result = s.indexOf("xyz") &gt;= 0;</code></pre>
+            <p><code>result</code> 是什麼？</p>
+            <div class="choices">
+              <span>A. true</span>
+              <span>B. false</span>
+              <span>C. -1</span>
+              <span>D. Runtime error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l6-r10">揭曉答案</button>
+          <div class="reveal-panel" id="l6-r10">
+            <p>答案是 B。<code>indexOf("xyz") = -1</code>，所以 <code>-1 &gt;= 0</code> 是 <code>false</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">compareTo</p>
+          <h2>只看正負號，不要硬背精確數字</h2>
+          <div class="multiple-choice">
+            <pre><code>String a = "dog";
+String b = "cat";
+boolean result = a.compareTo(b) &lt; 0;</code></pre>
+            <p><code>result</code> 是什麼？</p>
+            <div class="choices">
+              <span>A. true</span>
+              <span>B. false</span>
+              <span>C. 0</span>
+              <span>D. Compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l6-r11">揭曉答案</button>
+          <div class="reveal-panel" id="l6-r11">
+            <p>答案是 B。<code>"dog"</code> 排在 <code>"cat"</code> 後面，所以 <code>compareTo()</code> 是 positive。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Compile Errors</p>
+          <h2>這些不是 true/false，而是不合法</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead>
+                <tr>
+                  <th>錯誤寫法</th>
+                  <th>問題</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><code>0 &lt; x &lt; 10</code></td><td>Java 不支援 chained comparison</td></tr>
+                <tr><td><code>x =&gt; 5</code></td><td>應寫 <code>x &gt;= 5</code></td></tr>
+                <tr><td><code>name &lt; "John"</code></td><td>String 不能直接用 <code>&lt;</code></td></tr>
+                <tr><td><code>boolean b = 1;</code></td><td>Java Boolean 不能用 <code>1</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP SOP</p>
+          <h2>Boolean tracing 固定流程</h2>
+          <div class="big-flow">
+            <span>Find types</span>
+            <span>Evaluate method calls</span>
+            <span>Evaluate arithmetic</span>
+            <span>Compare</span>
+            <span>Write true/false</span>
+            <span>Draw references</span>
+          </div>
+          <p class="slide-note">不要跳步；很多錯誤都藏在 return type 和 reference diagram。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP-style Trace</p>
+          <h2>綜合追蹤</h2>
+          <div class="deck-code">
+            <pre><code>String a = new String("APCSA");
+String b = a;
+String c = new String("APCSA");
+
+boolean x = a == b;
+boolean y = a == c;
+boolean z = a.equals(c);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l6-r12">揭曉結果</button>
+          <div class="reveal-panel" id="l6-r12">
+            <pre><code>x = true
+y = false
+z = true</code></pre>
+            <p><code>b</code> 是 <code>a</code> 的 alias；<code>c</code> 是不同 object，但 contents 一樣。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的五個小程式</h2>
+          <div class="exit-grid">
+            <div>Passed：<code>score &gt;= 60</code></div>
+            <div>Even：<code>number % 2 == 0</code></div>
+            <div>Divisible by 5：<code>x % 5 == 0</code></div>
+            <div>Contains text：<code>word.indexOf("AP") &gt;= 0</code></div>
+            <div>Same contents：<code>a.equals(b)</code></div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-6-practice.html">開始 Lesson 6 課後練習</a>
+            <a class="button" href="lesson-6.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十句</h2>
+          <div class="exit-grid">
+            <div>Boolean expression evaluates to <code>true</code> or <code>false</code>.</div>
+            <div><code>=</code> assignment；<code>==</code> comparison。</div>
+            <div>Primitive <code>==</code> compares values.</div>
+            <div>Object <code>==</code> compares references.</div>
+            <div>Use <code>equals()</code> for String contents.</div>
+            <div><code>compareTo()</code> uses sign: negative / zero / positive.</div>
+            <div><code>ref == null</code> is safe.</div>
+            <div><code>ref.method()</code> can crash if <code>ref</code> is <code>null</code>.</div>
+            <div>Java does not support <code>0 &lt; x &lt; 10</code>.</div>
+            <div>Arithmetic is evaluated before relational comparison.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

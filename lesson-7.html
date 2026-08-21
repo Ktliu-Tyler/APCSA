@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 7｜if / else 條件判斷</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 7：if、else、else if、execution path tracing、nested if、range checking、case analysis、boundary testing、獨立 if 與 AP-style 條件判斷題。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 7</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第七堂課導覽">
+        <a href="lesson-7-presentation.html">投影模式</a>
+        <a href="lesson-7-practice.html">課後練習</a>
+        <a href="lesson-6.html">上一課</a>
+        <a href="lesson-8.html">下一課</a>
+        <a href="#if">if</a>
+        <a href="#else">else</a>
+        <a href="#else-if">else if</a>
+        <a href="#nested">Nested</a>
+        <a href="#range">Range</a>
+        <a href="#errors">錯誤</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 7</p>
+          <h1><code>if / else</code> 條件判斷與程式分支</h1>
+          <p class="lead">
+            Lesson 6 學會產生 <code>true</code> / <code>false</code>。這一課讓程式根據 Boolean condition
+            決定要執行哪一段：<code>if</code>、<code>else</code>、<code>else if</code>、nested if、
+            range checking、case analysis 與 AP-style execution path tracing。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-7-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-7-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-6.html">回 Lesson 6</a>
+            <a class="button" href="lesson-8.html">前往 Lesson 8</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#selection">Selection</a>
+          <a href="#if">if</a>
+          <a href="#boolean-condition">condition 必須是 boolean</a>
+          <a href="#trace">Execution Tracing</a>
+          <a href="#else">if / else</a>
+          <a href="#else-if">else if</a>
+          <a href="#independent-if">獨立 if</a>
+          <a href="#nested">Nested if</a>
+          <a href="#range">Range Checking</a>
+          <a href="#case-analysis">Case Analysis</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#ap-patterns">AP 題型</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>使用 <code>if</code> 讓程式只在 condition 為 <code>true</code> 時執行某段程式。</div>
+              <div>知道 <code>if</code> condition 必須是 <code>boolean</code>，不能把 <code>int</code> 當條件。</div>
+              <div>trace <code>if</code> 區塊：condition 是 false 時只跳過 body，不會停止整個程式。</div>
+              <div>使用 <code>if / else</code> 表示二選一的 execution path。</div>
+              <div>使用 <code>else if</code> 建立 multi-way selection，並理解從上往下檢查。</div>
+              <div>分辨多個獨立 <code>if</code> 與 <code>if / else if</code> chain。</div>
+              <div>trace branch 中的 variable update，後面的 condition 使用更新後的值。</div>
+              <div>理解 nested if、inner / outer condition 和 <code>else</code> 配對。</div>
+              <div>使用 braces <code>{ }</code> 避免 dangling else、missing braces 與 semicolon traps。</div>
+              <div>做 range checking、grade classifier、sign classifier 與 invalid input 檢查。</div>
+              <div>用 case analysis 檢查所有 cases 是否被涵蓋、是否重疊、boundary 是否正確。</div>
+              <div>找出 unreachable branch、錯誤 threshold order、String <code>==</code>、<code>=</code> vs <code>==</code> 等 AP 陷阱。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson7-flow-0" /> <span><strong>Single selection</strong>：<code>if</code> 的 condition 與 body。</span></label>
+              <label><input type="checkbox" data-progress="lesson7-flow-1" /> <span><strong>Two-way selection</strong>：<code>if / else</code> 一次只會走一條路。</span></label>
+              <label><input type="checkbox" data-progress="lesson7-flow-2" /> <span><strong>Multi-way selection</strong>：<code>else if</code> 從上往下，第一個 true 就停止。</span></label>
+              <label><input type="checkbox" data-progress="lesson7-flow-3" /> <span><strong>Tracing</strong>：branch 內修改 variable 後，後面使用新值。</span></label>
+              <label><input type="checkbox" data-progress="lesson7-flow-4" /> <span><strong>Nested if</strong>：outer condition 決定 inner condition 是否有機會被判斷。</span></label>
+              <label><input type="checkbox" data-progress="lesson7-flow-5" /> <span><strong>AP 題型</strong>：range、boundary、unreachable branch、missing braces、case table。</span></label>
+            </div>
+          </section>
+
+          <section id="selection" class="article-section">
+            <p class="eyebrow">Selection</p>
+            <h2>程式不一定永遠從上到下做同一件事</h2>
+            <p>
+              到目前為止，程式大多是一行一行往下執行。但真實程式常常需要根據狀況選擇路徑：
+              密碼正確才登入、成績達標才顯示 pass、輸入不合法就顯示錯誤。這種能力叫做
+              selection 或 conditional execution。
+            </p>
+            <div class="concept-card">
+              <pre><code>condition
+  |
+  +-- true  -> execute this branch
+  |
+  +-- false -> skip or execute another branch</code></pre>
+            </div>
+          </section>
+
+          <section id="if" class="article-section">
+            <p class="eyebrow">if</p>
+            <h2><code>if</code>：condition 是 true 才執行 body</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Basic if</h3>
+                <button class="copy-button" type="button" data-copy="l7-code-basic-if">Copy</button>
+              </div>
+              <pre><code id="l7-code-basic-if">int temperature = 35;
+
+if (temperature &gt; 30)
+{
+    System.out.println("Hot");
+}</code></pre>
+            </div>
+            <p>
+              <code>temperature &gt; 30</code> 是 <code>true</code>，所以程式進入 braces 裡面並輸出
+              <code>Hot</code>。如果 <code>temperature</code> 是 <code>20</code>，condition 是 <code>false</code>，
+              body 會被跳過。
+            </p>
+            <div class="definition-grid">
+              <article><h3><code>if</code></h3><p>關鍵字，開始一個條件判斷。</p></article>
+              <article><h3><code>(condition)</code></h3><p>必須得到 <code>true</code> 或 <code>false</code>。</p></article>
+              <article><h3><code>{ body }</code></h3><p>condition 是 <code>true</code> 時才執行。</p></article>
+            </div>
+          </section>
+
+          <section id="boolean-condition" class="article-section">
+            <p class="eyebrow">Boolean Condition</p>
+            <h2><code>if</code> 括號中一定要是 <code>boolean</code></h2>
+            <p>
+              Java 不會把 <code>0</code> 當 false，也不會把非零數字當 true。<code>if</code> 的 condition
+              必須真的是 Boolean expression。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Condition</th>
+                    <th>合法嗎？</th>
+                    <th>原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>if (x &gt; 5)</code></td><td>合法</td><td><code>x &gt; 5</code> 得到 <code>boolean</code>。</td></tr>
+                  <tr><td><code>if (x == 10)</code></td><td>合法</td><td><code>==</code> 是 comparison。</td></tr>
+                  <tr><td><code>if (name.equals("Tom"))</code></td><td>合法</td><td><code>equals()</code> 回傳 <code>boolean</code>。</td></tr>
+                  <tr><td><code>if (isReady)</code></td><td>合法</td><td><code>isReady</code> 本身是 <code>boolean</code> variable。</td></tr>
+                  <tr><td><code>if (x)</code></td><td>不合法</td><td>如果 <code>x</code> 是 <code>int</code>，它不是 <code>boolean</code>。</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              Lesson 7 會大量使用 Lesson 6 的 Boolean expressions；看見 <code>if (...)</code> 先問括號裡最後是不是 Boolean。
+            </p>
+          </section>
+
+          <section id="trace" class="article-section">
+            <p class="eyebrow">Execution Tracing</p>
+            <h2><code>if</code> 是跳過 body，不是停止整個程式</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Trace if</h3>
+                <button class="copy-button" type="button" data-copy="l7-code-if-trace">Copy</button>
+              </div>
+              <pre><code id="l7-code-if-trace">int x = 8;
+
+System.out.println("A");
+
+if (x &gt; 5)
+{
+    System.out.println("B");
+}
+
+System.out.println("C");</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>x = 8
+
+print A
+x &gt; 5 -> 8 &gt; 5 -> true
+print B
+print C
+
+Output:
+A
+B
+C</code></pre>
+            </div>
+            <p>
+              如果 <code>x = 3</code>，那麼 <code>x &gt; 5</code> 是 <code>false</code>，<code>B</code> 被跳過，
+              但 <code>C</code> 仍然會執行。
+            </p>
+            <div class="question-list">
+              <article>
+                <h3>AP tracing SOP</h3>
+                <p>先寫目前 variable values，再算 condition，決定 execution path，只執行那條路，最後繼續往下。</p>
+              </article>
+              <article>
+                <h3>Variable update</h3>
+                <p>branch 中如果修改 variable，下一個 condition 一定使用更新後的值。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="else" class="article-section">
+            <p class="eyebrow">if / else</p>
+            <h2><code>if / else</code>：條件成立做 A，否則做 B</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Two-way Selection</h3>
+                <button class="copy-button" type="button" data-copy="l7-code-if-else">Copy</button>
+              </div>
+              <pre><code id="l7-code-if-else">int age = 16;
+
+if (age &gt;= 18)
+{
+    System.out.println("Adult");
+}
+else
+{
+    System.out.println("Minor");
+}</code></pre>
+            </div>
+            <p>
+              <code>if</code> 和對應的 <code>else</code> 是 mutually exclusive paths。每一次執行只會選一條，
+              不可能同時印出 <code>Adult</code> 和 <code>Minor</code>。
+            </p>
+            <div class="concept-card">
+              <pre><code>age &gt;= 18
+   |
+   +-- true  -> Adult
+   |
+   +-- false -> Minor</code></pre>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Execution Path</h3>
+                <button class="copy-button" type="button" data-copy="l7-code-path">Copy</button>
+              </div>
+              <pre><code id="l7-code-path">int x = 7;
+
+if (x &gt; 5)
+{
+    x += 2;
+}
+else
+{
+    x -= 2;
+}
+
+x *= 3;
+
+System.out.println(x);</code></pre>
+            </div>
+            <p>
+              <code>7 &gt; 5</code> 是 <code>true</code>，所以 <code>x += 2</code> 讓 <code>x</code> 變
+              <code>9</code>；<code>else</code> 不執行。最後 <code>x *= 3</code> 得到 <code>27</code>。
+            </p>
+          </section>
+
+          <section id="else-if" class="article-section">
+            <p class="eyebrow">else if</p>
+            <h2><code>else if</code>：多個 case 中選第一個成立的 branch</h2>
+            <p>
+              當情況不只兩種時，可以用 <code>if / else if / else</code>。Java 會從上往下檢查，
+              一旦遇到第一個 <code>true</code>，就執行那個 branch，後面全部跳過。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Grade Classifier</h3>
+                <button class="copy-button" type="button" data-copy="l7-code-grade">Copy</button>
+              </div>
+              <pre><code id="l7-code-grade">int score = 87;
+String grade;
+
+if (score &gt;= 90)
+{
+    grade = "A";
+}
+else if (score &gt;= 80)
+{
+    grade = "B";
+}
+else if (score &gt;= 70)
+{
+    grade = "C";
+}
+else if (score &gt;= 60)
+{
+    grade = "D";
+}
+else
+{
+    grade = "F";
+}
+
+System.out.println("Grade: " + grade);</code></pre>
+            </div>
+            <p>
+              <code>87 &gt;= 90</code> 是 false，接著 <code>87 &gt;= 80</code> 是 true，所以 grade 是
+              <code>"B"</code>。後面的 <code>&gt;= 70</code> 和 <code>&gt;= 60</code> 不會再檢查。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>score</th>
+                    <th>第一個成立條件</th>
+                    <th>grade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>95</code></td><td><code>score &gt;= 90</code></td><td><code>A</code></td></tr>
+                  <tr><td><code>87</code></td><td><code>score &gt;= 80</code></td><td><code>B</code></td></tr>
+                  <tr><td><code>75</code></td><td><code>score &gt;= 70</code></td><td><code>C</code></td></tr>
+                  <tr><td><code>58</code></td><td><code>else</code></td><td><code>F</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              用 <code>&gt;=</code> 做等級分類時，threshold 通常要從大到小排：<code>90</code>、<code>80</code>、<code>70</code>、<code>60</code>。
+            </p>
+          </section>
+
+          <section id="independent-if" class="article-section">
+            <p class="eyebrow">Independent if</p>
+            <h2>兩個 <code>if</code> 不等於 <code>if + else if</code></h2>
+            <p>
+              這是 AP CSA 非常常考的陷阱。兩個獨立 <code>if</code> 會各自判斷；<code>else if</code> chain
+              則最多只會執行其中一個 branch。
+            </p>
+            <div class="question-list">
+              <article>
+                <h3>Two independent if statements</h3>
+                <pre><code>int x = 10;
+
+if (x &gt; 0)
+{
+    System.out.println("A");
+}
+
+if (x &gt; 5)
+{
+    System.out.println("B");
+}</code></pre>
+                <p>兩個 condition 都是 true，所以輸出 <code>A</code> 和 <code>B</code>。</p>
+              </article>
+              <article>
+                <h3>if / else if chain</h3>
+                <pre><code>int x = 10;
+
+if (x &gt; 0)
+{
+    System.out.println("A");
+}
+else if (x &gt; 5)
+{
+    System.out.println("B");
+}</code></pre>
+                <p>第一個 condition 已經 true，所以 <code>else if</code> 不檢查，只輸出 <code>A</code>。</p>
+              </article>
+            </div>
+            <div class="concept-card">
+              <pre><code>if (A) { ... }
+if (B) { ... }
+
+可能都執行。
+
+if (A) { ... }
+else if (B) { ... }
+
+最多只執行一個 branch。</code></pre>
+            </div>
+          </section>
+
+          <section id="nested" class="article-section">
+            <p class="eyebrow">Nested if</p>
+            <h2>Nested if：只有外層成立，內層才有機會判斷</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Nested if</h3>
+                <button class="copy-button" type="button" data-copy="l7-code-nested">Copy</button>
+              </div>
+              <pre><code id="l7-code-nested">int age = 20;
+boolean hasTicket = true;
+
+if (age &gt;= 18)
+{
+    if (hasTicket)
+    {
+        System.out.println("Enter");
+    }
+}</code></pre>
+            </div>
+            <p>
+              這表示兩個條件都必須成立：先檢查 <code>age &gt;= 18</code>，成立後才會檢查
+              <code>hasTicket</code>。Lesson 8 學到 <code>&amp;&amp;</code> 後，可以把這種邏輯寫得更短。
+            </p>
+            <div class="question-list">
+              <article>
+                <h3>Nested if / else</h3>
+                <pre><code>int score = 75;
+
+if (score &gt;= 60)
+{
+    if (score &gt;= 90)
+    {
+        System.out.println("Excellent");
+    }
+    else
+    {
+        System.out.println("Pass");
+    }
+}
+else
+{
+    System.out.println("Fail");
+}</code></pre>
+                <p><code>75 &gt;= 60</code> true，內層 <code>75 &gt;= 90</code> false，所以輸出 <code>Pass</code>。</p>
+              </article>
+              <article>
+                <h3>Dangling else</h3>
+                <p><code>else</code> 會配對最近一個尚未配對的 <code>if</code>。最好永遠寫 braces，讓結構清楚。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="range" class="article-section">
+            <p class="eyebrow">Range Checking</p>
+            <h2>Range checking：條件順序本身就是邏輯的一部分</h2>
+            <p>
+              分類題最常見的錯誤是 boundary 和 threshold order。用 <code>&gt;=</code> 寫分數等級時，
+              通常從大到小；用 <code>&lt;=</code> 寫年齡分類時，常從小到大。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>英文</th>
+                    <th>Java</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>greater than 10</td><td><code>x &gt; 10</code></td></tr>
+                  <tr><td>less than 10</td><td><code>x &lt; 10</code></td></tr>
+                  <tr><td>at least 10</td><td><code>x &gt;= 10</code></td></tr>
+                  <tr><td>at most 10</td><td><code>x &lt;= 10</code></td></tr>
+                  <tr><td>exactly 10</td><td><code>x == 10</code></td></tr>
+                  <tr><td>not equal to 10</td><td><code>x != 10</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Temperature Classifier</h3>
+                <button class="copy-button" type="button" data-copy="l7-code-temp">Copy</button>
+              </div>
+              <pre><code id="l7-code-temp">int temperature = 24;
+
+if (temperature &gt;= 30)
+{
+    System.out.println("Hot");
+}
+else if (temperature &gt;= 20)
+{
+    System.out.println("Warm");
+}
+else if (temperature &gt;= 10)
+{
+    System.out.println("Cool");
+}
+else
+{
+    System.out.println("Cold");
+}</code></pre>
+            </div>
+            <p>
+              <code>24 &gt;= 30</code> false，<code>24 &gt;= 20</code> true，所以輸出 <code>Warm</code>。
+            </p>
+            <p class="callout">
+              Boundary testing：如果條件分界是 <code>80</code> 和 <code>90</code>，請測 <code>79</code>、<code>80</code>、<code>89</code>、<code>90</code>。
+            </p>
+          </section>
+
+          <section id="case-analysis" class="article-section">
+            <p class="eyebrow">Case Analysis</p>
+            <h2>Case analysis：把所有輸入分成清楚且不重疊的情況</h2>
+            <p>
+              AP CSA 很重視 case analysis。好的分類應該 cover all cases、不意外重疊、boundary 清楚。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Sign Classifier</h3>
+                <button class="copy-button" type="button" data-copy="l7-code-sign">Copy</button>
+              </div>
+              <pre><code id="l7-code-sign">int x = -5;
+
+if (x &gt; 0)
+{
+    System.out.println("Positive");
+}
+else if (x == 0)
+{
+    System.out.println("Zero");
+}
+else
+{
+    System.out.println("Negative");
+}</code></pre>
+            </div>
+            <p>
+              最後的 <code>else</code> 不必再寫 <code>x &lt; 0</code>，因為前面已經排除
+              <code>x &gt; 0</code> 和 <code>x == 0</code>，剩下只可能是 negative。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>x 範圍</th>
+                    <th>第一條件</th>
+                    <th>第二條件</th>
+                    <th>輸出</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>x &gt; 0</code></td><td>true</td><td>不檢查</td><td>Positive</td></tr>
+                  <tr><td><code>x == 0</code></td><td>false</td><td>true</td><td>Zero</td></tr>
+                  <tr><td><code>x &lt; 0</code></td><td>false</td><td>false</td><td>Negative</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Errors</p>
+            <h2>Lesson 7 常見錯誤與 AP 陷阱</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>陷阱</th>
+                    <th>錯誤想法</th>
+                    <th>正確觀念</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>if (x)</code></td><td>非 0 就是 true。</td><td>Java condition 必須是 <code>boolean</code>。</td></tr>
+                  <tr><td><code>if (x = 5)</code></td><td>檢查 x 是否為 5。</td><td><code>=</code> 是 assignment；比較要用 <code>==</code>。</td></tr>
+                  <tr><td><code>password == "abc123"</code></td><td>比較 String 內容。</td><td>String contents 用 <code>equals()</code>。</td></tr>
+                  <tr><td><code>if (x &gt; 5);</code></td><td>分號沒影響。</td><td><code>if</code> 控制 empty statement，後方 block 可能總是執行。</td></tr>
+                  <tr><td>忘記 braces</td><td>縮排決定 body。</td><td>Java 看 syntax，不看縮排；建議永遠寫 <code>{ }</code>。</td></tr>
+                  <tr><td>錯誤 threshold order</td><td>條件順序沒差。</td><td><code>else if</code> 是第一個 true 就停止。</td></tr>
+                  <tr><td>unreachable branch</td><td>每個 branch 都可能跑到。</td><td>前面條件若比較寬，後面更嚴格條件可能永遠到不了。</td></tr>
+                  <tr><td>branch update</td><td>後面仍用舊值。</td><td>branch 中修改後，後面 condition 用新值。</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Unreachable Branch</h3>
+                <button class="copy-button" type="button" data-copy="l7-code-unreachable">Copy</button>
+              </div>
+              <pre><code id="l7-code-unreachable">if (x &gt;= 50)
+{
+    System.out.println("A");
+}
+else if (x &gt;= 70)
+{
+    System.out.println("B");
+}
+else
+{
+    System.out.println("C");
+}</code></pre>
+            </div>
+            <p>
+              <code>B</code> 永遠不會執行，因為任何 <code>x &gt;= 70</code> 的值都已經先符合
+              <code>x &gt;= 50</code>。
+            </p>
+          </section>
+
+          <section id="ap-patterns" class="article-section">
+            <p class="eyebrow">AP Patterns</p>
+            <h2>AP-style 題型整理</h2>
+            <div class="question-list">
+              <article>
+                <h3>Independent if</h3>
+                <pre><code>int x = 6;
+
+if (x &gt; 3)
+{
+    x += 2;
+}
+
+if (x &gt; 7)
+{
+    x *= 2;
+}</code></pre>
+                <p><code>x</code> 先變 <code>8</code>，第二個 <code>if</code> 也成立，最後 <code>x = 16</code>。</p>
+              </article>
+              <article>
+                <h3>else if first true wins</h3>
+                <pre><code>int x = 15;
+
+if (x &gt; 5)
+{
+    System.out.print("A");
+}
+else if (x &gt; 10)
+{
+    System.out.print("B");
+}</code></pre>
+                <p>只輸出 <code>A</code>；<code>x &gt; 10</code> 不會再檢查。</p>
+              </article>
+              <article>
+                <h3>Nested if</h3>
+                <pre><code>int x = 4;
+
+if (x &gt; 0)
+{
+    System.out.print("A");
+
+    if (x &gt; 5)
+    {
+        System.out.print("B");
+    }
+    else
+    {
+        System.out.print("C");
+    }
+}
+
+System.out.print("D");</code></pre>
+                <p>Output 是 <code>ACD</code>。</p>
+              </article>
+              <article>
+                <h3>Boundary</h3>
+                <pre><code>int score = 80;
+
+if (score &gt; 90)
+{
+    System.out.println("A");
+}
+else if (score &gt; 80)
+{
+    System.out.println("B");
+}
+else if (score &gt; 70)
+{
+    System.out.println("C");
+}</code></pre>
+                <p><code>80 &gt; 80</code> 是 false，但 <code>80 &gt; 70</code> 是 true，所以輸出 <code>C</code>。</p>
+              </article>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Final Trace Example</h3>
+                <button class="copy-button" type="button" data-copy="l7-code-final-trace">Copy</button>
+              </div>
+              <pre><code id="l7-code-final-trace">int x = 10;
+int y = 5;
+
+if (x &gt; y)
+{
+    x -= 5;
+
+    if (x == y)
+    {
+        y *= 2;
+    }
+}
+else
+{
+    x += 10;
+}
+
+System.out.println(x + " " + y);</code></pre>
+            </div>
+            <p>
+              <code>10 &gt; 5</code> true，<code>x</code> 變 <code>5</code>，內層 <code>x == y</code> true，
+              <code>y</code> 變 <code>10</code>，output 是 <code>5 10</code>。
+            </p>
+          </section>
+
+          <section id="practice" class="article-section">
+            <p class="eyebrow">Practice</p>
+            <h2>練習題與可完成的小程式</h2>
+            <p>
+              完整課後題本已整理成 single selection、two-way selection、multi-way selection、nested if、
+              range classification、boundary、unreachable branch、bug finding 與 coding practice。
+            </p>
+            <div class="inline-actions">
+              <a class="button primary" href="lesson-7-practice.html">開始 Lesson 7 課後練習</a>
+              <a class="button" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+            <div class="practice-set">
+              <article>
+                <h3>Odd / Even</h3>
+                <p>用 <code>if / else</code> 和 <code>number % 2 == 0</code> 判斷奇偶。</p>
+              </article>
+              <article>
+                <h3>Sign Classifier</h3>
+                <p>把整數分成 positive、zero、negative。</p>
+              </article>
+              <article>
+                <h3>Ticket Price</h3>
+                <p>用 <code>else if</code> 依年齡決定票價。</p>
+              </article>
+              <article>
+                <h3>Grade + Invalid</h3>
+                <p>先處理 invalid / special cases，再處理正常分類。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong><code>if</code></strong><span>condition 是 true 才執行 body。</span></div>
+              <div><strong>condition</strong><span>必須是 <code>boolean</code>，不能是 <code>int</code>。</span></div>
+              <div><strong>false</strong><span>只跳過 body，不會停止整個程式。</span></div>
+              <div><strong><code>if / else</code></strong><span>二選一，兩條路互斥。</span></div>
+              <div><strong><code>else if</code></strong><span>從上往下，第一個 true 執行，後面跳過。</span></div>
+              <div><strong>多個 <code>if</code></strong><span>彼此獨立，可能多個都執行。</span></div>
+              <div><strong>Nested if</strong><span>outer true 後，inner 才有機會判斷。</span></div>
+              <div><strong>Boundary</strong><span><code>&gt;</code>、<code>&gt;=</code>、<code>&lt;</code>、<code>&lt;=</code> 差很多。</span></div>
+              <div><strong>Order</strong><span>threshold 順序會改變結果。</span></div>
+              <div><strong>Case analysis</strong><span>cover all cases、avoid overlap、test boundary。</span></div>
+              <div><strong>Braces</strong><span>建議永遠寫 <code>{ }</code>，避免 dangling else 和 missing braces。</span></div>
+              <div><strong>Tracing</strong><span>branch update 後，下一個 condition 用新值。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十句</summary>
+              <p><code>if</code> condition must be Boolean.</p>
+              <p><code>if / else</code> executes exactly one branch.</p>
+              <p><code>else if</code> checks from top to bottom.</p>
+              <p>The first true branch wins.</p>
+              <p>Separate <code>if</code> statements are independent.</p>
+              <p>Order matters in range classification.</p>
+              <p>Always test boundary values.</p>
+              <p>Nested inner conditions run only when the outer branch is entered.</p>
+              <p><code>else</code> pairs with the nearest unmatched <code>if</code>.</p>
+              <p>Variable updates inside a branch affect later conditions.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 7｜if / else 條件判斷與程式分支。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

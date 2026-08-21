@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 2 課後練習｜Assignment、Input、Casting 與數值範圍</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 2 課後練習：assignment trace、Scanner input、casting、rounding、overflow、double round-off 與 compound assignment。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 2 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-2-presentation.html">投影模式</a>
+        <a href="lesson-2.html">文章版</a>
+        <a href="lesson-1-practice.html">上一課練習</a>
+        <a href="#trace">Trace</a>
+        <a href="#casting">Casting</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 2</p>
+          <h1>課後練習：Assignment、Input、Casting 與數值範圍</h1>
+          <p class="lead">
+            先自己作答，再點開詳解。這份題本會檢查你是否能追蹤變數更新、判斷 input 與型別規則、
+            正確使用 casting、解釋 overflow 與 round-off error，並寫出幾個小型 Java 程式。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>45</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>Trace</strong><span>逐行推理</span></div>
+            <div><strong>AP-style</strong><span>選擇題與除錯題</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 名詞與觀念</a>
+          <a href="#trace">B. Assignment trace</a>
+          <a href="#scanner">C. Scanner input</a>
+          <a href="#casting">D. Casting 與 rounding</a>
+          <a href="#numbers">E. 數值範圍與精度</a>
+          <a href="#compound">F. Compound assignment</a>
+          <a href="#coding">G. 程式與除錯</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>名詞與觀念</h2>
+              <p>這一區確認你是否理解 assignment、initialization、RHS/LHS 與型別相容。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Assignment</span></div>
+              <h3>請排出 assignment 的正確執行順序。</h3>
+              <p>Store in LHS、Check type、Evaluate RHS、Produce value</p>
+              <button class="reveal-button" type="button" data-reveal="l2p1">詳解</button>
+              <div class="reveal-panel" id="l2p1">
+                <p>正確順序是 <strong>Evaluate RHS → Produce value → Check type → Store in LHS</strong>。Java 會先把右邊 expression 算完，確認結果能放進左邊變數，再完成 assignment。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Vocabulary</span></div>
+              <h3>請把三個名詞配對到正確意思。</h3>
+              <div class="match-grid">
+                <div><strong>Declaration</strong><span>?</span></div>
+                <div><strong>Initialization</strong><span>?</span></div>
+                <div><strong>Reassignment</strong><span>?</span></div>
+              </div>
+              <p>選項：建立變數名稱與型別、第一次給 value、之後再次修改 value。</p>
+              <button class="reveal-button" type="button" data-reveal="l2p2">詳解</button>
+              <div class="reveal-panel" id="l2p2">
+                <p><strong>Declaration</strong> 是建立變數名稱與型別。<strong>Initialization</strong> 是第一次給 value。<strong>Reassignment</strong> 是把新的 value 存進已存在的變數。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Compile-time Error</span></div>
+              <h3>這段程式的問題是什麼？</h3>
+              <pre><code>int x;
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p3">詳解</button>
+              <div class="reveal-panel" id="l2p3">
+                <p>這是 compile-time error。Local variable <code>x</code> 已經宣告，但尚未初始化。Java 不能讀取一個沒有 value 的 local variable。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>RHS/LHS</span></div>
+              <h3>在 <code>x = y + 5;</code> 中，哪一邊是 RHS？哪一邊是 LHS？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p4">詳解</button>
+              <div class="reveal-panel" id="l2p4">
+                <p><code>x</code> 是 LHS，也就是要被存入的 destination。<code>y + 5</code> 是 RHS，也就是會先被計算的 expression。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Type</span></div>
+              <h3>下列哪一行是合法 Java？</h3>
+              <div class="choices">
+                <span>A. <code>int x = 5.5;</code></span>
+                <span>B. <code>double y = 5;</code></span>
+                <span>C. <code>boolean ok = 1;</code></span>
+                <span>D. <code>int z = "7";</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l2p5">詳解</button>
+              <div class="reveal-panel" id="l2p5">
+                <p>答案是 B。<code>int</code> value 可以自動 widening 成 <code>double</code>。A 是把 double 放進 int；C 的 boolean 不能用 <code>1</code>；D 是把 String 放進 int。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Input</span></div>
+              <h3>為什麼 <code>int age = input.nextInt();</code> 也是 assignment？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p6">詳解</button>
+              <div class="reveal-panel" id="l2p6">
+                <p>右邊的 <code>input.nextInt()</code> 會讀取 input 並產生一個 int value。接著這個 value 被存進左邊的 <code>age</code>。所以它仍然符合「先算右邊，再存左邊」。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="trace" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Assignment Trace</p>
+              <h2>逐行追蹤</h2>
+              <p>先不要執行。請在紙上或腦中建立 trace table，再點開詳解。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Trace</span></div>
+              <h3>最後 <code>x</code> 是多少？</h3>
+              <pre><code>int x = 5;
+x = x + 4;
+x = x * 2;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p7">詳解</button>
+              <div class="reveal-panel" id="l2p7">
+                <p>答案是 <code>18</code>。初始 <code>x = 5</code>。第一個 reassignment 讓 <code>x</code> 變成 <code>9</code>。第二行使用新的 <code>9</code>，所以 <code>9 * 2 = 18</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Copy</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int a = 5;
+int b = a;
+a = 10;
+System.out.println(a);
+System.out.println(b);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p8">詳解</button>
+              <div class="reveal-panel" id="l2p8">
+                <pre><code>10
+5</code></pre>
+                <p><code>int b = a;</code> 是把 <code>a</code> 當下的 value 複製給 <code>b</code>。之後 <code>a</code> 變成 <code>10</code>，<code>b</code> 不會跟著變。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Trace</span></div>
+              <h3>最後 <code>x</code> 與 <code>y</code> 是多少？</h3>
+              <pre><code>int x = 4;
+int y = 2;
+x = x + y;
+y = x * 2;
+x = y - x;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p9">詳解</button>
+              <div class="reveal-panel" id="l2p9">
+                <p>初始 <code>x = 4</code>、<code>y = 2</code>。執行 <code>x = x + y;</code> 後 <code>x = 6</code>。執行 <code>y = x * 2;</code> 時使用新的 <code>x</code>，所以 <code>y = 12</code>。最後 <code>x = 12 - 6</code>，所以 <code>x = 6</code>。最後 <code>x = 6</code>、<code>y = 12</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Precedence</span></div>
+              <h3>最後 <code>x</code> 是多少？</h3>
+              <pre><code>int x = 5;
+int y = 3;
+x = x + y * 2;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p10">詳解</button>
+              <div class="reveal-panel" id="l2p10">
+                <p>答案是 <code>11</code>。右邊先遵守 operator precedence：<code>y * 2</code> 是 <code>3 * 2 = 6</code>，再做 <code>x + 6</code>，也就是 <code>5 + 6 = 11</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Trace</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 10;
+x = x - 4;
+x = x / 3;
+x = x + 8;
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p11">詳解</button>
+              <div class="reveal-panel" id="l2p11">
+                <pre><code>10</code></pre>
+                <p><code>x</code> 先從 <code>10</code> 變 <code>6</code>。接著 <code>6 / 3</code> 得到 <code>2</code>。最後 <code>2 + 8</code> 得到 <code>10</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Trace</span></div>
+              <h3>這段程式是否成功交換 <code>a</code> 與 <code>b</code>？</h3>
+              <pre><code>int a = 3;
+int b = 8;
+a = b;
+b = a;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p12">詳解</button>
+              <div class="reveal-panel" id="l2p12">
+                <p>沒有。執行 <code>a = b;</code> 後，<code>a</code> 變成 <code>8</code>，原本的 <code>3</code> 已經不在 <code>a</code> 裡。接著 <code>b = a;</code> 只是把 <code>8</code> 存進 <code>b</code>。最後 <code>a = 8</code>、<code>b = 8</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Trace Table</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 10;
+int y = 4;
+x += y;
+y = x / y;
+x %= 5;
+y++;
+System.out.println(x);
+System.out.println(y);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p13">詳解</button>
+              <div class="reveal-panel" id="l2p13">
+                <pre><code>4
+4</code></pre>
+                <p>初始 <code>x = 10</code>、<code>y = 4</code>。<code>x += y</code> 後 <code>x = 14</code>。<code>y = x / y</code> 是 <code>14 / 4</code>，integer division 得到 <code>3</code>。<code>x %= 5</code> 是 <code>14 % 5</code>，得到 <code>4</code>。最後 <code>y++</code> 讓 <code>y</code> 變 <code>4</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="scanner" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Scanner Input</p>
+              <h2>輸入與 Scanner</h2>
+              <p>這一區檢查 Scanner 的基本架構，以及 input 如何變成 variable value。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Scanner</span></div>
+              <h3>如果要使用 <code>Scanner</code>，程式最前面通常需要哪一行？</h3>
+              <div class="choices">
+                <span>A. <code>import java.util.Scanner;</code></span>
+                <span>B. <code>new java.Scanner;</code></span>
+                <span>C. <code>include Scanner;</code></span>
+                <span>D. <code>Scanner.import();</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l2p14">詳解</button>
+              <div class="reveal-panel" id="l2p14">
+                <p>答案是 A。<code>Scanner</code> 在 <code>java.util</code> package 裡，所以要使用 <code>import java.util.Scanner;</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Scanner</span></div>
+              <h3>哪一行會建立從 keyboard 讀取資料的 Scanner？</h3>
+              <div class="choices">
+                <span>A. <code>Scanner input = new Scanner(System.in);</code></span>
+                <span>B. <code>Scanner input = System.out;</code></span>
+                <span>C. <code>int input = new Scanner();</code></span>
+                <span>D. <code>input.Scanner(System.in);</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l2p15">詳解</button>
+              <div class="reveal-panel" id="l2p15">
+                <p>答案是 A。<code>System.in</code> 代表標準輸入，常見情況就是鍵盤輸入。<code>input</code> 是這個 Scanner 物件的變數名稱。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>nextInt</span></div>
+              <h3>如果使用者輸入 <code>18</code>，最後 output 是什麼？</h3>
+              <pre><code>System.out.print("Age: ");
+int age = input.nextInt();
+System.out.println(age + 2);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p16">詳解</button>
+              <div class="reveal-panel" id="l2p16">
+                <pre><code>Age: 20</code></pre>
+                <p><code>print</code> 不換行，接著 input 讀到 <code>18</code>。<code>age + 2</code> 是數字加法，得到 <code>20</code>。許多線上執行器會把 prompt 與輸入顯示在同一行。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>nextDouble</span></div>
+              <h3>讀取身高 <code>175.5</code> 時，應該使用哪個 method？</h3>
+              <div class="choices">
+                <span>A. <code>nextInt()</code></span>
+                <span>B. <code>nextDouble()</code></span>
+                <span>C. <code>nextBoolean()</code></span>
+                <span>D. <code>println()</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l2p17">詳解</button>
+              <div class="reveal-panel" id="l2p17">
+                <p>答案是 B。<code>175.5</code> 是 double value，所以用 <code>nextDouble()</code> 讀取。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Input Type</span></div>
+              <h3>如果程式執行 <code>input.nextInt()</code>，但輸入是 <code>Hello</code>，最合理的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p18">詳解</button>
+              <div class="reveal-panel" id="l2p18">
+                <p><code>nextInt()</code> 期待讀到可以解析成 int 的 input。<code>Hello</code> 不是整數，因此程式在執行讀取時會出錯。重點是 input method 與輸入資料型態要符合。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="casting" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Casting and Rounding</p>
+              <h2>Casting、整數除法與四捨五入</h2>
+              <p>這一區是 AP CSA 常考陷阱。請特別注意運算順序與 casting 位置。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Casting</span></div>
+              <h3><code>(int) 9.8</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p19">詳解</button>
+              <div class="reveal-panel" id="l2p19">
+                <p>答案是 <code>9</code>。<code>(int)</code> 會 truncate toward zero，移除小數點右側，不會四捨五入。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Negative Casting</span></div>
+              <h3><code>(int) -9.8</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p20">詳解</button>
+              <div class="reveal-panel" id="l2p20">
+                <p>答案是 <code>-9</code>。Casting 不是 floor。它會朝 0 截掉小數部分，所以 <code>-9.8</code> 變成 <code>-9</code>，不是 <code>-10</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Integer Division</span></div>
+              <h3><code>double x = 7 / 2;</code> 中，<code>x</code> 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p21">詳解</button>
+              <div class="reveal-panel" id="l2p21">
+                <p><code>x</code> 是 <code>3.0</code>。右邊先做 <code>int / int</code>，<code>7 / 2</code> 得到 <code>3</code>，接著才存入 double 變成 <code>3.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Casting Position</span></div>
+              <h3><code>double x = (double) 7 / 2;</code> 中，<code>x</code> 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p22">詳解</button>
+              <div class="reveal-panel" id="l2p22">
+                <p><code>x</code> 是 <code>3.5</code>。<code>(double) 7</code> 先變成 <code>7.0</code>，接著 <code>7.0 / 2</code> 做 double division。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Casting Position</span></div>
+              <h3><code>double x = (double) (7 / 2);</code> 中，<code>x</code> 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p23">詳解</button>
+              <div class="reveal-panel" id="l2p23">
+                <p><code>x</code> 是 <code>3.0</code>。括號裡的 <code>7 / 2</code> 先做 integer division，得到 <code>3</code>。之後再 cast 成 double，所以是 <code>3.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Average</span></div>
+              <h3>哪兩種寫法能得到真正的小數平均？</h3>
+              <pre><code>int score1 = 80;
+int score2 = 90;
+int score3 = 95;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p24">詳解</button>
+              <div class="reveal-panel" id="l2p24">
+                <p>可以寫 <code>double avg = (score1 + score2 + score3) / 3.0;</code>，或 <code>double avg = (double) (score1 + score2 + score3) / 3;</code>。重點是 division 發生前，至少一邊要是 double。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Widening</span></div>
+              <h3><code>double x = 5;</code> 為什麼合法？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p25">詳解</button>
+              <div class="reveal-panel" id="l2p25">
+                <p>這是 automatic widening。<code>int</code> value <code>5</code> 可以安全轉成 double value <code>5.0</code>，不會失去數值資訊。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Narrowing</span></div>
+              <h3><code>int x = 5.8;</code> 為什麼不合法？如何修正？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p26">詳解</button>
+              <div class="reveal-panel" id="l2p26">
+                <p><code>5.8</code> 是 double。把 double 放進 int 會失去小數資訊，Java 不會自動 narrowing。可以寫 <code>int x = (int) 5.8;</code>，此時 <code>x</code> 是 <code>5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Rounding</span></div>
+              <h3><code>double x = 4.8;</code>，用哪個 expression 可以四捨五入成 <code>5</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p27">詳解</button>
+              <div class="reveal-panel" id="l2p27">
+                <p>使用 <code>(int) (x + 0.5)</code>。先得到 <code>5.3</code>，再 cast 成 <code>5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Rounding</span></div>
+              <h3><code>double x = -4.8;</code>，用哪個 expression 可以四捨五入成 <code>-5</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p28">詳解</button>
+              <div class="reveal-panel" id="l2p28">
+                <p>使用 <code>(int) (x - 0.5)</code>。先得到 <code>-5.3</code>，再 truncate toward zero 成 <code>-5</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="numbers" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Range and Precision</p>
+              <h2>數值範圍與精度</h2>
+              <p>這一區檢查 int range、integer overflow 與 double round-off error。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>int Range</span></div>
+              <h3>Java <code>int</code> 的最大值可以用哪個 constant 取得？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p29">詳解</button>
+              <div class="reveal-panel" id="l2p29">
+                <p>使用 <code>Integer.MAX_VALUE</code>。最小值則是 <code>Integer.MIN_VALUE</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Overflow</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = Integer.MAX_VALUE;
+x++;
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p30">詳解</button>
+              <div class="reveal-panel" id="l2p30">
+                <pre><code>-2147483648</code></pre>
+                <p><code>Integer.MAX_VALUE</code> 是 <code>2147483647</code>。再加 1 超過 int range，發生 integer overflow，結果會繞到 <code>Integer.MIN_VALUE</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Overflow</span></div>
+              <h3>這段程式為什麼危險？</h3>
+              <pre><code>int x = 1500000000;
+int y = 2;
+int result = x * y;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p31">詳解</button>
+              <div class="reveal-panel" id="l2p31">
+                <p><code>x</code> 與 <code>y</code> 各自都在 int range 內，但 expression <code>x * y</code> 的數學結果是 <code>3000000000</code>，超過 <code>Integer.MAX_VALUE</code>。Overflow 是 expression 的結果超出範圍，不是只有單一變數本身超出才會發生。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Error Type</span></div>
+              <h3>Integer overflow 一定會造成 runtime error 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p32">詳解</button>
+              <div class="reveal-panel" id="l2p32">
+                <p>不一定。很多 int overflow 會讓程式繼續執行，但 value 已經不是數學上預期的結果。這就是它危險的地方：程式看起來沒有當場壞掉，但結果可能錯。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Round-Off</span></div>
+              <h3>為什麼 <code>0.1 + 0.2</code> 可能不是剛好 <code>0.3</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p33">詳解</button>
+              <div class="reveal-panel" id="l2p33">
+                <p><code>double</code> 使用有限的 binary bits 儲存小數。某些十進位小數，例如 <code>0.1</code>，無法用有限 binary representation 精確表示，所以計算後可能出現 <code>0.30000000000000004</code> 這類 round-off error。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="compound" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Compound Assignment</p>
+              <h2>簡寫更新</h2>
+              <p>這一區練習 <code>+=</code>、<code>/=</code>、<code>%=</code>、<code>x++</code> 與 <code>x--</code>。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Compound</span></div>
+              <h3><code>x += 5;</code> 可以先理解成什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l2p34">詳解</button>
+              <div class="reveal-panel" id="l2p34">
+                <p>可以先理解成 <code>x = x + 5;</code>。它會讀取舊的 <code>x</code>，加上 <code>5</code>，再把結果存回 <code>x</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Integer Division</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 5;
+x /= 2;
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p35">詳解</button>
+              <div class="reveal-panel" id="l2p35">
+                <pre><code>2</code></pre>
+                <p><code>x /= 2;</code> 對 int 來說可以先理解成 <code>x = x / 2;</code>。<code>5 / 2</code> 是 integer division，得到 <code>2</code>，不是 <code>2.5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Modulo</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 17;
+x %= 5;
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p36">詳解</button>
+              <div class="reveal-panel" id="l2p36">
+                <pre><code>2</code></pre>
+                <p><code>x %= 5;</code> 可以理解成 <code>x = x % 5;</code>。<code>17 % 5</code> 的餘數是 <code>2</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>Increment</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 4;
+x++;
+x--;
+x++;
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p37">詳解</button>
+              <div class="reveal-panel" id="l2p37">
+                <pre><code>5</code></pre>
+                <p><code>x++</code> 讓 <code>x</code> 加 1，<code>x--</code> 讓 <code>x</code> 減 1。Trace：<code>4 → 5 → 4 → 5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Trace</span></div>
+              <h3>最後 <code>x</code> 是多少？</h3>
+              <pre><code>int x = 5;
+x += 3;
+x *= 2;
+x--;
+x %= 4;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p38">詳解</button>
+              <div class="reveal-panel" id="l2p38">
+                <p>答案是 <code>3</code>。<code>5 + 3 = 8</code>，<code>8 * 2 = 16</code>，<code>x--</code> 後變 <code>15</code>，最後 <code>15 % 4 = 3</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>AP-style</span></div>
+              <h3>What value is stored in <code>total</code>?</h3>
+              <pre><code>int total = 17;
+total /= 5;
+total += 4;</code></pre>
+              <div class="choices">
+                <span>A. 3</span>
+                <span>B. 7</span>
+                <span>C. 7.4</span>
+                <span>D. 8</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l2p39">詳解</button>
+              <div class="reveal-panel" id="l2p39">
+                <p>答案是 B。<code>total /= 5</code> 是 <code>17 / 5</code>，integer division 得到 <code>3</code>。接著 <code>total += 4</code> 得到 <code>7</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding and Debugging</p>
+              <h2>程式與除錯</h2>
+              <p>這一區可以貼到 Java 執行器完成。先試著自己寫，再打開參考解法。</p>
+              <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Coding</span></div>
+              <h3>Temperature Converter</h3>
+              <p>讀取攝氏溫度，使用公式 <code>fahrenheit = celsius * 9.0 / 5 + 32</code>，輸出華氏溫度。</p>
+              <button class="reveal-button" type="button" data-reveal="l2p40">參考解法與說明</button>
+              <div class="reveal-panel" id="l2p40">
+                <pre><code>import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+
+        System.out.print("Enter Celsius: ");
+        double celsius = input.nextDouble();
+
+        double fahrenheit = celsius * 9.0 / 5 + 32;
+        System.out.println("Fahrenheit: " + fahrenheit);
+    }
+}</code></pre>
+                <p>使用 <code>9.0</code> 可以確保 division 使用 double calculation，不會被 integer division 影響。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Coding</span></div>
+              <h3>Average Calculator</h3>
+              <p>讀取三個整數分數，輸出真正的小數平均。</p>
+              <button class="reveal-button" type="button" data-reveal="l2p41">參考解法與說明</button>
+              <div class="reveal-panel" id="l2p41">
+                <pre><code>import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+
+        System.out.print("Score 1: ");
+        int score1 = input.nextInt();
+
+        System.out.print("Score 2: ");
+        int score2 = input.nextInt();
+
+        System.out.print("Score 3: ");
+        int score3 = input.nextInt();
+
+        double average = (score1 + score2 + score3) / 3.0;
+        System.out.println("Average: " + average);
+    }
+}</code></pre>
+                <p>重點是 <code>/ 3.0</code>。如果寫成 <code>/ 3</code>，右邊會先做 integer division，小數部分會消失。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Coding</span></div>
+              <h3>Seconds Converter</h3>
+              <p>設定 <code>int totalSeconds = 3725;</code>，輸出 hours、minutes、seconds。</p>
+              <button class="reveal-button" type="button" data-reveal="l2p42">參考解法與說明</button>
+              <div class="reveal-panel" id="l2p42">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int totalSeconds = 3725;
+
+        int hours = totalSeconds / 3600;
+        int remaining = totalSeconds % 3600;
+        int minutes = remaining / 60;
+        int seconds = remaining % 60;
+
+        System.out.println("Hours: " + hours);
+        System.out.println("Minutes: " + minutes);
+        System.out.println("Seconds: " + seconds);
+    }
+}</code></pre>
+                <p><code>/</code> 用來取得完整的小時或分鐘數，<code>%</code> 用來取得剩下的秒數。<code>3725</code> 秒是 <code>1</code> 小時、<code>2</code> 分鐘、<code>5</code> 秒。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>Debugging</span></div>
+              <h3>這段程式想得到 <code>2.5</code>，但 output 是 <code>2.0</code>。請修正。</h3>
+              <pre><code>int x = 5;
+int y = 2;
+double answer = x / y;
+System.out.println(answer);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p43">詳解</button>
+              <div class="reveal-panel" id="l2p43">
+                <p>問題是右邊 <code>x / y</code> 是 <code>int / int</code>，先得到 <code>2</code>。可以改成 <code>double answer = (double) x / y;</code>，或 <code>double answer = x / 2.0;</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Debugging</span></div>
+              <h3>這段程式能否 compile？如何修正？</h3>
+              <pre><code>double price = 19.99;
+int wholePrice = price;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p44">詳解</button>
+              <div class="reveal-panel" id="l2p44">
+                <p>不能 compile。<code>price</code> 是 double，不能自動 narrowing 成 int。可以寫 <code>int wholePrice = (int) price;</code>，結果是 <code>19</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Final Challenge</span></div>
+              <h3>完整 trace，預測四行 output。</h3>
+              <pre><code>int a = 17;
+int b = 4;
+
+double x = (double) a / b;
+
+a %= b;
+b += 2;
+a *= b;
+a++;
+
+int y = (int) x;
+
+System.out.println(a);
+System.out.println(b);
+System.out.println(x);
+System.out.println(y);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l2p45">詳解</button>
+              <div class="reveal-panel" id="l2p45">
+                <pre><code>7
+6
+4.25
+4</code></pre>
+                <p><code>x = (double) a / b</code> 是 <code>17.0 / 4</code>，得到 <code>4.25</code>。<code>a %= b</code> 是 <code>17 % 4</code>，讓 <code>a = 1</code>。<code>b += 2</code> 讓 <code>b = 6</code>。<code>a *= b</code> 讓 <code>a = 6</code>，接著 <code>a++</code> 變 <code>7</code>。最後 <code>(int) x</code> 把 <code>4.25</code> truncate 成 <code>4</code>。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 2 課後練習。先自己作答，再打開詳解檢查推理。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

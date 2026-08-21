@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 3｜Methods、Math Class 與 API Reading</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 3：method call、arguments、parameters、return value、method signature、Math class、Math.random 與 random integer range。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 3</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第三堂課導覽">
+        <a href="lesson-3-presentation.html">投影模式</a>
+        <a href="lesson-3-practice.html">課後練習</a>
+        <a href="lesson-2.html">上一課</a>
+        <a href="#method-model">Method</a>
+        <a href="#math-class">Math</a>
+        <a href="#random">Random</a>
+        <a href="#ap-patterns">AP 題型</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 3</p>
+          <h1>Methods、Math Class 與 API Reading</h1>
+          <p class="lead">
+            這一課把 Lesson 1/2 的 expression、assignment 與 casting 接到 method call。
+            你會學會讀懂 method 的 arguments、parameters、return value 與 signature，
+            並能正確使用 <code>Math.abs</code>、<code>Math.pow</code>、<code>Math.sqrt</code>、<code>Math.random</code> 解 AP 題。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-3-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-3-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-2.html">回 Lesson 2</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#review">Lesson 2 銜接</a>
+          <a href="#method-model">Method call 模型</a>
+          <a href="#arguments">Argument 與 Parameter</a>
+          <a href="#return-values">Return value</a>
+          <a href="#signature">Signature 與 API Reading</a>
+          <a href="#math-class">Math class</a>
+          <a href="#pow-sqrt">pow、sqrt 與 tracing</a>
+          <a href="#random">Math.random</a>
+          <a href="#range">Random range</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#ap-patterns">AP 常見題型</a>
+          <a href="#practice">練習題</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>看懂 Java 的 method call，拆出 class name、method name 與 arguments。</div>
+              <div>分辨 method、argument、parameter、return value 與 method signature。</div>
+              <div>把 method call 當成 expression 的一部分追蹤。</div>
+              <div>讀懂 AP Java Quick Reference 中 method header 的格式。</div>
+              <div>正確使用 <code>Math.abs</code>、<code>Math.pow</code>、<code>Math.sqrt</code>、<code>Math.random</code>。</div>
+              <div>寫出指定 inclusive range 的 random integer expression。</div>
+              <div>避免 <code>Math.pow</code> / <code>Math.sqrt</code> 回傳 <code>double</code>、casting 位置與 integer division 的常見陷阱。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson3-flow-0" /> <span><strong>銜接</strong>：從 Lesson 2 的 expression 與 casting 進到 method call。</span></label>
+              <label><input type="checkbox" data-progress="lesson3-flow-1" /> <span><strong>語言</strong>：method、argument、parameter、return value、signature。</span></label>
+              <label><input type="checkbox" data-progress="lesson3-flow-2" /> <span><strong>API reading</strong>：從 method header 看 return type 與 parameter types。</span></label>
+              <label><input type="checkbox" data-progress="lesson3-flow-3" /> <span><strong>Math</strong>：使用 <code>abs</code>、<code>pow</code>、<code>sqrt</code> 做 expression tracing。</span></label>
+              <label><input type="checkbox" data-progress="lesson3-flow-4" /> <span><strong>Random</strong>：理解 <code>Math.random()</code> 的範圍與 casting 位置。</span></label>
+              <label><input type="checkbox" data-progress="lesson3-flow-5" /> <span><strong>AP 題型</strong>：nested method call、random range、compile-time error、debugging。</span></label>
+            </div>
+          </section>
+
+          <section id="review" class="article-section">
+            <p class="eyebrow">Connection From Lesson 2</p>
+            <h2>Method call 會變成 expression 裡的一個 value</h2>
+            <p>
+              Lesson 1 和 Lesson 2 已經建立了 <code>variable</code>、<code>expression</code>、<code>assignment</code>、
+              <code>casting</code>、<code>integer division</code>。從這一課開始，expression 裡面會開始出現 method call。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Method Call in an Expression</h3>
+                <button class="copy-button" type="button" data-copy="l3-code-review">Copy</button>
+              </div>
+              <pre><code id="l3-code-review">double x = Math.sqrt(25) + 3;</code></pre>
+            </div>
+            <p>
+              這行不是直接背答案，而是先把 method call 換成它的 return value：
+            </p>
+            <div class="flow-strip">
+              <span><code>Math.sqrt(25)</code></span>
+              <span><code>5.0</code></span>
+              <span><code>5.0 + 3</code></span>
+              <span><code>8.0</code></span>
+              <span><code>x = 8.0</code></span>
+            </div>
+            <p class="callout">
+              AP CSA 看到 method call 時，不要只看 method name。請同時問三件事：
+              它需要哪些 arguments？它回傳什麼 value？它的 return type 是什麼？
+            </p>
+          </section>
+
+          <section id="method-model" class="article-section">
+            <p class="eyebrow">Method Call</p>
+            <h2>Method 是可以被呼叫執行的一段功能</h2>
+            <p>
+              在 Java 中，method 是一段具有特定功能、可以被呼叫執行的程式碼。
+              例如 <code>Math.sqrt(25)</code> 會計算 25 的平方根，回傳 <code>5.0</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>形式</th>
+                    <th>例子</th>
+                    <th>意思</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>ClassName.methodName(arguments)</code></td>
+                    <td><code>Math.pow(2, 3)</code></td>
+                    <td>到 <code>Math</code> class 裡呼叫 <code>pow</code> method。</td>
+                  </tr>
+                  <tr>
+                    <td>method name</td>
+                    <td><code>pow</code></td>
+                    <td>要執行哪個功能。</td>
+                  </tr>
+                  <tr>
+                    <td>arguments</td>
+                    <td><code>2, 3</code></td>
+                    <td>呼叫時實際傳入的資料。</td>
+                  </tr>
+                  <tr>
+                    <td>return value</td>
+                    <td><code>8.0</code></td>
+                    <td>method 執行完產生的結果。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="note-grid">
+              <div><strong>Input</strong><span>把 arguments 傳進 method。</span></div>
+              <div><strong>Process</strong><span>method 內部執行某段功能。</span></div>
+              <div><strong>Return</strong><span>如果 method 有回傳值，就能放進 expression。</span></div>
+              <div><strong>Trace</strong><span>把 method call 替換成 return value 繼續算。</span></div>
+            </div>
+          </section>
+
+          <section id="arguments" class="article-section">
+            <p class="eyebrow">Argument vs Parameter</p>
+            <h2>Argument 是呼叫時傳入的資料，parameter 是定義時接收資料的變數</h2>
+            <p>
+              AP CSA 很喜歡考這兩個字。它們都跟資料傳遞有關，但出現位置不同。
+              <strong>Argument</strong> 出現在 method call。<strong>Parameter</strong> 出現在 method definition。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Parameter and Argument</h3>
+                <button class="copy-button" type="button" data-copy="l3-code-square">Copy</button>
+              </div>
+              <pre><code id="l3-code-square">public static int square(int x)
+{
+    return x * x;
+}
+
+int result = square(7);</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>名稱</th>
+                    <th>出現位置</th>
+                    <th>在例子中是什麼</th>
+                    <th>意思</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Parameter</td>
+                    <td>method 定義</td>
+                    <td><code>int x</code></td>
+                    <td>接收資料的變數。</td>
+                  </tr>
+                  <tr>
+                    <td>Argument</td>
+                    <td>method call</td>
+                    <td><code>7</code></td>
+                    <td>實際傳進 method 的 value。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              呼叫 <code>square(7)</code> 時，可以把它想成 <code>x = 7</code>，
+              接著 method 內部執行 <code>return x * x;</code>，所以 return value 是 <code>49</code>。
+            </p>
+            <p class="callout">
+              精準說法：argument 和 parameter 不是完全一樣的東西。它們描述同一個資料傳遞過程中的不同位置。
+            </p>
+          </section>
+
+          <section id="return-values" class="article-section">
+            <p class="eyebrow">Return Value</p>
+            <h2>Return value 可以被儲存、印出，也可以繼續參與 expression</h2>
+            <p>
+              很多 methods 執行完會產生一個結果，稱為 return value。例如 <code>Math.sqrt(81)</code> 的 return value 是 <code>9.0</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>寫法</th>
+                    <th>作用</th>
+                    <th>結果</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>double answer = Math.sqrt(81);</code></td>
+                    <td>把 return value 存進變數。</td>
+                    <td><code>answer = 9.0</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>System.out.println(Math.sqrt(81));</code></td>
+                    <td>把 return value 印出來。</td>
+                    <td>output 是 <code>9.0</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>Math.sqrt(81) + 1</code></td>
+                    <td>return value 參與 expression。</td>
+                    <td><code>10.0</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              不是每個 method 都有 return value。例如 <code>System.out.println("Hello")</code> 的 return type 是 <code>void</code>，
+              它的目的是把東西印出來，不是回傳一個可以放進 expression 的值。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>void Method Trap</h3>
+                <button class="copy-button" type="button" data-copy="l3-code-void">Copy</button>
+              </div>
+              <pre><code id="l3-code-void">int x = System.out.println("Hello");</code></pre>
+            </div>
+            <p class="callout">
+              這行不合法。<code>println</code> 沒有 return value，所以不能把它 assignment 給 <code>int x</code>。
+              也要分清楚：return value 不等於 printed output。
+            </p>
+          </section>
+
+          <section id="signature" class="article-section">
+            <p class="eyebrow">Signature and API Reading</p>
+            <h2>讀懂 method header，就能知道要傳什麼、會回傳什麼</h2>
+            <p>
+              Method signature 主要由 method name 和 parameter types 決定。Return type 不是 Java method signature 的一部分，
+              但 AP 題目仍然很常用 return type 來考 assignment 是否合法。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Method header</th>
+                    <th>Return type</th>
+                    <th>Method name</th>
+                    <th>Parameter types</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>double pow(double base, double exponent)</code></td>
+                    <td><code>double</code></td>
+                    <td><code>pow</code></td>
+                    <td><code>double, double</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>double sqrt(double x)</code></td>
+                    <td><code>double</code></td>
+                    <td><code>sqrt</code></td>
+                    <td><code>double</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>double random()</code></td>
+                    <td><code>double</code></td>
+                    <td><code>random</code></td>
+                    <td>none</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="note-grid">
+              <div><strong>Return type 不構成 signature</strong><span><code>int calc(int x)</code> 和 <code>double calc(int x)</code> 不能只靠 return type 分開。</span></div>
+              <div><strong>Parameter 名稱不構成 signature</strong><span><code>calc(int x)</code> 和 <code>calc(int number)</code> 對 signature 來說相同。</span></div>
+              <div><strong>Parameter type 順序會構成 signature</strong><span><code>mix(int, double)</code> 與 <code>mix(double, int)</code> 不同。</span></div>
+              <div><strong>AP Quick Reference</strong><span>考試時你需要會讀 method 格式，不需要背完整 Java library。</span></div>
+            </div>
+          </section>
+
+          <section id="math-class" class="article-section">
+            <p class="eyebrow">Math Class</p>
+            <h2><code>Math</code> 是 AP CSA 最常見的 utility class 之一</h2>
+            <p>
+              <code>Math</code> class 提供很多常用數學 methods。AP CSA 前段最常見的是
+              <code>Math.abs</code>、<code>Math.pow</code>、<code>Math.sqrt</code>、<code>Math.random</code>。
+              呼叫時通常寫成 <code>Math.methodName(...)</code>，不需要自己建立 <code>Math</code> object。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>用途</th>
+                    <th>Example</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>Math.abs(x)</code></td>
+                    <td>absolute value，絕對值。</td>
+                    <td><code>Math.abs(-8)</code></td>
+                    <td><code>8</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>Math.pow(base, exponent)</code></td>
+                    <td>次方。</td>
+                    <td><code>Math.pow(2, 3)</code></td>
+                    <td><code>8.0</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>Math.sqrt(x)</code></td>
+                    <td>平方根。</td>
+                    <td><code>Math.sqrt(25)</code></td>
+                    <td><code>5.0</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>Math.random()</code></td>
+                    <td>產生 random double。</td>
+                    <td><code>Math.random()</code></td>
+                    <td><code>0.0 &lt;= r &lt; 1.0</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Math Methods Demo</h3>
+                <button class="copy-button" type="button" data-copy="l3-code-math-demo">Copy</button>
+              </div>
+              <pre><code id="l3-code-math-demo">public class Main
+{
+    public static void main(String[] args)
+    {
+        System.out.println(Math.abs(-8));
+        System.out.println(Math.pow(2, 3));
+        System.out.println(Math.sqrt(25));
+        System.out.println(Math.random());
+    }
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="pow-sqrt" class="article-section">
+            <p class="eyebrow">pow, sqrt, and Tracing</p>
+            <h2><code>Math.pow</code> 與 <code>Math.sqrt</code> 回傳 <code>double</code></h2>
+            <p>
+              即使答案看起來像整數，<code>Math.pow</code> 和 <code>Math.sqrt</code> 的 return type 仍然是 <code>double</code>。
+              所以 <code>Math.pow(2, 3)</code> 是 <code>8.0</code>，<code>Math.sqrt(25)</code> 是 <code>5.0</code>。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>是否合法</th>
+                    <th>原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>double x = Math.pow(2, 3);</code></td>
+                    <td>合法</td>
+                    <td><code>Math.pow</code> 回傳 <code>double</code>。</td>
+                  </tr>
+                  <tr>
+                    <td><code>int x = Math.pow(2, 3);</code></td>
+                    <td>不合法</td>
+                    <td>不能自動把 <code>double</code> 放進 <code>int</code>。</td>
+                  </tr>
+                  <tr>
+                    <td><code>int x = (int)Math.pow(2, 3);</code></td>
+                    <td>合法</td>
+                    <td>明確 casting，結果是 <code>8</code>。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Method call 可以巢狀放在另一個 method call 裡。看到這種 expression，最穩的做法是從最內層開始。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Distance Formula</h3>
+                <button class="copy-button" type="button" data-copy="l3-code-distance">Copy</button>
+              </div>
+              <pre><code id="l3-code-distance">double result =
+    Math.sqrt(
+        Math.pow(3, 2) + Math.pow(4, 2)
+    );</code></pre>
+            </div>
+            <div class="flow-strip">
+              <span><code>Math.pow(3, 2) = 9.0</code></span>
+              <span><code>Math.pow(4, 2) = 16.0</code></span>
+              <span><code>9.0 + 16.0 = 25.0</code></span>
+              <span><code>Math.sqrt(25.0) = 5.0</code></span>
+            </div>
+            <p class="callout">
+              Method 不會自動修正 argument 內已經發生的 integer division。
+              <code>Math.sqrt(9 / 4)</code> 會先算 <code>9 / 4 = 2</code>，再算 <code>Math.sqrt(2)</code>。
+            </p>
+          </section>
+
+          <section id="random" class="article-section">
+            <p class="eyebrow">Math.random</p>
+            <h2><code>Math.random()</code> 會產生 <code>[0.0, 1.0)</code> 的 random double</h2>
+            <p>
+              <code>Math.random()</code> 是 AP CSA 非常重要的 Math method。它可能產生 <code>0.0</code>，
+              但永遠不會產生 <code>1.0</code>。
+            </p>
+            <div class="note-grid">
+              <div><strong>Minimum</strong><span>可能是 <code>0.0</code>。</span></div>
+              <div><strong>Maximum</strong><span>小於 <code>1.0</code>，不包含 <code>1.0</code>。</span></div>
+              <div><strong>Return type</strong><span><code>double</code>。</span></div>
+              <div><strong>Range notation</strong><span><code>[0.0, 1.0)</code>。</span></div>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Print Random Values</h3>
+                <button class="copy-button" type="button" data-copy="l3-code-random-print">Copy</button>
+              </div>
+              <pre><code id="l3-code-random-print">public class Main
+{
+    public static void main(String[] args)
+    {
+        System.out.println(Math.random());
+        System.out.println(Math.random());
+        System.out.println(Math.random());
+    }
+}</code></pre>
+            </div>
+            <p>
+              每次執行可能不同，例如 <code>0.1537</code>、<code>0.8234</code>、<code>0.9998</code>。
+              但不會是 <code>1.0</code>。
+            </p>
+          </section>
+
+          <section id="range" class="article-section">
+            <p class="eyebrow">Random Integer Range</p>
+            <h2>Random integer 的核心是乘法、casting、位移</h2>
+            <p>
+              <code>Math.random()</code> 本身是 <code>0.0</code> 到小於 <code>1.0</code> 的 double。
+              乘以 <code>n</code> 後，範圍變成 <code>0.0</code> 到小於 <code>n</code>。
+              再 cast 成 <code>int</code>，小數部分會被截掉。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Expression</th>
+                    <th>可能產生</th>
+                    <th>AP 重點</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>(int)(Math.random() * 10)</code></td>
+                    <td><code>0 through 9</code></td>
+                    <td>不是 <code>1 through 10</code>。</td>
+                  </tr>
+                  <tr>
+                    <td><code>(int)(Math.random() * 6) + 1</code></td>
+                    <td><code>1 through 6</code></td>
+                    <td>骰子公式。</td>
+                  </tr>
+                  <tr>
+                    <td><code>(int)(Math.random() * 6) + 5</code></td>
+                    <td><code>5 through 10</code></td>
+                    <td>先產生 0 through 5，再位移到 5 through 10。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="concept-card">
+              <pre><code>(int)(Math.random() * (max - min + 1)) + min</code></pre>
+              <p>這個公式會產生 <code>min through max</code>，包含兩端。</p>
+            </div>
+            <div class="note-grid">
+              <div><strong>數字個數</strong><span><code>max - min + 1</code></span></div>
+              <div><strong>起點位移</strong><span><code>+ min</code></span></div>
+              <div><strong>例子：20 through 30</strong><span><code>(int)(Math.random() * 11) + 20</code></span></div>
+              <div><strong>例子：-5 through 5</strong><span><code>(int)(Math.random() * 11) - 5</code></span></div>
+            </div>
+            <p class="callout">
+              Casting 位置非常重要。<code>(int)Math.random() * 10</code> 會先把 <code>Math.random()</code> cast 成 <code>0</code>，
+              所以整個 expression 永遠是 <code>0</code>。
+            </p>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Errors</p>
+            <h2>Lesson 3 常見 compile-time errors 與 logic traps</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>錯誤程式碼</th>
+                    <th>問題</th>
+                    <th>修正方向</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>Math.sqrt(4, 9)</code></td>
+                    <td><code>sqrt</code> 不接受兩個 arguments。</td>
+                    <td><code>Math.sqrt(4)</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>int x = Math.sqrt(25)</code></td>
+                    <td><code>sqrt</code> 回傳 <code>double</code>。</td>
+                    <td><code>double x = Math.sqrt(25)</code> 或 <code>int x = (int)Math.sqrt(25)</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>Math.Sqrt(25)</code></td>
+                    <td>Java case-sensitive。</td>
+                    <td><code>Math.sqrt(25)</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>Math.sqrt</code></td>
+                    <td>method call 需要 parentheses。</td>
+                    <td><code>Math.sqrt(25)</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>(int)Math.random() * 10</code></td>
+                    <td>casting 太早，永遠是 0。</td>
+                    <td><code>(int)(Math.random() * 10)</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="ap-patterns" class="article-section">
+            <p class="eyebrow">AP Patterns</p>
+            <h2>AP CSA 常見題型與解題策略</h2>
+            <div class="question-list">
+              <article>
+                <h3>Tracing Method Return Values</h3>
+                <pre><code>int a = 4;
+double b = Math.pow(a, 2) + Math.sqrt(a);</code></pre>
+                <p><code>Math.pow(4, 2)</code> 是 <code>16.0</code>，<code>Math.sqrt(4)</code> 是 <code>2.0</code>，所以 <code>b = 18.0</code>。</p>
+              </article>
+              <article>
+                <h3>Integer Division Inside Argument</h3>
+                <pre><code>double x = Math.sqrt(16 / 9);</code></pre>
+                <p><code>16 / 9</code> 先得到 <code>1</code>，所以 <code>x = 1.0</code>。</p>
+              </article>
+              <article>
+                <h3>Random Range</h3>
+                <pre><code>int x = (int)(Math.random() * 8) + 4;</code></pre>
+                <p><code>(int)(Math.random() * 8)</code> 是 0 through 7，加 4 後是 4 through 11。</p>
+              </article>
+              <article>
+                <h3>Reverse Design</h3>
+                <pre><code>// generate 12 through 20
+int x = (int)(Math.random() * 9) + 12;</code></pre>
+                <p>因為 <code>20 - 12 + 1 = 9</code>。</p>
+              </article>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Final Trace Example</h3>
+                <button class="copy-button" type="button" data-copy="l3-code-final-example">Copy</button>
+              </div>
+              <pre><code id="l3-code-final-example">int n = 20;
+
+double result =
+    Math.sqrt(
+        Math.pow(n / 5, 2)
+        +
+        Math.abs(n - 29)
+    );
+
+System.out.println(result);</code></pre>
+            </div>
+            <p>
+              Trace：<code>n / 5 = 4</code>，<code>Math.pow(4, 2) = 16.0</code>，
+              <code>Math.abs(20 - 29) = 9</code>，<code>Math.sqrt(25.0) = 5.0</code>。
+            </p>
+          </section>
+
+          <section id="practice" class="article-section">
+            <p class="eyebrow">Practice</p>
+            <h2>練習題與可完成的小程式</h2>
+            <p>
+              完整課後題本已整理成 method vocabulary、return type、Math methods、nested tracing、
+              random range、AP-style multiple choice、coding practice 與 debugging practice。
+            </p>
+            <div class="inline-actions">
+              <a class="button primary" href="lesson-3-practice.html">開始 Lesson 3 課後練習</a>
+              <a class="button" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+            <div class="practice-set">
+              <article>
+                <h3>Distance From Origin</h3>
+                <p>使用 <code>Math.sqrt</code> 和 <code>Math.pow</code> 計算點 <code>(6, 8)</code> 到原點的距離。</p>
+              </article>
+              <article>
+                <h3>Dice Simulator</h3>
+                <p>產生兩顆骰子 <code>1 through 6</code>，計算總和。</p>
+              </article>
+              <article>
+                <h3>Random Four-Digit Code</h3>
+                <p>產生 <code>1000 through 9999</code> 的四位數驗證碼。</p>
+              </article>
+              <article>
+                <h3>Score Distance</h3>
+                <p>使用 <code>Math.abs</code> 計算分數距離目標分數差多少。</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="article-section answer-section">
+            <p class="eyebrow">Takeaways</p>
+            <h2>本課核心觀念</h2>
+            <div class="takeaway-grid">
+              <div><strong>Method Call</strong><span><code>ClassName.methodName(arguments)</code> 會呼叫一段功能。</span></div>
+              <div><strong>Argument</strong><span>呼叫 method 時實際傳入的資料。</span></div>
+              <div><strong>Parameter</strong><span>method 定義中接收資料的變數。</span></div>
+              <div><strong>Return Value</strong><span>method 執行完產生的結果，可以放進 expression。</span></div>
+              <div><strong>Return Type</strong><span>決定 return value 能否直接存進某個 variable type。</span></div>
+              <div><strong>Math.pow / sqrt</strong><span>即使答案像整數，return type 仍然是 <code>double</code>。</span></div>
+              <div><strong>Math.random</strong><span>範圍是 <code>0.0 &lt;= r &lt; 1.0</code>，不包含 <code>1.0</code>。</span></div>
+              <div><strong>Random Range</strong><span><code>(int)(Math.random() * (max - min + 1)) + min</code></span></div>
+            </div>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 3｜Methods、Math Class、Method Calls 與 API Reading。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

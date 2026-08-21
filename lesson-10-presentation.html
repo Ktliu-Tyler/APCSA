@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 10 投影模式｜for Loops</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 10 投影模式：for loops、counted loops、execution order、loop bounds、off-by-one、accumulator、scope、index pattern 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 10</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-10.html">文章版</a>
+        <a href="lesson-10-practice.html">課後練習</a>
+        <a href="lesson-9.html">上一課</a>
+        <a href="lesson-11.html">下一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 10</p>
+          <h1><code>for</code> Loops</h1>
+          <p class="slide-lead">
+            今天把 counted loop 寫得更集中：syntax、execution order、loop bounds、
+            <code>i &lt; n</code> vs <code>i &lt;= n</code>、off-by-one、accumulator、scope 與 AP tracing。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-10-practice.html">Lesson 10 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">From Lesson 9</p>
+          <h2><code>for</code> 是 counted <code>while</code> 的集中寫法</h2>
+          <div class="deck-code">
+            <pre><code>int i = 1;
+
+while (i &lt;= 5)
+{
+    System.out.println(i);
+    i++;
+}</code></pre>
+          </div>
+          <p class="slide-note">三個控制元素：從哪開始、什麼時候繼續、每輪怎麼更新。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Counted Loop</p>
+          <h2>明確次數的工作，通常適合 <code>for</code></h2>
+          <div class="exit-grid">
+            <div>重複 n 次</div>
+            <div>從 1 through n</div>
+            <div>從 10 倒數到 1</div>
+            <div>處理每個 index</div>
+            <div>做 100 次 random trial</div>
+            <div>計算 sum、product、count</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Syntax</p>
+          <h2><code>for</code> header 的三個部分</h2>
+          <div class="deck-code">
+            <pre><code>for (initialization; condition; update)
+{
+    body;
+}</code></pre>
+          </div>
+          <div class="type-grid operator-grid">
+            <div><strong>Initialization</strong><span>只執行一次</span></div>
+            <div><strong>Condition</strong><span>每輪 body 前檢查</span></div>
+            <div><strong>Update</strong><span>每輪 body 後執行</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Execution Order</p>
+          <h2>順序不是 init → condition → update → body</h2>
+          <div class="big-flow">
+            <span>Initialization</span>
+            <span>Condition</span>
+            <span>Body</span>
+            <span>Update</span>
+            <span>Condition again</span>
+          </div>
+          <p class="slide-note">Update 在 body 後才發生，所以第一次看到的是初始值。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">First Check</p>
+          <h2>預測 output</h2>
+          <div class="multiple-choice">
+            <pre><code>for (int i = 1; i &lt;= 3; i++)
+{
+    System.out.print(i + " ");
+}</code></pre>
+            <div class="choices">
+              <span>A. 0 1 2</span>
+              <span>B. 1 2 3</span>
+              <span>C. 2 3 4</span>
+              <span>D. Infinite loop</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l10-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l10-r1">
+            <p>答案是 B。第一次 body 看到 <code>i = 1</code>；update 在 body 後。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">for vs while</p>
+          <h2>這兩段控制邏輯對應</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead><tr><th>while</th><th>for header</th></tr></thead>
+              <tbody>
+                <tr><td><code>int i = 1;</code></td><td><code>int i = 1</code></td></tr>
+                <tr><td><code>while (i &lt;= 5)</code></td><td><code>i &lt;= 5</code></td></tr>
+                <tr><td><code>i++;</code></td><td><code>i++</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="slide-note">轉成 while 時最容易忘記 update。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">0-based Pattern</p>
+          <h2><code>for (int i = 0; i &lt; n; i++)</code></h2>
+          <div class="definition-grid">
+            <article><h3>Values</h3><p><code>0, 1, 2, ..., n - 1</code></p></article>
+            <article><h3>Iterations</h3><p><code>n</code> 次</p></article>
+            <article><h3>Use</h3><p>repeat n times / process n indexes</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">1-based Pattern</p>
+          <h2><code>for (int i = 1; i &lt;= n; i++)</code></h2>
+          <div class="definition-grid">
+            <article><h3>Values</h3><p><code>1, 2, ..., n</code></p></article>
+            <article><h3>Iterations</h3><p><code>n</code> 次</p></article>
+            <article><h3>Use</h3><p>第 1 次到第 n 次 / 1 through n</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Bounds</p>
+          <h2>四個 pattern 一定要熟</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead><tr><th>Loop</th><th>i values</th><th>Count</th></tr></thead>
+              <tbody>
+                <tr><td><code>i = 0; i &lt; n</code></td><td><code>0...n-1</code></td><td>n</td></tr>
+                <tr><td><code>i = 0; i &lt;= n</code></td><td><code>0...n</code></td><td>n+1</td></tr>
+                <tr><td><code>i = 1; i &lt; n</code></td><td><code>1...n-1</code></td><td>n-1</td></tr>
+                <tr><td><code>i = 1; i &lt;= n</code></td><td><code>1...n</code></td><td>n</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Count Check</p>
+          <h2>這個 loop body 執行幾次？</h2>
+          <div class="multiple-choice">
+            <pre><code>for (int i = 0; i &lt;= 10; i++)
+{
+    // work
+}</code></pre>
+            <div class="choices">
+              <span>A. 9</span>
+              <span>B. 10</span>
+              <span>C. 11</span>
+              <span>D. 12</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l10-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l10-r2">
+            <p>答案是 C。<code>i</code> 是 0 到 10，共 11 個值。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Inclusive / Exclusive</p>
+          <h2>英文題目的 bounds</h2>
+          <div class="definition-grid">
+            <article><h3>from 1 through n</h3><p><code>i = 1; i &lt;= n</code></p></article>
+            <article><h3>0 up to but not including n</h3><p><code>i = 0; i &lt; n</code></p></article>
+            <article><h3>a through b, inclusive</h3><p><code>i = a; i &lt;= b</code></p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Counting Down</p>
+          <h2>倒數時，condition 和 update 方向要一致</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 10; i &gt;= 1; i--)
+{
+    System.out.println(i);
+}</code></pre>
+          </div>
+          <p class="slide-note">錯誤方向：<code>for (int i = 10; i &gt;= 1; i++)</code> 通常不會停止。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Custom Step</p>
+          <h2>Update 不一定只能 <code>i++</code></h2>
+          <div class="exit-grid">
+            <div><code>i += 2</code>：每次加 2</div>
+            <div><code>i -= 3</code>：每次減 3</div>
+            <div><code>i *= 2</code>：每次乘 2</div>
+            <div><code>i /= 2</code>：每次除 2</div>
+          </div>
+          <p class="slide-note">Step 不為 1 時，直接列出 i 的值最穩。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Custom Step Check</p>
+          <h2>這個 loop body 執行幾次？</h2>
+          <div class="multiple-choice">
+            <pre><code>for (int i = 1; i &lt;= 10; i += 3)
+{
+    // work
+}</code></pre>
+            <div class="choices">
+              <span>A. 3</span>
+              <span>B. 4</span>
+              <span>C. 5</span>
+              <span>D. 10</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l10-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l10-r3">
+            <p>答案是 B。<code>i</code> 是 1、4、7、10，共 4 次。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Accumulator</p>
+          <h2><code>for</code> 搭配 sum / product / count</h2>
+          <div class="definition-grid">
+            <article><h3>Sum</h3><p><code>int sum = 0;</code> then <code>sum += i;</code></p></article>
+            <article><h3>Product</h3><p><code>int product = 1;</code> then <code>product *= i;</code></p></article>
+            <article><h3>Count</h3><p><code>int count = 0;</code> then <code>count++;</code></p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Count Matches</p>
+          <h2>Loop 次數和 statement 次數可能不同</h2>
+          <div class="deck-code">
+            <pre><code>int count = 0;
+
+for (int i = 0; i &lt; 10; i++)
+{
+    if (i % 3 == 0)
+    {
+        count++;
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l10-r4">揭曉 count</button>
+          <div class="reveal-panel" id="l10-r4">
+            <p><code>i = 0, 3, 6, 9</code> 符合，所以 <code>count = 4</code>。注意 0 也符合 <code>0 % 3 == 0</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">for vs while</p>
+          <h2>知道次數用 <code>for</code>；不知道次數常用 <code>while</code></h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead><tr><th>Situation</th><th>Usually</th></tr></thead>
+              <tbody>
+                <tr><td>repeat exactly n times</td><td><code>for</code></td></tr>
+                <tr><td>process each index</td><td><code>for</code></td></tr>
+                <tr><td>input until -1</td><td><code>while</code></td></tr>
+                <tr><td>input validation</td><td><code>while</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Loop Variable Scope</p>
+          <h2>在 header 宣告的 <code>i</code>，通常 loop 外不能用</h2>
+          <div class="multiple-choice">
+            <pre><code>for (int i = 0; i &lt; 5; i++)
+{
+    System.out.println(i);
+}
+
+System.out.println(i);</code></pre>
+            <div class="choices">
+              <span>A. 印 5</span>
+              <span>B. 印 4</span>
+              <span>C. Compile error</span>
+              <span>D. Infinite loop</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l10-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l10-r5">
+            <p>答案是 C。<code>i</code> 的 scope 只在這個 <code>for</code> loop 中。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Index Pattern</p>
+          <h2>String / Array index 通常是 <code>0 ... length - 1</code></h2>
+          <div class="deck-code">
+            <pre><code>String word = "JAVA";
+
+for (int i = 0; i &lt; word.length(); i++)
+{
+    String letter = word.substring(i, i + 1);
+    System.out.println(letter);
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>i &lt;= word.length()</code> 會多跑到非法 index。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP Trap</p>
+          <h2>Body 修改 <code>i</code> 時，一定 trace</h2>
+          <div class="multiple-choice">
+            <pre><code>for (int i = 0; i &lt; 10; i++)
+{
+    i++;
+}</code></pre>
+            <p>Body 執行幾次？</p>
+            <div class="choices">
+              <span>A. 5</span>
+              <span>B. 9</span>
+              <span>C. 10</span>
+              <span>D. Infinite loop</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l10-r6">揭曉答案</button>
+          <div class="reveal-panel" id="l10-r6">
+            <p>答案是 A。Body 裡加一次，header update 再加一次，所以 i 以 0、2、4、6、8 進 body。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Bound Changes</p>
+          <h2>Bound 被改，也不能只看 header</h2>
+          <div class="deck-code">
+            <pre><code>int n = 8;
+
+for (int i = 0; i &lt; n; i++)
+{
+    n -= 2;
+}</code></pre>
+          </div>
+          <p class="slide-note">Trace: (i,n) = (0,8), (1,6), (2,4)，之後 i = 3、n = 2 停止。共 3 次。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Errors</p>
+          <h2>今天最常見的錯誤</h2>
+          <div class="exit-grid">
+            <div><code>i &lt; n</code> 誤以為跑到 n</div>
+            <div><code>i &lt;= n</code> 從 0 開始多一次</div>
+            <div>倒數時 update 方向錯</div>
+            <div>忘記 update 在 body 後</div>
+            <div>loop 外使用 header 裡宣告的 <code>i</code></div>
+            <div><code>for (...);</code> 造成 empty body</div>
+            <div>body 偷改 <code>i</code></div>
+            <div>把 length 當最後 index</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP SOP</p>
+          <h2>AP for 題固定解題流程</h2>
+          <div class="big-flow">
+            <span>Start value</span>
+            <span>Condition</span>
+            <span>Body</span>
+            <span>Body changes?</span>
+            <span>Header update</span>
+            <span>Repeat</span>
+          </div>
+          <p class="slide-note">分清楚 loop iterations、if body 次數、method call 次數、print 次數。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的六個小程式</h2>
+          <div class="exit-grid">
+            <div>印 1 到 10</div>
+            <div>倒數 10 到 1</div>
+            <div>印偶數 2 到 20</div>
+            <div>計算 1 到 100 總和</div>
+            <div>計算 3 的倍數有幾個</div>
+            <div>走訪 String 每個 index</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-10-practice.html">開始 Lesson 10 課後練習</a>
+            <a class="button" href="lesson-10.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十二句</h2>
+          <div class="exit-grid">
+            <div><code>for</code> 適合 counted loop。</div>
+            <div>Initialization 只執行一次。</div>
+            <div>Condition 在每輪 body 前檢查。</div>
+            <div>Update 在 body 後執行。</div>
+            <div><code>i = 0; i &lt; n</code> 是 n 次。</div>
+            <div><code>i = 0; i &lt;= n</code> 是 n+1 次。</div>
+            <div><code>i = 1; i &lt;= n</code> 是 n 次。</div>
+            <div>Step 不為 1 時要列值。</div>
+            <div>倒數通常用 <code>i--</code>。</div>
+            <div>Header 宣告的 <code>i</code> 通常 loop 外不能用。</div>
+            <div>最後合法 index 是 <code>length - 1</code>。</div>
+            <div>Body 改 <code>i</code> 或 bound 時一定 trace。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

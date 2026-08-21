@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 9｜while Loops</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 9：while loops、initialization、condition、update、termination、loop tracing、counter loops、sentinel loops、input validation、infinite loops、digit algorithms 與 AP-style loop tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 9</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第九堂課導覽">
+        <a href="lesson-9-presentation.html">投影模式</a>
+        <a href="lesson-9-practice.html">課後練習</a>
+        <a href="lesson-8.html">上一課</a>
+        <a href="lesson-10.html">下一課</a>
+        <a href="#syntax">Syntax</a>
+        <a href="#trace">Trace</a>
+        <a href="#counter">Counter</a>
+        <a href="#sentinel">Sentinel</a>
+        <a href="#digits">Digits</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 9</p>
+          <h1><code>while</code> Loops：條件控制的重複執行</h1>
+          <p class="lead">
+            Lesson 8 的 Boolean expression 現在會控制「是否繼續重複」。這堂課學
+            <code>while</code> loop 的 execution order、trace table、counter-controlled loops、
+            sentinel loops、input validation、infinite loops、off-by-one errors 與 digit algorithms。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-9-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-9-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-8.html">回 Lesson 8</a>
+            <a class="button" href="lesson-10.html">前往 Lesson 10</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#syntax"><code>while</code> 語法</a>
+          <a href="#if-vs-while"><code>if</code> vs <code>while</code></a>
+          <a href="#trace">Loop Tracing</a>
+          <a href="#parts">四個核心元素</a>
+          <a href="#zero">Zero Iterations</a>
+          <a href="#counter">Counter Loops</a>
+          <a href="#off-by-one">Off-by-One</a>
+          <a href="#accumulator">Accumulator</a>
+          <a href="#sentinel">Sentinel Loops</a>
+          <a href="#validation">Input Validation</a>
+          <a href="#infinite">Infinite Loops</a>
+          <a href="#digits">Digit Algorithms</a>
+          <a href="#flags">Boolean Flags</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>讀懂 <code>while (condition)</code> 的執行順序：先判斷，再執行 body，再回頭重新判斷。</div>
+              <div>分辨 <code>if</code> 最多執行一次，而 <code>while</code> 可能執行 0 次、1 次、很多次或永遠不停。</div>
+              <div>用 initialization、condition、update、termination 四個元素分析一個 loop。</div>
+              <div>使用 trace table 追蹤 loop control variable、counter、accumulator、output 與最後變數值。</div>
+              <div>判斷 loop body 執行幾次，並找出 <code>&lt;</code> / <code>&lt;=</code> 造成的 off-by-one error。</div>
+              <div>寫 counter-controlled loops：往上數、倒數、每次增加 2 或依條件 count。</div>
+              <div>使用 accumulator 計算 sum、product、count matches 與 average 前置資料。</div>
+              <div>理解 sentinel value、priming read 與「sentinel 本身通常不被處理」。</div>
+              <div>寫 input validation：通常是 <code>while (invalidCondition)</code>。</div>
+              <div>辨識 infinite loop：控制變數沒有更新、更新方向錯、或 update 不一定會執行。</div>
+              <div>使用 <code>% 10</code> 取得最後一位 digit，使用 <code>/= 10</code> 移除最後一位 digit。</div>
+              <div>搭配 Boolean flag 與 short-circuit 寫 search-until-found 類型的 loop。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson9-flow-0" /> <span><strong>基本語法</strong>：<code>while</code> 是 pre-test loop，condition 一開始 false 就 0 iterations。</span></label>
+              <label><input type="checkbox" data-progress="lesson9-flow-1" /> <span><strong>Trace</strong>：逐輪追蹤 condition、body、update 與 final value。</span></label>
+              <label><input type="checkbox" data-progress="lesson9-flow-2" /> <span><strong>Counter</strong>：固定次數、倒數、skip by 2、execution count 與 off-by-one。</span></label>
+              <label><input type="checkbox" data-progress="lesson9-flow-3" /> <span><strong>Accumulator</strong>：sum、product、count、average，初始化值要正確。</span></label>
+              <label><input type="checkbox" data-progress="lesson9-flow-4" /> <span><strong>Sentinel / validation</strong>：未知次數輸入、priming read、while invalid。</span></label>
+              <label><input type="checkbox" data-progress="lesson9-flow-5" /> <span><strong>Digit algorithms</strong>：<code>% 10</code>、<code>/ 10</code>、sum digits、count digits、reverse。</span></label>
+            </div>
+          </section>
+
+          <section id="syntax" class="article-section">
+            <p class="eyebrow">Syntax</p>
+            <h2><code>while</code> 的意思：只要 condition 還是 true，就繼續執行</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Basic while Pattern</h3>
+                <button class="copy-button" type="button" data-copy="l9-code-syntax">Copy</button>
+              </div>
+              <pre><code id="l9-code-syntax">initialization;
+
+while (condition)
+{
+    statement;
+    update;
+}</code></pre>
+            </div>
+            <p>
+              <code>while</code> 每次進入 body 前都會重新檢查 condition。只要 condition 是
+              <code>true</code>，body 就會再執行一次；當 condition 變成 <code>false</code>，程式離開 loop。
+            </p>
+            <div class="concept-card">
+              <pre><code>initialize
+check condition
+true  -> body -> update -> check condition again
+false -> exit loop</code></pre>
+            </div>
+          </section>
+
+          <section id="if-vs-while" class="article-section">
+            <p class="eyebrow">if vs while</p>
+            <h2><code>if</code> 是選擇一次；<code>while</code> 是條件成立就重複</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Structure</th>
+                    <th>最多執行幾次 body？</th>
+                    <th>用途</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>if (x &lt; 5)</code></td><td>一次</td><td>根據條件選一條路徑。</td></tr>
+                  <tr><td><code>while (x &lt; 5)</code></td><td>不固定</td><td>只要條件成立就重複執行。</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="question-list">
+              <article>
+                <h3><code>if</code></h3>
+                <pre><code>int x = 1;
+
+if (x &lt; 5)
+{
+    x++;
+}</code></pre>
+                <p>只判斷一次，最後 <code>x</code> 是 2。</p>
+              </article>
+              <article>
+                <h3><code>while</code></h3>
+                <pre><code>int x = 1;
+
+while (x &lt; 5)
+{
+    x++;
+}</code></pre>
+                <p>一直重複到 <code>x == 5</code>，最後 <code>x</code> 是 5。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="trace" class="article-section">
+            <p class="eyebrow">Loop Tracing</p>
+            <h2>AP CSA 常考：loop 執行幾次、輸出什麼、最後變數是多少</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>First while Trace</h3>
+                <button class="copy-button" type="button" data-copy="l9-code-first-trace">Copy</button>
+              </div>
+              <pre><code id="l9-code-first-trace">int x = 1;
+
+while (x &lt;= 5)
+{
+    System.out.println(x);
+    x++;
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Iteration</th>
+                    <th>x before condition</th>
+                    <th>condition</th>
+                    <th>output</th>
+                    <th>x after update</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>1</td><td><code>1 &lt;= 5</code> true</td><td>1</td><td>2</td></tr>
+                  <tr><td>2</td><td>2</td><td><code>2 &lt;= 5</code> true</td><td>2</td><td>3</td></tr>
+                  <tr><td>3</td><td>3</td><td><code>3 &lt;= 5</code> true</td><td>3</td><td>4</td></tr>
+                  <tr><td>4</td><td>4</td><td><code>4 &lt;= 5</code> true</td><td>4</td><td>5</td></tr>
+                  <tr><td>5</td><td>5</td><td><code>5 &lt;= 5</code> true</td><td>5</td><td>6</td></tr>
+                  <tr><td>stop</td><td>6</td><td><code>6 &lt;= 5</code> false</td><td>-</td><td>-</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              Iteration 是 body 完整執行一次。上例 body 執行 5 次，最後 <code>x</code> 是 6。
+            </p>
+          </section>
+
+          <section id="parts" class="article-section">
+            <p class="eyebrow">Four Parts</p>
+            <h2>一個正確的 <code>while</code> loop 通常要看四件事</h2>
+            <div class="definition-grid">
+              <article>
+                <h3>Initialization</h3>
+                <p>Loop 開始前設定控制變數，例如 <code>int count = 1;</code>。</p>
+              </article>
+              <article>
+                <h3>Condition</h3>
+                <p><code>while</code> 括號中的 Boolean expression，例如 <code>count &lt;= 5</code>。</p>
+              </article>
+              <article>
+                <h3>Update</h3>
+                <p>每輪改變會影響 condition 的值，例如 <code>count++</code>。</p>
+              </article>
+              <article>
+                <h3>Termination</h3>
+                <p>說明為什麼 condition 最後會變 false，例如 <code>count</code> 會到 6。</p>
+              </article>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Annotated Loop</h3>
+                <button class="copy-button" type="button" data-copy="l9-code-parts">Copy</button>
+              </div>
+              <pre><code id="l9-code-parts">int count = 1;          // initialization
+
+while (count &lt;= 5)      // condition
+{
+    System.out.println(count);
+    count++;            // update
+}
+
+// termination: count becomes 6, so count &lt;= 5 is false</code></pre>
+            </div>
+          </section>
+
+          <section id="zero" class="article-section">
+            <p class="eyebrow">Pre-Test Loop</p>
+            <h2><code>while</code> 可能執行 0 次</h2>
+            <p>
+              <code>while</code> 是 pre-test loop：先檢查 condition，才決定要不要執行 body。
+              如果 condition 一開始就是 false，body 一次都不會跑。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Zero Iterations</h3>
+                <button class="copy-button" type="button" data-copy="l9-code-zero">Copy</button>
+              </div>
+              <pre><code id="l9-code-zero">int x = 10;
+
+while (x &lt; 5)
+{
+    System.out.println(x);
+    x++;
+}
+
+System.out.println("Done");</code></pre>
+            </div>
+            <p><code>10 &lt; 5</code> 一開始就是 false，所以只會輸出 <code>Done</code>。</p>
+          </section>
+
+          <section id="counter" class="article-section">
+            <p class="eyebrow">Counter-Controlled Loops</p>
+            <h2>Counter loop：已知大概要重複幾次時最常用</h2>
+            <div class="question-list">
+              <article>
+                <h3>從 1 印到 10</h3>
+                <pre><code>int i = 1;
+
+while (i &lt;= 10)
+{
+    System.out.println(i);
+    i++;
+}</code></pre>
+              </article>
+              <article>
+                <h3>從 10 倒數到 1</h3>
+                <pre><code>int i = 10;
+
+while (i &gt;= 1)
+{
+    System.out.println(i);
+    i--;
+}</code></pre>
+              </article>
+              <article>
+                <h3>印偶數 2, 4, 6, 8, 10</h3>
+                <pre><code>int i = 2;
+
+while (i &lt;= 10)
+{
+    System.out.println(i);
+    i += 2;
+}</code></pre>
+              </article>
+            </div>
+            <p class="callout">
+              如果是 <code>int i = a;</code> 搭配 <code>while (i &lt;= b)</code> 和 <code>i++</code>，
+              當 <code>a &lt;= b</code> 時，執行次數是 <code>b - a + 1</code>。但遇到 <code>i += 3</code>、
+              <code>i *= 2</code>、<code>i /= 2</code> 時，最好真的 trace。
+            </p>
+          </section>
+
+          <section id="off-by-one" class="article-section">
+            <p class="eyebrow">Off-by-One</p>
+            <h2><code>&lt;</code> 和 <code>&lt;=</code> 可能只差一個字，卻差一輪</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>body 對哪些 i 執行</th>
+                    <th>次數</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>int i = 1; while (i &lt; 5)</code></td><td>1, 2, 3, 4</td><td>4</td></tr>
+                  <tr><td><code>int i = 1; while (i &lt;= 5)</code></td><td>1, 2, 3, 4, 5</td><td>5</td></tr>
+                  <tr><td><code>int i = 0; while (i &lt; 10)</code></td><td>0 到 9</td><td>10</td></tr>
+                  <tr><td><code>int i = 0; while (i &lt;= 10)</code></td><td>0 到 10</td><td>11</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              0-based counter <code>int i = 0; while (i &lt; n)</code> 會執行 n 次，這也是之後
+              String indexing、arrays、ArrayList traversal 很常見的形式。
+            </p>
+          </section>
+
+          <section id="accumulator" class="article-section">
+            <p class="eyebrow">Accumulator</p>
+            <h2>Accumulator 用 loop 不斷累積結果</h2>
+            <div class="question-list">
+              <article>
+                <h3>Sum：1 + 2 + 3 + 4 + 5</h3>
+                <pre><code>int i = 1;
+int sum = 0;
+
+while (i &lt;= 5)
+{
+    sum += i;
+    i++;
+}
+
+System.out.println(sum);  // 15</code></pre>
+                <p><code>sum</code> 從 0 開始，因為 0 是加法 identity。</p>
+              </article>
+              <article>
+                <h3>Product：1 * 2 * 3 * 4 * 5</h3>
+                <pre><code>int i = 1;
+int product = 1;
+
+while (i &lt;= 5)
+{
+    product *= i;
+    i++;
+}
+
+System.out.println(product);  // 120</code></pre>
+                <p><code>product</code> 通常從 1 開始；若從 0 開始，永遠會是 0。</p>
+              </article>
+              <article>
+                <h3>Count and Sum Matches</h3>
+                <pre><code>int i = 1;
+int count = 0;
+int sum = 0;
+
+while (i &lt;= 10)
+{
+    if (i % 2 == 0)
+    {
+        count++;
+        sum += i;
+    }
+    i++;
+}</code></pre>
+                <p>最後 <code>count</code> 是 5，<code>sum</code> 是 30。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="sentinel" class="article-section">
+            <p class="eyebrow">Sentinel Loops</p>
+            <h2>Sentinel loop：不知道要讀幾筆，直到特殊值出現</h2>
+            <p>
+              Sentinel value 是代表「資料結束」的特殊值。例如成績合法範圍是 0 到 100，輸入
+              <code>-1</code> 結束就很合理，因為 <code>-1</code> 不會和正常成績混淆。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Sentinel Pattern</h3>
+                <button class="copy-button" type="button" data-copy="l9-code-sentinel">Copy</button>
+              </div>
+              <pre><code id="l9-code-sentinel">int value = input.nextInt();   // priming read
+
+while (value != -1)
+{
+    System.out.println("Read: " + value);
+    value = input.nextInt();   // read next value
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>輸入</th>
+                    <th>是否進 body？</th>
+                    <th>處理結果</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>5</td><td>是</td><td>印 5，讀下一筆</td></tr>
+                  <tr><td>8</td><td>是</td><td>印 8，讀下一筆</td></tr>
+                  <tr><td>3</td><td>是</td><td>印 3，讀下一筆</td></tr>
+                  <tr><td>-1</td><td>否</td><td>停止；sentinel 本身不處理</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              Priming read 是 loop 前先讀第一筆，因為 <code>while</code> 必須先有值才能判斷是否進入 loop。
+            </p>
+          </section>
+
+          <section id="validation" class="article-section">
+            <p class="eyebrow">Input Validation</p>
+            <h2>Input validation 通常寫成：不合法就繼續問</h2>
+            <p>
+              如果合法分數是 0 到 100，合法 condition 是
+              <code>score &gt;= 0 &amp;&amp; score &lt;= 100</code>。要「不合法時重問」，所以 while condition 應該寫反：
+              <code>score &lt; 0 || score &gt; 100</code>。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>While Invalid</h3>
+                <button class="copy-button" type="button" data-copy="l9-code-validation">Copy</button>
+              </div>
+              <pre><code id="l9-code-validation">System.out.print("Enter score: ");
+int score = input.nextInt();
+
+while (score &lt; 0 || score &gt; 100)
+{
+    System.out.println("Invalid score.");
+    System.out.print("Enter score again: ");
+    score = input.nextInt();
+}
+
+System.out.println("Accepted: " + score);</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>目的</th>
+                    <th>Condition</th>
+                    <th>意思</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>valid score</td><td><code>score &gt;= 0 &amp;&amp; score &lt;= 100</code></td><td>分數在範圍內。</td></tr>
+                  <tr><td>invalid score</td><td><code>score &lt; 0 || score &gt; 100</code></td><td>分數超出任一邊界。</td></tr>
+                  <tr><td>while invalid</td><td><code>while (score &lt; 0 || score &gt; 100)</code></td><td>不合法就繼續要求輸入。</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="infinite" class="article-section">
+            <p class="eyebrow">Infinite Loops</p>
+            <h2>判斷 infinite loop：控制 condition 的值有沒有往 false 前進？</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>錯誤類型</th>
+                    <th>例子</th>
+                    <th>為什麼不會停</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>忘記 update</td>
+                    <td><code>while (i &lt; 10) { System.out.println(i); }</code></td>
+                    <td><code>i</code> 永遠不變。</td>
+                  </tr>
+                  <tr>
+                    <td>update direction 錯</td>
+                    <td><code>while (i &lt; 10) { i--; }</code></td>
+                    <td><code>i</code> 越來越小，離 false 更遠。</td>
+                  </tr>
+                  <tr>
+                    <td>update 不一定執行</td>
+                    <td><code>while (x &lt; 10) { if (x % 2 == 0) { x++; } }</code></td>
+                    <td>若 <code>x</code> 一開始是奇數，<code>x++</code> 不會發生。</td>
+                  </tr>
+                  <tr>
+                    <td>多一個 semicolon</td>
+                    <td><code>while (x &lt; 5);</code></td>
+                    <td>loop body 變成 empty statement。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="callout">
+              檢查 while 的兩句話：condition 裡的變數有改嗎？改變方向會讓 condition 最後變 false 嗎？
+            </p>
+          </section>
+
+          <section id="digits" class="article-section">
+            <p class="eyebrow">Digit Algorithms</p>
+            <h2>處理整數每一位 digit：<code>% 10</code> 取得，<code>/= 10</code> 移除</h2>
+            <div class="definition-grid">
+              <article>
+                <h3>取得最右 digit</h3>
+                <p><code>int digit = number % 10;</code></p>
+              </article>
+              <article>
+                <h3>移除最右 digit</h3>
+                <p><code>number /= 10;</code></p>
+              </article>
+              <article>
+                <h3>Preserve original</h3>
+                <p>如果後面還需要原數字，先寫 <code>int temp = number;</code>。</p>
+              </article>
+            </div>
+            <div class="question-list">
+              <article>
+                <h3>Sum Digits</h3>
+                <pre><code>int number = 58321;
+int sum = 0;
+
+while (number &gt; 0)
+{
+    int digit = number % 10;
+    sum += digit;
+    number /= 10;
+}</code></pre>
+                <p>sum 是 <code>5 + 8 + 3 + 2 + 1 = 19</code>。</p>
+              </article>
+              <article>
+                <h3>Count Digits</h3>
+                <pre><code>int number = 58321;
+int count = 0;
+
+while (number &gt; 0)
+{
+    count++;
+    number /= 10;
+}</code></pre>
+                <p>count 是 5。若 number 可能是 0，要另外處理。</p>
+              </article>
+              <article>
+                <h3>Reverse Number</h3>
+                <pre><code>int number = 58321;
+int reversed = 0;
+
+while (number &gt; 0)
+{
+    int digit = number % 10;
+    reversed = reversed * 10 + digit;
+    number /= 10;
+}</code></pre>
+                <p><code>reversed * 10 + digit</code> 把新 digit 接到結果右側。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="flags" class="article-section">
+            <p class="eyebrow">Boolean Flags</p>
+            <h2>Boolean flag 可以控制「找到就停」或「還沒達成就繼續」</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Search Until Found</h3>
+                <button class="copy-button" type="button" data-copy="l9-code-flag">Copy</button>
+              </div>
+              <pre><code id="l9-code-flag">int number = 7421;
+boolean found = false;
+
+while (number &gt; 0 &amp;&amp; !found)
+{
+    int digit = number % 10;
+
+    if (digit == 7)
+    {
+        found = true;
+    }
+
+    number /= 10;
+}</code></pre>
+            </div>
+            <p>
+              這個 condition 使用 Lesson 8 的 short-circuit 思想：<code>number &gt; 0</code> 且
+              <code>!found</code> 都成立時才繼續。找到 7 後，<code>found</code> 變 true，
+              下一輪 <code>!found</code> 是 false，loop 停止。
+            </p>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Errors</p>
+            <h2>Lesson 9 常見錯誤與 AP 陷阱</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>陷阱</th>
+                    <th>錯誤觀念</th>
+                    <th>正確觀念</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>while</code></td><td>至少執行一次</td><td>可能 0 iterations。</td></tr>
+                  <tr><td>condition</td><td>只判斷一次</td><td>每輪 body 前都會重新判斷。</td></tr>
+                  <tr><td>update</td><td>有寫就一定會停</td><td>update 要改到 condition 使用的值，而且方向要正確。</td></tr>
+                  <tr><td><code>&lt;</code> / <code>&lt;=</code></td><td>沒差</td><td>常常差一輪。</td></tr>
+                  <tr><td>sentinel</td><td>sentinel 也加入 sum</td><td>sentinel 通常只用來停止，不被處理。</td></tr>
+                  <tr><td>validation</td><td><code>while (valid)</code></td><td>通常寫 <code>while (invalid)</code>。</td></tr>
+                  <tr><td>digit</td><td><code>% 10</code> 會移除 digit</td><td><code>% 10</code> 取得 digit；<code>/ 10</code> 移除 digit。</td></tr>
+                  <tr><td>product</td><td><code>product = 0</code></td><td>乘法 accumulator 通常從 1 開始。</td></tr>
+                  <tr><td>braces</td><td>縮排決定 loop body</td><td>Java 語法決定 body；建議 always use braces。</td></tr>
+                  <tr><td>semicolon</td><td><code>while (...);</code> 沒差</td><td>會形成 empty loop，通常造成 infinite loop。</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="practice" class="article-section">
+            <p class="eyebrow">Practice</p>
+            <h2>練習題與可完成的小程式</h2>
+            <p>
+              完整課後題本已整理成概念題、trace 題、counter / off-by-one、accumulator、sentinel、
+              validation、digit algorithms、infinite loop 與 coding practice。
+            </p>
+            <div class="inline-actions">
+              <a class="button primary" href="lesson-9-practice.html">開始 Lesson 9 課後練習</a>
+              <a class="button" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+            <div class="practice-set">
+              <article>
+                <h3>Trace Loop</h3>
+                <p>逐輪寫出變數值，找出 output 與 final value。</p>
+              </article>
+              <article>
+                <h3>Counter Loop</h3>
+                <p>寫出從 start 到 end 的 loop，避免 off-by-one。</p>
+              </article>
+              <article>
+                <h3>Validation</h3>
+                <p>使用 <code>while (score &lt; 0 || score &gt; 100)</code>。</p>
+              </article>
+              <article>
+                <h3>Digit Algorithm</h3>
+                <p>用 <code>% 10</code> 和 <code>/= 10</code> 處理每一位 digit。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Syntax</strong><span><code>while (condition) { body; update; }</code>。</span></div>
+              <div><strong>Pre-test</strong><span>先判斷 condition，所以可能 0 iterations。</span></div>
+              <div><strong>Iteration</strong><span>body 完整執行一次。</span></div>
+              <div><strong>Trace</strong><span>追蹤 condition、body、update、final value。</span></div>
+              <div><strong>Counter</strong><span>固定次數常用 <code>i++</code> 或 <code>i--</code>。</span></div>
+              <div><strong>Off-by-one</strong><span><code>&lt;</code> / <code>&lt;=</code>、<code>&gt;</code> / <code>&gt;=</code> 要小心。</span></div>
+              <div><strong>Accumulator</strong><span><code>sum += value</code>；product 通常從 1。</span></div>
+              <div><strong>Sentinel</strong><span>loop 前 priming read，body 末端讀下一筆。</span></div>
+              <div><strong>Validation</strong><span>通常 <code>while (invalidCondition)</code>。</span></div>
+              <div><strong>Infinite loop</strong><span>檢查控制變數是否往 termination 前進。</span></div>
+              <div><strong>Digit</strong><span><code>% 10</code> 取得 digit；<code>/= 10</code> 移除 digit。</span></div>
+              <div><strong>Flag</strong><span><code>boolean found</code> 可搭配 <code>while (!found)</code>。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十二句</summary>
+              <p><code>while</code> repeats while the condition is true.</p>
+              <p>The condition is checked before every iteration.</p>
+              <p>A while loop can execute zero times.</p>
+              <p>Every while loop needs a path toward termination.</p>
+              <p>Trace the value before condition, after body, and after update.</p>
+              <p><code>i = 0; while (i &lt; n)</code> executes n times.</p>
+              <p><code>&lt;</code> and <code>&lt;=</code> often differ by one iteration.</p>
+              <p>A sentinel value usually is not processed as data.</p>
+              <p>Validation usually means continue while invalid.</p>
+              <p><code>% 10</code> gets the last digit.</p>
+              <p><code>/ 10</code> removes the last digit for integers.</p>
+              <p>If you still need the original number, copy it before a digit loop.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 9｜while Loops。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

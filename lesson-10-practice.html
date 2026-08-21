@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 10 課後練習｜for Loops</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 10 課後練習：for loops、counted loops、execution order、loop bounds、i &lt; n、i &lt;= n、off-by-one、accumulators、scope、for vs while 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 10 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-10-presentation.html">投影模式</a>
+        <a href="lesson-10.html">文章版</a>
+        <a href="lesson-9-practice.html">上一課練習</a>
+        <a href="lesson-11-practice.html">下一課練習</a>
+        <a href="#trace">Trace</a>
+        <a href="#bounds">Bounds</a>
+        <a href="#accumulator">Accumulator</a>
+        <a href="#scope">Scope</a>
+        <a href="#ap-traps">AP Traps</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 10</p>
+          <h1>課後練習：<code>for</code> Loops</h1>
+          <p class="lead">
+            先列出 loop variable 會經過哪些值，再打開詳解。這份題本練習
+            <code>for</code> syntax、execution order、loop bounds、<code>i &lt; n</code>、
+            <code>i &lt;= n</code>、off-by-one、accumulator、scope、for/while conversion、
+            body 修改 <code>i</code> 與 AP-style statement count。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>Bounds</strong><span>上下界推理</span></div>
+            <div><strong>AP-style</strong><span>常見陷阱</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#trace">B. Basic Tracing</a>
+          <a href="#bounds">C. Bounds / Off-by-One</a>
+          <a href="#accumulator">D. Accumulator</a>
+          <a href="#scope">E. Scope / Conversion</a>
+          <a href="#ap-traps">F. AP Traps</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先確認 counted loop、header 三部分與 execution order。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Definition</span></div>
+              <h3>Counted loop 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p1">詳解</button>
+              <div class="reveal-panel" id="l10p1">
+                <p>事先知道或能清楚描述 iteration count 的 loop，例如重複 n 次、從 1 到 10、處理每個 index。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Header</span></div>
+              <h3><code>for</code> header 的三個部分是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p2">詳解</button>
+              <div class="reveal-panel" id="l10p2">
+                <p><code>initialization</code>、<code>condition</code>、<code>update</code>。語法是 <code>for (initialization; condition; update)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Order</span></div>
+              <h3><code>for</code> 的正確執行順序是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p3">詳解</button>
+              <div class="reveal-panel" id="l10p3">
+                <p>Initialization → condition → body → update → condition。Update 在 body 後，不是一開始。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Initialization</span></div>
+              <h3><code>for</code> header 中的 initialization 會執行幾次？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p4">詳解</button>
+              <div class="reveal-panel" id="l10p4">
+                <p>一次。它只在 loop 開始時執行，不會每輪重新執行。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Update</span></div>
+              <h3>Update section 在什麼時候執行？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p5">詳解</button>
+              <div class="reveal-panel" id="l10p5">
+                <p>每輪 body 完整執行後才執行，然後回到 condition。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Zero iterations</span></div>
+              <h3><code>for</code> loop 可能執行 0 次嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p6">詳解</button>
+              <div class="reveal-panel" id="l10p6">
+                <p>可能。若第一次 condition 就是 false，body 會執行 0 次。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="trace" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Trace</p>
+              <h2>Basic Tracing</h2>
+              <p>每題先列出 <code>i</code> 會經過哪些值。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Output</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>for (int i = 1; i &lt;= 3; i++)
+{
+    System.out.print(i + " ");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p7">詳解</button>
+              <div class="reveal-panel" id="l10p7">
+                <p><code>1 2 3 </code>。第一次不會先 update，所以第一個印出 1。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Output</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>for (int i = 2; i &lt;= 8; i += 2)
+{
+    System.out.print(i + " ");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p8">詳解</button>
+              <div class="reveal-panel" id="l10p8">
+                <p><code>2 4 6 8 </code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Countdown</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>for (int i = 5; i &gt; 0; i--)
+{
+    System.out.print(i + " ");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p9">詳解</button>
+              <div class="reveal-panel" id="l10p9">
+                <p><code>5 4 3 2 1 </code>。當 <code>i</code> 更新到 0，condition false。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Expression</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>for (int i = 0; i &lt; 4; i++)
+{
+    System.out.print(i * 2 + " ");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p10">詳解</button>
+              <div class="reveal-panel" id="l10p10">
+                <p><code>i</code> 是 0、1、2、3，所以 output 是 <code>0 2 4 6 </code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Final value</span></div>
+              <h3>最後 <code>x</code> 是多少？</h3>
+              <pre><code>int x = 1;
+
+for (int i = 1; i &lt;= 4; i++)
+{
+    x += i;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p11">詳解</button>
+              <div class="reveal-panel" id="l10p11">
+                <p><code>x = 1 + 1 + 2 + 3 + 4 = 11</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Zero iterations</span></div>
+              <h3>這段 body 執行幾次？</h3>
+              <pre><code>for (int i = 10; i &lt; 5; i++)
+{
+    System.out.println(i);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p12">詳解</button>
+              <div class="reveal-panel" id="l10p12">
+                <p>0 次。一開始 <code>10 &lt; 5</code> 就 false。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Custom update</span></div>
+              <h3>這段 body 執行幾次？</h3>
+              <pre><code>for (int i = 1; i &lt; 100; i *= 2)
+{
+    System.out.println(i);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p13">詳解</button>
+              <div class="reveal-panel" id="l10p13">
+                <p><code>i</code> 是 1、2、4、8、16、32、64，共 7 次。下一個 128 不小於 100。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Update after body</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>for (int i = 1; i &lt;= 3; i++)
+{
+    i++;
+    System.out.print(i + " ");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p14">詳解</button>
+              <div class="reveal-panel" id="l10p14">
+                <p><code>2 4 </code>。Body 裡先把 i 變 2 並印出；header update 變 3。下一輪 body 印 4，header update 變 5 後停止。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Final value</span></div>
+              <h3>最後 <code>i</code> 是多少？</h3>
+              <pre><code>int i;
+
+for (i = 3; i &lt;= 8; i++)
+{
+    System.out.print(i + " ");
+}
+
+System.out.println(i);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p15">詳解</button>
+              <div class="reveal-panel" id="l10p15">
+                <p>Loop 印 3 到 8，結束後 <code>i</code> 是 9，所以最後又印 <code>9</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="bounds" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Bounds</p>
+              <h2>Bounds / Off-by-One</h2>
+              <p>特別練習 <code>i &lt; n</code>、<code>i &lt;= n</code>、0-based 與 1-based。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Count</span></div>
+              <h3><code>for (int i = 0; i &lt; 12; i++)</code> 執行幾次？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p16">詳解</button>
+              <div class="reveal-panel" id="l10p16">
+                <p>12 次。<code>i</code> 是 0 到 11。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Count</span></div>
+              <h3><code>for (int i = 1; i &lt;= 12; i++)</code> 執行幾次？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p17">詳解</button>
+              <div class="reveal-panel" id="l10p17">
+                <p>12 次。<code>i</code> 是 1 到 12。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Count</span></div>
+              <h3><code>for (int i = 1; i &lt; 12; i++)</code> 執行幾次？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p18">詳解</button>
+              <div class="reveal-panel" id="l10p18">
+                <p>11 次。<code>i</code> 是 1 到 11。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Count</span></div>
+              <h3><code>for (int i = 0; i &lt;= 12; i++)</code> 執行幾次？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p19">詳解</button>
+              <div class="reveal-panel" id="l10p19">
+                <p>13 次。<code>i</code> 是 0 到 12。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Inclusive</span></div>
+              <h3>從 3 through 8，包含兩端，應寫成哪個 loop？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p20">詳解</button>
+              <div class="reveal-panel" id="l10p20">
+                <pre><code>for (int i = 3; i &lt;= 8; i++)</code></pre>
+                <p><code>through</code> 和 <code>inclusive</code> 通常表示包含上界。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Exclusive</span></div>
+              <h3>從 3 up to but not including 8，應寫成哪個 loop？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p21">詳解</button>
+              <div class="reveal-panel" id="l10p21">
+                <pre><code>for (int i = 3; i &lt; 8; i++)</code></pre>
+                <p>不包含 8，所以用 <code>&lt; 8</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Bug</span></div>
+              <h3>想執行 20 次，這段錯在哪？</h3>
+              <pre><code>for (int i = 0; i &lt;= 20; i++)
+{
+    // work
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p22">詳解</button>
+              <div class="reveal-panel" id="l10p22">
+                <p>它執行 21 次，因為 <code>i</code> 是 0 到 20。若要 20 次，寫 <code>i &lt; 20</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Index</span></div>
+              <h3>若有 n 個合法 index：0 到 n - 1，應使用哪個 condition？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p23">詳解</button>
+              <div class="reveal-panel" id="l10p23">
+                <p><code>i &lt; n</code>。不能寫 <code>i &lt;= n</code>，因為 <code>i = n</code> 不是合法 index。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Step</span></div>
+              <h3><code>for (int i = 1; i &lt;= 10; i += 3)</code> 執行幾次？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p24">詳解</button>
+              <div class="reveal-panel" id="l10p24">
+                <p><code>i</code> 是 1、4、7、10，共 4 次。Step 大於 1 時直接列值最安全。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="accumulator" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Accumulator</p>
+              <h2>Accumulator / Counter / Statement Count</h2>
+              <p>分辨 loop body 執行次數和某個 statement 執行次數。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Sum</span></div>
+              <h3>最後 <code>sum</code> 是多少？</h3>
+              <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 5; i++)
+{
+    sum += i;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p25">詳解</button>
+              <div class="reveal-panel" id="l10p25">
+                <p><code>1 + 2 + 3 + 4 + 5 = 15</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Product</span></div>
+              <h3>最後 <code>product</code> 是多少？</h3>
+              <pre><code>int product = 1;
+
+for (int i = 1; i &lt;= 5; i++)
+{
+    product *= i;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p26">詳解</button>
+              <div class="reveal-panel" id="l10p26">
+                <p><code>1 * 2 * 3 * 4 * 5 = 120</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Count matches</span></div>
+              <h3>最後 <code>count</code> 是多少？</h3>
+              <pre><code>int count = 0;
+
+for (int i = 1; i &lt;= 100; i++)
+{
+    if (i % 7 == 0)
+    {
+        count++;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p27">詳解</button>
+              <div class="reveal-panel" id="l10p27">
+                <p>7 的倍數是 7、14、...、98，共 14 個，所以 <code>count = 14</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Sum matches</span></div>
+              <h3>最後 <code>sum</code> 是多少？</h3>
+              <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 20; i++)
+{
+    if (i % 2 == 0)
+    {
+        sum += i;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p28">詳解</button>
+              <div class="reveal-panel" id="l10p28">
+                <p><code>2 + 4 + 6 + 8 + 10 + 12 + 14 + 16 + 18 + 20 = 110</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Multiples include 0</span></div>
+              <h3>最後 <code>count</code> 是多少？</h3>
+              <pre><code>int count = 0;
+
+for (int i = 0; i &lt; 10; i++)
+{
+    if (i % 3 == 0)
+    {
+        count++;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p29">詳解</button>
+              <div class="reveal-panel" id="l10p29">
+                <p><code>i = 0, 3, 6, 9</code> 符合，共 4 次。注意 <code>0 % 3 == 0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Statement count</span></div>
+              <h3>Loop body 執行幾次？<code>System.out.println</code> 執行幾次？</h3>
+              <pre><code>for (int i = 1; i &lt;= 10; i++)
+{
+    if (i &gt; 7)
+    {
+        System.out.println(i);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p30">詳解</button>
+              <div class="reveal-panel" id="l10p30">
+                <p>Loop body 10 次；<code>println</code> 只在 <code>i = 8, 9, 10</code> 執行，共 3 次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Average</span></div>
+              <h3>算 1 到 n 的平均時，為什麼通常需要確保 <code>n &gt; 0</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p31">詳解</button>
+              <div class="reveal-panel" id="l10p31">
+                <p>平均是 <code>sum / n</code>，若 <code>n == 0</code> 會除以 0。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Random trial</span></div>
+              <h3>這段會產生幾次骰子結果？</h3>
+              <pre><code>for (int i = 0; i &lt; 100; i++)
+{
+    int roll = (int) (Math.random() * 6) + 1;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p32">詳解</button>
+              <div class="reveal-panel" id="l10p32">
+                <p>100 次。<code>i</code> 是 0 到 99。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="scope" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Scope</p>
+              <h2>Scope / for 與 while 轉換</h2>
+              <p>練習 loop variable 的生命週期，以及 equivalent loop 轉換。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Scope</span></div>
+              <h3>這段最後一行是否合法？</h3>
+              <pre><code>for (int i = 0; i &lt; 5; i++)
+{
+    System.out.println(i);
+}
+
+System.out.println(i);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p33">詳解</button>
+              <div class="reveal-panel" id="l10p33">
+                <p>不合法，compile error。<code>i</code> 在 <code>for</code> header 宣告，scope 通常只在 loop 內。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Scope</span></div>
+              <h3>這段最後會印什麼？</h3>
+              <pre><code>int i;
+
+for (i = 0; i &lt; 5; i++)
+{
+    // no output
+}
+
+System.out.println(i);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p34">詳解</button>
+              <div class="reveal-panel" id="l10p34">
+                <p><code>5</code>。因為 <code>i</code> 在 loop 外宣告，loop 結束後仍可使用。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Convert</span></div>
+              <h3>把這個 <code>for</code> 改成 equivalent <code>while</code>。</h3>
+              <pre><code>for (int i = 0; i &lt; 5; i++)
+{
+    System.out.println(i);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p35">參考解法</button>
+              <div class="reveal-panel" id="l10p35">
+                <pre><code>int i = 0;
+
+while (i &lt; 5)
+{
+    System.out.println(i);
+    i++;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Convert bug</span></div>
+              <h3>這個 <code>while</code> 是不是等價於上一題？</h3>
+              <pre><code>int i = 0;
+
+while (i &lt; 5)
+{
+    System.out.println(i);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p36">詳解</button>
+              <div class="reveal-panel" id="l10p36">
+                <p>不是。少了 <code>i++</code>，如果 <code>i &lt; 5</code> 一開始 true，就會 infinite loop。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>for vs while</span></div>
+              <h3>「輸入直到 -1 停止」通常較適合 <code>for</code> 還是 <code>while</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p37">詳解</button>
+              <div class="reveal-panel" id="l10p37">
+                <p><code>while</code>。因為不知道輸入幾筆，只知道停止條件是 sentinel。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>for vs while</span></div>
+              <h3>「輸入正好 5 個成績」通常較適合 <code>for</code> 還是 <code>while</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p38">詳解</button>
+              <div class="reveal-panel" id="l10p38">
+                <p><code>for</code>。因為輸入數量明確是 5 筆。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="ap-traps" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. AP Traps</p>
+              <h2>Body 修改控制變數、Bound 改變、Index Pattern</h2>
+              <p>這些題不能只看 header，要逐輪 trace。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Body modifies i</span></div>
+              <h3>這段 body 執行幾次？</h3>
+              <pre><code>for (int i = 0; i &lt; 10; i++)
+{
+    i++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p39">詳解</button>
+              <div class="reveal-panel" id="l10p39">
+                <p>5 次。每輪 body 內 <code>i++</code>，header update 又 <code>i++</code>，所以 i 以 0、2、4、6、8 進 body。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Bound changes</span></div>
+              <h3>這段 body 執行幾次？</h3>
+              <pre><code>int n = 8;
+
+for (int i = 0; i &lt; n; i++)
+{
+    n -= 2;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p40">詳解</button>
+              <div class="reveal-panel" id="l10p40">
+                <p>3 次。Trace：<code>(i,n)</code> 是 (0,8)、(1,6)、(2,4)，之後 <code>i = 3</code>、<code>n = 2</code>，condition false。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Infinite loop</span></div>
+              <h3>這段是否會停止？</h3>
+              <pre><code>for (int i = 10; i &gt;= 1; i++)
+{
+    System.out.println(i);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p41">詳解</button>
+              <div class="reveal-panel" id="l10p41">
+                <p>通常不會停止。倒數條件 <code>i &gt;= 1</code> 搭配 <code>i++</code>，i 越來越大。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Semicolon</span></div>
+              <h3>這段有什麼問題？</h3>
+              <pre><code>for (int i = 0; i &lt; 5; i++);
+{
+    System.out.println("Hi");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p42">詳解</button>
+              <div class="reveal-panel" id="l10p42">
+                <p><code>for (...);</code> 的 body 是 empty statement。後面的 block 不屬於 loop，所以 <code>Hi</code> 只印一次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>String index</span></div>
+              <h3>若 <code>String word = "JAVA";</code>，合法 index 是哪些？</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p43">詳解</button>
+              <div class="reveal-panel" id="l10p43">
+                <p><code>0, 1, 2, 3</code>。<code>word.length()</code> 是 4，但最後 index 是 3。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>String loop</span></div>
+              <h3>哪個 loop 較適合走訪 <code>word</code> 的每個合法 index？</h3>
+              <pre><code>A. for (int i = 0; i &lt; word.length(); i++)
+B. for (int i = 0; i &lt;= word.length(); i++)</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p44">詳解</button>
+              <div class="reveal-panel" id="l10p44">
+                <p>A。B 會讓 <code>i</code> 等於 length，通常造成 index out of bounds。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Same iterations?</span></div>
+              <h3>這兩個 loop 都執行 n 次。它們一定 equivalent 嗎？</h3>
+              <pre><code>for (int i = 0; i &lt; n; i++)
+{
+    sum += i;
+}
+
+for (int i = 1; i &lt;= n; i++)
+{
+    sum += i;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p45">詳解</button>
+              <div class="reveal-panel" id="l10p45">
+                <p>不一定。Iteration count 相同，但 <code>i</code> 的值不同：第一個加 0 到 n - 1，第二個加 1 到 n。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding</p>
+              <h2>程式練習</h2>
+              <p>把 counted loop pattern 寫成可執行 Java 片段。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Coding</span></div>
+              <h3>寫一個 <code>for</code> loop 印出 1 到 10。</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p46">參考解法</button>
+              <div class="reveal-panel" id="l10p46">
+                <pre><code>for (int i = 1; i &lt;= 10; i++)
+{
+    System.out.println(i);
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Coding</span></div>
+              <h3>寫一個 <code>for</code> loop 印出 10、8、6、4、2。</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p47">參考解法</button>
+              <div class="reveal-panel" id="l10p47">
+                <pre><code>for (int i = 10; i &gt;= 2; i -= 2)
+{
+    System.out.println(i);
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Coding</span></div>
+              <h3>寫一個 <code>for</code> loop 計算 1 到 100 的總和。</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p48">參考解法</button>
+              <div class="reveal-panel" id="l10p48">
+                <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 100; i++)
+{
+    sum += i;
+}
+
+System.out.println(sum);</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Coding</span></div>
+              <h3>寫一個 <code>for</code> loop 計算 1 到 50 中 3 的倍數有幾個。</h3>
+              <button class="reveal-button" type="button" data-reveal="l10p49">參考解法</button>
+              <div class="reveal-panel" id="l10p49">
+                <pre><code>int count = 0;
+
+for (int i = 1; i &lt;= 50; i++)
+{
+    if (i % 3 == 0)
+    {
+        count++;
+    }
+}
+
+System.out.println(count);</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 10; i++)
+{
+    if (i % 2 == 0 &amp;&amp; i &gt; 5)
+    {
+        sum += i;
+    }
+}
+
+System.out.println(sum);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l10p50">詳解</button>
+              <div class="reveal-panel" id="l10p50">
+                <p>符合條件的是 6、8、10，所以 <code>sum = 24</code>。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 10 課後練習。先列出 loop variable 的值，再打開詳解檢查推理。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

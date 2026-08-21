@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 12 課後練習｜Nested Loops</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 12 課後練習：nested loops、outer/inner execution、row-column patterns、dependent bounds、pair algorithms、runtime 與 debug。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 12 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-12-presentation.html">投影模式</a>
+        <a href="lesson-12.html">文章版</a>
+        <a href="lesson-11-practice.html">上一課練習</a>
+        <a href="#concepts">概念</a>
+        <a href="#trace">Trace</a>
+        <a href="#patterns">Pattern</a>
+        <a href="#pairs">Pairs</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 12</p>
+          <h1>課後練習：Nested Loops</h1>
+          <p class="lead">
+            這份題本練習巢狀迴圈的執行順序、總次數、pattern output、dependent bounds、
+            pair algorithms、accumulator scope 與常見錯誤。每題先自己 trace，再打開詳解。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>Row/Col</strong><span>表格思維</span></div>
+            <div><strong>AP-style</strong><span>輸出與陷阱</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#trace">B. 執行與輸出</a>
+          <a href="#patterns">C. Pattern Output</a>
+          <a href="#counting">D. 執行次數</a>
+          <a href="#pairs">E. Pair Algorithms</a>
+          <a href="#scope-runtime">F. Scope / Runtime / Debug</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先確認你能說出 outer loop、inner loop、row / column 與 inner reset 的意思。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Definition</span></div>
+              <h3>什麼是 nested loop？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p1">詳解</button>
+              <div class="reveal-panel" id="l12p1">
+                <p>Nested loop 是一個 loop 的 body 裡面再放另一個 loop，也就是 loop inside a loop。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Outer / Inner</span></div>
+              <h3>在 pattern 題中，outer loop 和 inner loop 通常各控制什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p2">詳解</button>
+              <div class="reveal-panel" id="l12p2">
+                <p>outer loop 通常控制 row，也就是有幾列；inner loop 通常控制 column，也就是每列有幾個。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Reset</span></div>
+              <h3>outer loop 每執行一次，inner loop 會發生什麼事？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p3">詳解</button>
+              <div class="reveal-panel" id="l12p3">
+                <p>inner loop 會重新 initialization，然後完整執行。inner variable 不會從上一輪結束後的值繼續。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>print</span></div>
+              <h3>在印 pattern 時，<code>print</code> 和 <code>println</code> 的差異是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p4">詳解</button>
+              <div class="reveal-panel" id="l12p4">
+                <p><code>print</code> 留在同一行；<code>println</code> 會換行。通常 inner loop 裡用 <code>print</code>，inner loop 後用 <code>println</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Counting</span></div>
+              <h3>如果 outer loop 跑 6 次，inner loop 每次跑 4 次，inner body 總共執行幾次？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p5">詳解</button>
+              <div class="reveal-panel" id="l12p5">
+                <p><code>6 * 4 = 24</code> 次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Dependent Bound</span></div>
+              <h3>為什麼 <code>for (int j = 1; j &lt;= i; j++)</code> 不一定能用乘法直接算總次數？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p6">詳解</button>
+              <div class="reveal-panel" id="l12p6">
+                <p>因為 inner loop 次數會隨著 <code>i</code> 改變。例如 <code>i</code> 從 1 到 5 時，總次數是 <code>1 + 2 + 3 + 4 + 5</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="trace" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Trace And Output</p>
+              <h2>執行順序與輸出追蹤</h2>
+              <p>這一段練習先固定 outer，再完整跑 inner。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Output</span></div>
+              <h3>以下程式輸出幾行？</h3>
+              <pre><code>for (int i = 1; i &lt;= 3; i++)
+{
+    for (int j = 1; j &lt;= 2; j++)
+    {
+        System.out.println(i + " " + j);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p7">詳解</button>
+              <div class="reveal-panel" id="l12p7">
+                <p>6 行。外層 3 次，每次內層 2 次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Output</span></div>
+              <h3>上題完整輸出是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p8">詳解</button>
+              <div class="reveal-panel" id="l12p8">
+                <pre><code>1 1
+1 2
+2 1
+2 2
+3 1
+3 2</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Trace</span></div>
+              <h3>以下程式最後印出多少？</h3>
+              <pre><code>int count = 0;
+
+for (int a = 0; a &lt; 4; a++)
+{
+    for (int b = 0; b &lt; 3; b++)
+    {
+        count++;
+    }
+}
+
+System.out.println(count);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p9">詳解</button>
+              <div class="reveal-panel" id="l12p9">
+                <p><code>12</code>。外層 4 次，內層每次 3 次，<code>count++</code> 共 12 次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Trace</span></div>
+              <h3>以下程式最後印出多少？</h3>
+              <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 2; i++)
+{
+    for (int j = 1; j &lt;= 3; j++)
+    {
+        sum += i;
+    }
+}
+
+System.out.println(sum);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p10">詳解</button>
+              <div class="reveal-panel" id="l12p10">
+                <p><code>i = 1</code> 時加三次 1，得到 3；<code>i = 2</code> 時加三次 2，再加 6。總共 <code>9</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Trace</span></div>
+              <h3>以下程式最後印出多少？</h3>
+              <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 3; i++)
+{
+    for (int j = 1; j &lt;= 2; j++)
+    {
+        sum += j;
+    }
+}
+
+System.out.println(sum);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p11">詳解</button>
+              <div class="reveal-panel" id="l12p11">
+                <p>每次 outer 會加 <code>1 + 2 = 3</code>。外層 3 次，所以答案是 <code>9</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Trace</span></div>
+              <h3>以下程式最後印出多少？</h3>
+              <pre><code>int total = 0;
+
+for (int i = 1; i &lt;= 3; i++)
+{
+    for (int j = 1; j &lt;= i; j++)
+    {
+        total++;
+    }
+}
+
+System.out.println(total);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p12">詳解</button>
+              <div class="reveal-panel" id="l12p12">
+                <p>inner 次數是 <code>1 + 2 + 3 = 6</code>，所以印出 <code>6</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Output</span></div>
+              <h3>以下程式輸出什麼？</h3>
+              <pre><code>for (int i = 1; i &lt;= 2; i++)
+{
+    for (int j = 1; j &lt;= 3; j++)
+    {
+        System.out.print(j);
+    }
+    System.out.println();
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p13">詳解</button>
+              <div class="reveal-panel" id="l12p13">
+                <pre><code>123
+123</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Output</span></div>
+              <h3>以下程式輸出什麼？</h3>
+              <pre><code>for (int i = 1; i &lt;= 3; i++)
+{
+    for (int j = 1; j &lt;= 2; j++)
+    {
+        System.out.print(i);
+    }
+    System.out.println();
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p14">詳解</button>
+              <div class="reveal-panel" id="l12p14">
+                <pre><code>11
+22
+33</code></pre>
+              </div>
+            </article>
+          </section>
+
+          <section id="patterns" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Pattern Output</p>
+              <h2>Pattern 題</h2>
+              <p>先判斷列數，再判斷每列印什麼、印幾次、什麼時候換行。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Pattern</span></div>
+              <h3>寫出程式印出 4 列、每列 3 顆星。</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p15">參考解法</button>
+              <div class="reveal-panel" id="l12p15">
+                <pre><code>for (int row = 1; row &lt;= 4; row++)
+{
+    for (int col = 1; col &lt;= 3; col++)
+    {
+        System.out.print("*");
+    }
+    System.out.println();
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Pattern</span></div>
+              <h3>以下程式輸出什麼？</h3>
+              <pre><code>for (int row = 1; row &lt;= 4; row++)
+{
+    for (int col = 1; col &lt;= row; col++)
+    {
+        System.out.print("*");
+    }
+    System.out.println();
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p16">詳解</button>
+              <div class="reveal-panel" id="l12p16">
+                <pre><code>*
+**
+***
+****</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Pattern</span></div>
+              <h3>寫出程式印出下列結果。</h3>
+              <pre><code>*****
+****
+***
+**
+*</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p17">參考解法</button>
+              <div class="reveal-panel" id="l12p17">
+                <pre><code>for (int row = 5; row &gt;= 1; row--)
+{
+    for (int col = 1; col &lt;= row; col++)
+    {
+        System.out.print("*");
+    }
+    System.out.println();
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Pattern</span></div>
+              <h3>以下程式輸出什麼？</h3>
+              <pre><code>for (int row = 1; row &lt;= 3; row++)
+{
+    for (int col = 1; col &lt;= row; col++)
+    {
+        System.out.print(row);
+    }
+    System.out.println();
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p18">詳解</button>
+              <div class="reveal-panel" id="l12p18">
+                <pre><code>1
+22
+333</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Pattern</span></div>
+              <h3>以下程式輸出什麼？</h3>
+              <pre><code>for (int row = 1; row &lt;= 3; row++)
+{
+    for (int col = 1; col &lt;= row; col++)
+    {
+        System.out.print(col);
+    }
+    System.out.println();
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p19">詳解</button>
+              <div class="reveal-panel" id="l12p19">
+                <pre><code>1
+12
+123</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>println</span></div>
+              <h3>如果把 <code>System.out.println();</code> 放進 inner loop 裡，通常會發生什麼事？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p20">詳解</button>
+              <div class="reveal-panel" id="l12p20">
+                <p>每印一個符號就換行，原本應該在同一列的 pattern 會被拆成很多列。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Pattern</span></div>
+              <h3>寫出程式印出 1 到 4 的 row-column 座標。</h3>
+              <pre><code>1,1 1,2 1,3 1,4
+2,1 2,2 2,3 2,4
+3,1 3,2 3,3 3,4</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p21">參考解法</button>
+              <div class="reveal-panel" id="l12p21">
+                <pre><code>for (int row = 1; row &lt;= 3; row++)
+{
+    for (int col = 1; col &lt;= 4; col++)
+    {
+        System.out.print(row + "," + col + " ");
+    }
+    System.out.println();
+}</code></pre>
+              </div>
+            </article>
+          </section>
+
+          <section id="counting" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Counting Iterations</p>
+              <h2>執行次數</h2>
+              <p>固定範圍用乘法；dependent bounds 逐列加總。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Counting</span></div>
+              <h3>以下 inner body 執行幾次？</h3>
+              <pre><code>for (int r = 0; r &lt; 5; r++)
+{
+    for (int c = 0; c &lt; 6; c++)
+    {
+        System.out.println("*");
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p22">詳解</button>
+              <div class="reveal-panel" id="l12p22">
+                <p><code>5 * 6 = 30</code> 次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Counting</span></div>
+              <h3>以下 inner body 執行幾次？</h3>
+              <pre><code>for (int i = 1; i &lt;= 4; i++)
+{
+    for (int j = 1; j &lt;= i; j++)
+    {
+        System.out.println(j);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p23">詳解</button>
+              <div class="reveal-panel" id="l12p23">
+                <p><code>1 + 2 + 3 + 4 = 10</code> 次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Counting</span></div>
+              <h3>以下 inner body 執行幾次？</h3>
+              <pre><code>for (int i = 5; i &gt;= 1; i--)
+{
+    for (int j = 1; j &lt;= i; j++)
+    {
+        System.out.println(j);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p24">詳解</button>
+              <div class="reveal-panel" id="l12p24">
+                <p><code>5 + 4 + 3 + 2 + 1 = 15</code> 次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Counting</span></div>
+              <h3>以下 inner body 執行幾次？</h3>
+              <pre><code>for (int i = 2; i &lt;= 6; i++)
+{
+    for (int j = 0; j &lt; 3; j++)
+    {
+        System.out.println(i + j);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p25">詳解</button>
+              <div class="reveal-panel" id="l12p25">
+                <p>外層 <code>i = 2, 3, 4, 5, 6</code> 共 5 次；內層 3 次，所以總共 <code>15</code> 次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Counting</span></div>
+              <h3>如果 <code>n = 6</code>，以下 inner body 執行幾次？</h3>
+              <pre><code>for (int i = 1; i &lt;= n; i++)
+{
+    for (int j = 1; j &lt; i; j++)
+    {
+        System.out.println(j);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p26">詳解</button>
+              <div class="reveal-panel" id="l12p26">
+                <p>inner 次數是 <code>0 + 1 + 2 + 3 + 4 + 5 = 15</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Counting</span></div>
+              <h3>如果外層跑 <code>n</code> 次、內層每次跑 <code>m</code> 次，總次數的 runtime 直覺是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p27">詳解</button>
+              <div class="reveal-panel" id="l12p27">
+                <p><code>O(nm)</code>。若 <code>m</code> 也是 <code>n</code>，就會變成 <code>O(n^2)</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="pairs" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Pair Algorithms</p>
+              <h2>配對演算法</h2>
+              <p>配對題要先分清楚是否包含自己、是否有方向、是否要去除重複。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Pairs</span></div>
+              <h3>以下程式印出幾組 pair？</h3>
+              <pre><code>for (int i = 1; i &lt;= 3; i++)
+{
+    for (int j = 1; j &lt;= 3; j++)
+    {
+        System.out.println(i + "," + j);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p28">詳解</button>
+              <div class="reveal-panel" id="l12p28">
+                <p><code>3 * 3 = 9</code> 組，包含 self-pair 和反方向 pair。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Pairs</span></div>
+              <h3>以下程式印出哪些 pair？</h3>
+              <pre><code>for (int i = 1; i &lt;= 4; i++)
+{
+    for (int j = i + 1; j &lt;= 4; j++)
+    {
+        System.out.println(i + "," + j);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p29">詳解</button>
+              <div class="reveal-panel" id="l12p29">
+                <pre><code>1,2
+1,3
+1,4
+2,3
+2,4
+3,4</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Pairs</span></div>
+              <h3><code>j = i + 1</code> 的目的通常是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p30">詳解</button>
+              <div class="reveal-panel" id="l12p30">
+                <p>避免自己跟自己配對，也避免 <code>i,j</code> 和 <code>j,i</code> 重複。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Pairs</span></div>
+              <h3>若有 5 個項目，要列出所有 unique pairs，總共有幾組？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p31">詳解</button>
+              <div class="reveal-panel" id="l12p31">
+                <p><code>4 + 3 + 2 + 1 = 10</code> 組。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Pairs</span></div>
+              <h3>以下程式計算幾個 pair 滿足 <code>i &lt; j</code>？</h3>
+              <pre><code>int count = 0;
+
+for (int i = 1; i &lt;= 4; i++)
+{
+    for (int j = 1; j &lt;= 4; j++)
+    {
+        if (i &lt; j)
+        {
+            count++;
+        }
+    }
+}
+
+System.out.println(count);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p32">詳解</button>
+              <div class="reveal-panel" id="l12p32">
+                <p>答案是 <code>6</code>，也就是 <code>(1,2)</code>、<code>(1,3)</code>、<code>(1,4)</code>、<code>(2,3)</code>、<code>(2,4)</code>、<code>(3,4)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Pairs</span></div>
+              <h3>上題若 inner loop 改成 <code>for (int j = i + 1; j &lt;= 4; j++)</code>，還需要 <code>if (i &lt; j)</code> 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p33">詳解</button>
+              <div class="reveal-panel" id="l12p33">
+                <p>不需要，因為 <code>j</code> 從 <code>i + 1</code> 開始，天然保證 <code>j &gt; i</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="scope-runtime" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Scope / Runtime / Debug</p>
+              <h2>變數位置、效率與除錯</h2>
+              <p>AP 題常會考變數放錯位置、condition/update 用錯變數、或錯估 nested runtime。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Scope</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>for (int row = 1; row &lt;= 3; row++)
+{
+    int rowSum = 0;
+
+    for (int col = 1; col &lt;= 4; col++)
+    {
+        rowSum += col;
+    }
+
+    System.out.println(rowSum);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p34">詳解</button>
+              <div class="reveal-panel" id="l12p34">
+                <pre><code>10
+10
+10</code></pre>
+                <p><code>rowSum</code> 每一列都重新設為 0，然後加 <code>1 + 2 + 3 + 4</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Scope</span></div>
+              <h3>如果想計算全部 rows 的總和，<code>total</code> 應該放在哪裡初始化？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p35">詳解</button>
+              <div class="reveal-panel" id="l12p35">
+                <p><code>total</code> 應該在 outer loop 前初始化，這樣不會每一列重設。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Runtime</span></div>
+              <h3>兩層 loop 都跑 <code>n</code> 次，runtime 直覺是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p36">詳解</button>
+              <div class="reveal-panel" id="l12p36">
+                <p><code>O(n^2)</code>，因為大約做 <code>n * n</code> 次工作。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>Runtime</span></div>
+              <h3><code>1 + 2 + ... + n</code> 的 nested loop，在 Big-O 直覺上通常看成什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p37">詳解</button>
+              <div class="reveal-panel" id="l12p37">
+                <p>仍然看成 <code>O(n^2)</code>，因為它大約是 <code>n^2 / 2</code> 等級。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Bug</span></div>
+              <h3>以下 inner loop 有什麼問題？</h3>
+              <pre><code>for (int i = 0; i &lt; 3; i++)
+{
+    for (int j = 0; i &lt; 4; j++)
+    {
+        System.out.println(j);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p38">詳解</button>
+              <div class="reveal-panel" id="l12p38">
+                <p>inner condition 用到 <code>i &lt; 4</code>，但 inner loop 更新的是 <code>j</code>。若 <code>i</code> 沒變，inner loop 可能不會停止。通常應該是 <code>j &lt; 4</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Bug</span></div>
+              <h3>以下 inner loop 有什麼問題？</h3>
+              <pre><code>for (int i = 0; i &lt; 3; i++)
+{
+    for (int j = 0; j &lt; 4; i++)
+    {
+        System.out.println(j);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p39">詳解</button>
+              <div class="reveal-panel" id="l12p39">
+                <p>inner update 改到 <code>i</code>，但 condition 檢查 <code>j &lt; 4</code>。因為 <code>j</code> 沒有更新，通常會造成無限迴圈或邏輯錯誤。應改成 <code>j++</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Bug</span></div>
+              <h3>以下程式想印 3 列 4 顆星，但結果不對。原因是什麼？</h3>
+              <pre><code>for (int row = 1; row &lt;= 3; row++)
+{
+    for (int col = 1; col &lt;= 4; col++)
+    {
+        System.out.println("*");
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p40">詳解</button>
+              <div class="reveal-panel" id="l12p40">
+                <p>inner loop 裡用了 <code>println</code>，每顆星都換行。應在 inner loop 裡用 <code>print("*")</code>，inner loop 後再 <code>println()</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Bug</span></div>
+              <h3>以下程式想每列重新計算 <code>rowSum</code>，但有錯。錯在哪？</h3>
+              <pre><code>int rowSum = 0;
+
+for (int row = 1; row &lt;= 3; row++)
+{
+    for (int col = 1; col &lt;= 4; col++)
+    {
+        rowSum += col;
+    }
+
+    System.out.println(rowSum);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p41">詳解</button>
+              <div class="reveal-panel" id="l12p41">
+                <p><code>rowSum</code> 放在 outer loop 外面，所以不會每列重設。若要每列重新算，要把 <code>int rowSum = 0;</code> 放進 outer loop body、inner loop 前。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Debug</span></div>
+              <h3>遇到 nested loop trace 題，最穩的 trace 方法是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p42">詳解</button>
+              <div class="reveal-panel" id="l12p42">
+                <p>先固定 outer loop 的一個值，再把 inner loop 完整跑完；每一輪記下 outer variable、inner variable 和任何 state variable。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding Practice</p>
+              <h2>程式練習</h2>
+              <p>這一段適合直接打開 Java 執行器測試。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>Coding</span></div>
+              <h3>寫一段程式印出 5 列，每列印出 <code>row</code> 這個數字 <code>row</code> 次。</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p43">參考解法</button>
+              <div class="reveal-panel" id="l12p43">
+                <pre><code>for (int row = 1; row &lt;= 5; row++)
+{
+    for (int col = 1; col &lt;= row; col++)
+    {
+        System.out.print(row);
+    }
+    System.out.println();
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Coding</span></div>
+              <h3>寫一段程式印出 1 到 5 的簡易乘法表。</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p44">參考解法</button>
+              <div class="reveal-panel" id="l12p44">
+                <pre><code>for (int row = 1; row &lt;= 5; row++)
+{
+    for (int col = 1; col &lt;= 5; col++)
+    {
+        System.out.print(row * col + "\t");
+    }
+    System.out.println();
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Coding</span></div>
+              <h3>寫一段程式計算 1 到 4 的所有 ordered pairs 有幾組。</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p45">參考解法</button>
+              <div class="reveal-panel" id="l12p45">
+                <pre><code>int count = 0;
+
+for (int i = 1; i &lt;= 4; i++)
+{
+    for (int j = 1; j &lt;= 4; j++)
+    {
+        count++;
+    }
+}
+
+System.out.println(count);</code></pre>
+                <p>答案是 <code>16</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Coding</span></div>
+              <h3>寫一段程式列出 1 到 5 的所有 unique pairs。</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p46">參考解法</button>
+              <div class="reveal-panel" id="l12p46">
+                <pre><code>for (int i = 1; i &lt;= 5; i++)
+{
+    for (int j = i + 1; j &lt;= 5; j++)
+    {
+        System.out.println(i + "," + j);
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Coding</span></div>
+              <h3>寫一段程式計算下面三角形總共有幾顆星，不直接手算。</h3>
+              <pre><code>*
+**
+***
+****
+*****</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p47">參考解法</button>
+              <div class="reveal-panel" id="l12p47">
+                <pre><code>int stars = 0;
+
+for (int row = 1; row &lt;= 5; row++)
+{
+    for (int col = 1; col &lt;= row; col++)
+    {
+        stars++;
+    }
+}
+
+System.out.println(stars);</code></pre>
+                <p>答案是 <code>15</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Coding</span></div>
+              <h3>寫一段程式印出所有 <code>i + j == 5</code> 的 ordered pairs，<code>i</code> 和 <code>j</code> 都從 1 到 4。</h3>
+              <button class="reveal-button" type="button" data-reveal="l12p48">參考解法</button>
+              <div class="reveal-panel" id="l12p48">
+                <pre><code>for (int i = 1; i &lt;= 4; i++)
+{
+    for (int j = 1; j &lt;= 4; j++)
+    {
+        if (i + j == 5)
+        {
+            System.out.println(i + "," + j);
+        }
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Coding</span></div>
+              <h3>寫一段程式，每列印出該列的 column 總和。</h3>
+              <pre><code>row 1: 10
+row 2: 10
+row 3: 10</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p49">參考解法</button>
+              <div class="reveal-panel" id="l12p49">
+                <pre><code>for (int row = 1; row &lt;= 3; row++)
+{
+    int rowSum = 0;
+
+    for (int col = 1; col &lt;= 4; col++)
+    {
+        rowSum += col;
+    }
+
+    System.out.println("row " + row + ": " + rowSum);
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>預測最後輸出，並解釋 inner loop 每列跑幾次。</h3>
+              <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 4; i++)
+{
+    for (int j = i; j &lt;= 4; j++)
+    {
+        sum += j;
+    }
+}
+
+System.out.println(sum);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l12p50">詳解</button>
+              <div class="reveal-panel" id="l12p50">
+                <p><code>i = 1</code> 加 <code>1 + 2 + 3 + 4 = 10</code>；<code>i = 2</code> 加 <code>2 + 3 + 4 = 9</code>；<code>i = 3</code> 加 <code>3 + 4 = 7</code>；<code>i = 4</code> 加 <code>4</code>。總和是 <code>30</code>。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 12 課後練習。先固定 outer，再完整 trace inner，最後才回答輸出或次數。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

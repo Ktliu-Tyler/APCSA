@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 8 課後練習｜Compound Boolean &amp; De Morgan</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 8 課後練習：&amp;&amp;、||、!、truth tables、range conditions、short-circuit、De Morgan、equivalent Boolean expressions 與 coding practice。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 8 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-8-presentation.html">投影模式</a>
+        <a href="lesson-8.html">文章版</a>
+        <a href="lesson-7-practice.html">上一課練習</a>
+        <a href="lesson-9-practice.html">下一課練習</a>
+        <a href="#operators">Operators</a>
+        <a href="#range">Range</a>
+        <a href="#short-circuit">Short-Circuit</a>
+        <a href="#de-morgan">De Morgan</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 8</p>
+          <h1>課後練習：Compound Boolean &amp; De Morgan</h1>
+          <p class="lead">
+            先自己拆基本 condition、判斷是否 short-circuit、處理括號與 NOT，再打開詳解。
+            這份題本練習 <code>&amp;&amp;</code>、<code>||</code>、<code>!</code>、truth table、
+            range conditions、short-circuit、De Morgan、equivalent expressions 與 Boolean return。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>Logic</strong><span>真假推理</span></div>
+            <div><strong>AP-style</strong><span>等價與短路</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#operators">B. Operators / Truth</a>
+          <a href="#range">C. Range Conditions</a>
+          <a href="#precedence">D. Precedence / Trace</a>
+          <a href="#short-circuit">E. Short-Circuit</a>
+          <a href="#de-morgan">F. De Morgan / Equivalent</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先確認 compound Boolean expression 與三個主要 operators。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Definition</span></div>
+              <h3>Compound Boolean Expression 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p1">詳解</button>
+              <div class="reveal-panel" id="l8p1">
+                <p>把兩個以上 Boolean expressions 用 <code>&amp;&amp;</code>、<code>||</code>、<code>!</code> 組合成更複雜的 Boolean expression。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>AND</span></div>
+              <h3><code>&amp;&amp;</code> 代表什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p2">詳解</button>
+              <div class="reveal-panel" id="l8p2">
+                <p>AND。兩邊都必須是 <code>true</code>，整體才是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>OR</span></div>
+              <h3><code>||</code> 代表什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p3">詳解</button>
+              <div class="reveal-panel" id="l8p3">
+                <p>OR。至少一邊是 <code>true</code>，整體就是 <code>true</code>。Java OR 是 inclusive OR。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>NOT</span></div>
+              <h3><code>!</code> 代表什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p4">詳解</button>
+              <div class="reveal-panel" id="l8p4">
+                <p>NOT，將 Boolean 結果取反。<code>!true</code> 是 false，<code>!false</code> 是 true。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Inclusive OR</span></div>
+              <h3>如果 <code>A</code> 和 <code>B</code> 都是 true，<code>A || B</code> 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p5">詳解</button>
+              <div class="reveal-panel" id="l8p5">
+                <p><code>true</code>。Java 的 OR 是 inclusive OR，兩個都 true 也算 true。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="operators" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Operators</p>
+              <h2>Operators / Truth Table</h2>
+              <p>先把每個基本 condition 算成 true / false，再合成結果。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>AND</span></div>
+              <h3><code>true &amp;&amp; false</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p6">詳解</button>
+              <div class="reveal-panel" id="l8p6">
+                <p><code>false</code>。AND 需要兩邊都 true。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>AND</span></div>
+              <h3><code>true &amp;&amp; true</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p7">詳解</button>
+              <div class="reveal-panel" id="l8p7">
+                <p><code>true</code>。這是 AND 唯一為 true 的情況。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>OR</span></div>
+              <h3><code>false || false</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p8">詳解</button>
+              <div class="reveal-panel" id="l8p8">
+                <p><code>false</code>。OR 只有兩邊都是 false 時才 false。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>OR</span></div>
+              <h3><code>true || false</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p9">詳解</button>
+              <div class="reveal-panel" id="l8p9">
+                <p><code>true</code>。OR 至少一個 true 就 true。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>NOT</span></div>
+              <h3><code>!false</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p10">詳解</button>
+              <div class="reveal-panel" id="l8p10">
+                <p><code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Trace</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int age = 20;
+boolean hasTicket = true;
+
+System.out.println(age &gt;= 18 &amp;&amp; hasTicket);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p11">詳解</button>
+              <div class="reveal-panel" id="l8p11">
+                <p><code>20 &gt;= 18</code> true，<code>hasTicket</code> true，所以 output 是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Trace</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int score = 120;
+
+System.out.println(score &lt; 0 || score &gt; 100);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p12">詳解</button>
+              <div class="reveal-panel" id="l8p12">
+                <p><code>120 &lt; 0</code> false，<code>120 &gt; 100</code> true，所以 output 是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>NOT</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>boolean gameOver = false;
+
+System.out.println(!gameOver);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p13">詳解</button>
+              <div class="reveal-panel" id="l8p13">
+                <p><code>!false</code> 是 <code>true</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Negation</span></div>
+              <h3><code>!(x &gt; 5)</code> 等價於哪個 condition？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p14">詳解</button>
+              <div class="reveal-panel" id="l8p14">
+                <p>等價於 <code>x &lt;= 5</code>，不是 <code>x &lt; 5</code>，因為 boundary <code>x == 5</code> 也要包含。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Negation</span></div>
+              <h3><code>!(x &gt;= 5)</code> 等價於哪個 condition？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p15">詳解</button>
+              <div class="reveal-panel" id="l8p15">
+                <p><code>x &lt; 5</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="range" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Range</p>
+              <h2>Range Conditions</h2>
+              <p>範圍內通常要同時符合上下界；範圍外只要超出任一邊。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Inside range</span></div>
+              <h3>「score 在 0 到 100，包含兩端」應寫成？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p16">詳解</button>
+              <div class="reveal-panel" id="l8p16">
+                <p><code>score &gt;= 0 &amp;&amp; score &lt;= 100</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Outside range</span></div>
+              <h3>「score 不在 0 到 100」應寫成？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p17">詳解</button>
+              <div class="reveal-panel" id="l8p17">
+                <p><code>score &lt; 0 || score &gt; 100</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Bug</span></div>
+              <h3>這個條件想檢查 valid score，錯在哪？</h3>
+              <pre><code>score &gt;= 0 || score &lt;= 100</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p18">詳解</button>
+              <div class="reveal-panel" id="l8p18">
+                <p>應使用 <code>&amp;&amp;</code>。這個錯誤條件幾乎永遠 true，例如 <code>500 &gt;= 0</code> 已經 true。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Bug</span></div>
+              <h3>這個條件想檢查 outside range，錯在哪？</h3>
+              <pre><code>score &lt; 0 &amp;&amp; score &gt; 100</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p19">詳解</button>
+              <div class="reveal-panel" id="l8p19">
+                <p>應使用 <code>||</code>。一個數字不可能同時小於 0 又大於 100。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Chained comparison</span></div>
+              <h3><code>0 &lt;= x &lt;= 100</code> 在 Java 合法嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p20">詳解</button>
+              <div class="reveal-panel" id="l8p20">
+                <p>不合法。Java 會先算 <code>0 &lt;= x</code> 得到 boolean，接著無法做 <code>true &lt;= 100</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Open range</span></div>
+              <h3>「x 大於 10 且小於 20」應寫成？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p21">詳解</button>
+              <div class="reveal-panel" id="l8p21">
+                <p><code>x &gt; 10 &amp;&amp; x &lt; 20</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Half-open</span></div>
+              <h3>合法 index 範圍 <code>0 &lt;= index &lt; length</code> 應寫成？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p22">詳解</button>
+              <div class="reveal-panel" id="l8p22">
+                <p><code>index &gt;= 0 &amp;&amp; index &lt; length</code>。上界通常不是 <code>&lt;= length</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Boundary</span></div>
+              <h3>對 <code>x &gt;= 10 &amp;&amp; x &lt;= 20</code>，<code>x = 20</code> 結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p23">詳解</button>
+              <div class="reveal-panel" id="l8p23">
+                <p><code>true</code>，因為 <code>&lt;= 20</code> 包含 20。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="precedence" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Precedence</p>
+              <h2>Precedence / Boolean Tracing</h2>
+              <p>沒有括號時，通常先算 <code>!</code>，再 <code>&amp;&amp;</code>，最後 <code>||</code>。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Precedence</span></div>
+              <h3><code>true &amp;&amp; false || true</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p24">詳解</button>
+              <div class="reveal-panel" id="l8p24">
+                <p>先算 <code>true &amp;&amp; false</code> 得 false，再 <code>false || true</code> 得 true。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Parentheses</span></div>
+              <h3>假設 <code>A = true</code>、<code>B = false</code>、<code>C = false</code>，<code>(A || B) &amp;&amp; C</code> 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p25">詳解</button>
+              <div class="reveal-panel" id="l8p25">
+                <p><code>A || B</code> 是 true，<code>true &amp;&amp; C</code> 是 false。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Parentheses</span></div>
+              <h3>同樣 <code>A = true</code>、<code>B = false</code>、<code>C = false</code>，<code>A || (B &amp;&amp; C)</code> 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p26">詳解</button>
+              <div class="reveal-panel" id="l8p26">
+                <p><code>B &amp;&amp; C</code> 是 false，<code>A || false</code> 是 true。和上一題不同。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Trace</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 8;
+int y = 12;
+
+if (x &gt; 5 &amp;&amp; y &lt; 20)
+{
+    System.out.println("A");
+}
+else
+{
+    System.out.println("B");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p27">詳解</button>
+              <div class="reveal-panel" id="l8p27">
+                <p><code>8 &gt; 5</code> true，<code>12 &lt; 20</code> true，所以 output 是 <code>A</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Trace</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 3;
+
+if (x &lt; 0 || x &gt; 10)
+{
+    System.out.println("Outside");
+}
+else
+{
+    System.out.println("Inside");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p28">詳解</button>
+              <div class="reveal-panel" id="l8p28">
+                <p><code>3 &lt; 0</code> false，<code>3 &gt; 10</code> false，所以 output 是 <code>Inside</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="short-circuit" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Short-Circuit</p>
+              <h2>Short-Circuit Evaluation</h2>
+              <p>判斷右側 expression 是否真的會被執行。不要假設兩邊都會算。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>AND short-circuit</span></div>
+              <h3><code>false &amp;&amp; methodCall()</code> 中 <code>methodCall()</code> 會被呼叫嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p29">詳解</button>
+              <div class="reveal-panel" id="l8p29">
+                <p>不會。AND 左邊 false，整體一定 false。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>OR short-circuit</span></div>
+              <h3><code>true || methodCall()</code> 中 <code>methodCall()</code> 會被呼叫嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p30">詳解</button>
+              <div class="reveal-panel" id="l8p30">
+                <p>不會。OR 左邊 true，整體一定 true。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Division</span></div>
+              <h3>這段程式會發生 division by zero 嗎？</h3>
+              <pre><code>int x = 0;
+
+if (x != 0 &amp;&amp; 100 / x &gt; 1)
+{
+    System.out.println("Yes");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p31">詳解</button>
+              <div class="reveal-panel" id="l8p31">
+                <p>不會。<code>x != 0</code> 是 false，所以右側 <code>100 / x</code> 不執行。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Order matters</span></div>
+              <h3>這段如果 <code>x = 0</code>，會怎樣？</h3>
+              <pre><code>if (100 / x &gt; 1 &amp;&amp; x != 0)
+{
+    System.out.println("Yes");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p32">詳解</button>
+              <div class="reveal-panel" id="l8p32">
+                <p>會先算 <code>100 / x</code>，因此 division by zero。short-circuit 只有在已經算完左側後才可能發生。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>null</span></div>
+              <h3>這段是否安全？</h3>
+              <pre><code>String name = null;
+
+if (name != null &amp;&amp; name.equals("Tom"))
+{
+    System.out.println("Tom");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p33">詳解</button>
+              <div class="reveal-panel" id="l8p33">
+                <p>安全。左邊 false，右邊 <code>name.equals(...)</code> 不執行。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>OR side effect</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 5;
+
+if (x == 5 || ++x &gt; 10)
+{
+    System.out.println(x);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p34">詳解</button>
+              <div class="reveal-panel" id="l8p34">
+                <p>Output 是 <code>5</code>。左邊 true，右側 <code>++x</code> 不執行。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>AND side effect</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 5;
+
+if (x != 5 &amp;&amp; ++x &gt; 0)
+{
+    x += 10;
+}
+
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p35">詳解</button>
+              <div class="reveal-panel" id="l8p35">
+                <p>Output 是 <code>5</code>。左邊 false，<code>++x</code> 不執行，if body 也不執行。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="de-morgan" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. De Morgan</p>
+              <h2>De Morgan / Equivalent Expressions</h2>
+              <p>NOT 穿過括號時，operator 要交換，每個 condition 都要取反。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>De Morgan</span></div>
+              <h3><code>!(A &amp;&amp; B)</code> 等價於什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p36">詳解</button>
+              <div class="reveal-panel" id="l8p36">
+                <p><code>!A || !B</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>De Morgan</span></div>
+              <h3><code>!(A || B)</code> 等價於什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p37">詳解</button>
+              <div class="reveal-panel" id="l8p37">
+                <p><code>!A &amp;&amp; !B</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>De Morgan</span></div>
+              <h3>化簡：<code>!(x &gt; 10 &amp;&amp; y &lt;= 5)</code></h3>
+              <button class="reveal-button" type="button" data-reveal="l8p38">詳解</button>
+              <div class="reveal-panel" id="l8p38">
+                <p><code>x &lt;= 10 || y &gt; 5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>De Morgan</span></div>
+              <h3>化簡：<code>!(x == 0 || y != 3)</code></h3>
+              <button class="reveal-button" type="button" data-reveal="l8p39">詳解</button>
+              <div class="reveal-panel" id="l8p39">
+                <p><code>x != 0 &amp;&amp; y == 3</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Range De Morgan</span></div>
+              <h3>化簡：<code>!(x &gt;= 1 &amp;&amp; x &lt;= 100)</code></h3>
+              <button class="reveal-button" type="button" data-reveal="l8p40">詳解</button>
+              <div class="reveal-panel" id="l8p40">
+                <p><code>x &lt; 1 || x &gt; 100</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Equivalent</span></div>
+              <h3><code>!(x &lt; 10 || x &gt; 20)</code> 等價於什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p41">詳解</button>
+              <div class="reveal-panel" id="l8p41">
+                <p><code>x &gt;= 10 &amp;&amp; x &lt;= 20</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Not equivalent</span></div>
+              <h3><code>!(A &amp;&amp; B)</code> 和 <code>!A &amp;&amp; !B</code> equivalent 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p42">詳解</button>
+              <div class="reveal-panel" id="l8p42">
+                <p>不 equivalent。反例：<code>A = true</code>、<code>B = false</code> 時，左邊 true，右邊 false。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>English</span></div>
+              <h3>「neither A nor B」應寫成？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p43">詳解</button>
+              <div class="reveal-panel" id="l8p43">
+                <p><code>!A &amp;&amp; !B</code>，也就是 <code>!(A || B)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>English</span></div>
+              <h3>「not both A and B」應寫成？</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p44">詳解</button>
+              <div class="reveal-panel" id="l8p44">
+                <p><code>!(A &amp;&amp; B)</code>，等價於 <code>!A || !B</code>。這和 neither 不同。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding</p>
+              <h2>程式練習</h2>
+              <p>把複合 Boolean expression 放進 <code>if</code> 或直接作為 Boolean return。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Coding</span></div>
+              <h3>Valid Score：判斷 score 是否在 0 到 100。</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p45">參考解法</button>
+              <div class="reveal-panel" id="l8p45">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int score = 87;
+
+        if (score &gt;= 0 &amp;&amp; score &lt;= 100) {
+            System.out.println("Valid");
+        } else {
+            System.out.println("Invalid");
+        }
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Coding</span></div>
+              <h3>Outside Range：temperature 小於 0 或大於 40 時輸出 Extreme。</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p46">參考解法</button>
+              <div class="reveal-panel" id="l8p46">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int temperature = 45;
+
+        if (temperature &lt; 0 || temperature &gt; 40) {
+            System.out.println("Extreme");
+        }
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Coding</span></div>
+              <h3>Login：username 是 admin 且 password 是 1234 時成功。</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p47">參考解法</button>
+              <div class="reveal-panel" id="l8p47">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        String username = "admin";
+        String password = "1234";
+
+        if (username.equals("admin") &amp;&amp; password.equals("1234")) {
+            System.out.println("Login successful");
+        } else {
+            System.out.println("Login failed");
+        }
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Coding</span></div>
+              <h3>Game Requirement：level 至少 10、有 key、且沒有 banned 才能開門。</h3>
+              <button class="reveal-button" type="button" data-reveal="l8p48">參考解法</button>
+              <div class="reveal-panel" id="l8p48">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int level = 12;
+        boolean hasKey = true;
+        boolean banned = false;
+
+        if (level &gt;= 10 &amp;&amp; hasKey &amp;&amp; !banned) {
+            System.out.println("Open door");
+        }
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Boolean return</span></div>
+              <h3>把這段簡化成直接 return Boolean expression。</h3>
+              <pre><code>public static boolean isValidScore(int score)
+{
+    if (score &gt;= 0 &amp;&amp; score &lt;= 100)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p49">參考解法</button>
+              <div class="reveal-panel" id="l8p49">
+                <pre><code>public static boolean isValidScore(int score)
+{
+    return score &gt;= 0 &amp;&amp; score &lt;= 100;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 5;
+int y = 12;
+boolean ready = false;
+
+if ((x &gt;= 1 &amp;&amp; x &lt;= 10) &amp;&amp; (y &gt; 10 || !ready))
+{
+    System.out.println("A");
+}
+else
+{
+    System.out.println("B");
+}
+
+if (!(x &lt; 0 || y &lt; 0))
+{
+    System.out.println("C");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l8p50">詳解</button>
+              <div class="reveal-panel" id="l8p50">
+                <pre><code>A
+C</code></pre>
+                <p><code>x</code> 在 1 到 10 之間；<code>y &gt; 10</code> true，所以第一個 if 成立。第二個是 <code>!(false || false)</code>，也成立。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 8 課後練習。先拆 condition、判斷 short-circuit、處理 NOT 與 De Morgan，再打開詳解檢查推理。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

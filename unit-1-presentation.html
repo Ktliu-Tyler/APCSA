@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unit 1 投影模式｜Java 編譯、執行與基礎語法</title>
+    <meta
+      name="description"
+      content="AP CSA Unit 1 投影模式：以簡報式畫面介紹 Java 編譯器、JVM、程式架構、變數、資料型別與運算。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Unit 1</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-1.html">文章版</a>
+        <a href="lesson-1-practice.html">課後練習</a>
+        <a href="lesson-2-presentation.html">Lesson 2</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Unit 1</p>
+          <h1>Java 編譯、執行與基礎語法</h1>
+          <p class="slide-lead">
+            今天從 Java 的執行原理開始：source code 如何被 compiler 檢查，如何交給 JVM 執行，
+            接著再進入第一個程式、變數、資料型別、運算與輸出。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-1-practice.html">Lesson 1 課後練習</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Opening Question</p>
+          <h2>如果 Java 程式只是文字，電腦為什麼能執行？</h2>
+          <p class="slide-text">
+            先從這個問題開始想：你平常看到的程式碼其實是給人讀的文字，
+            但 CPU 不會直接理解 <code>System.out.println("Hello")</code> 這種句子。
+          </p>
+          <div class="prompt-box">
+            <h3>先想一想</h3>
+            <p>你覺得按下 Run 之後，中間可能發生哪些步驟？電腦是直接讀 Java 嗎？</p>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="q1">揭曉概念</button>
+          <div class="reveal-panel" id="q1">
+            <p>
+              Java 程式會先經過 compiler 檢查語法與型別，轉成 bytecode，再由 JVM 執行。
+              也就是：人寫 source code，compiler 檢查與轉換，JVM 負責執行。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content split-slide">
+          <div>
+            <p class="slide-kicker">Unit 1 Roadmap</p>
+            <h2>第一單元不是只背語法</h2>
+            <p class="slide-text">
+              Unit 1 的核心是理解「使用物件與方法」之前，Java 程式如何被建立、檢查、執行，
+              以及資料如何以變數的形式存在程式裡。
+            </p>
+          </div>
+          <div class="stack-list">
+            <div><strong>編譯與執行</strong><span>source code、compiler、bytecode、JVM、output</span></div>
+            <div><strong>程式基本結構</strong><span><code>class Main</code>、<code>main</code>、statement、semicolon</span></div>
+            <div><strong>資料與變數</strong><span><code>int</code>、<code>double</code>、<code>boolean</code>、<code>String</code></span></div>
+            <div><strong>運算與輸出</strong><span>arithmetic、integer division、modulo、concatenation</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Big Picture</p>
+          <h2>從問題到程式</h2>
+          <p class="slide-text">
+            程式設計不是直接打出一堆語法，而是把問題轉成可執行的步驟。這個順序能幫你避免「只記模板」。
+          </p>
+          <div class="big-flow">
+            <span>Problem</span>
+            <span>Algorithm</span>
+            <span>Source Code</span>
+            <span>Compiler</span>
+            <span>Program Output</span>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="algorithm-definition">名詞解釋</button>
+          <div class="reveal-panel" id="algorithm-definition">
+            <p>
+              <strong>Algorithm</strong> 是解決問題的一系列明確步驟。它不一定是 Java，
+              可以先用中文、流程圖或 pseudo-code 表達，之後才翻成 source code。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Compiler</p>
+          <h2>Compiler 的工作：先檢查，才讓程式繼續</h2>
+          <p class="slide-text">
+            Compiler 不是在「執行」程式，而是在執行前檢查程式是否符合 Java 的語法與型別規則。
+            只要 compiler 不通過，程式就不會進入真正執行階段。
+          </p>
+          <div class="definition-grid">
+            <article>
+              <h3>Syntax</h3>
+              <p>語法格式。例如括號、分號、大小寫、關鍵字位置。</p>
+            </article>
+            <article>
+              <h3>Type Rule</h3>
+              <p>型別規則。例如 <code>int</code> 不能直接存 <code>"Hello"</code>，<code>boolean</code> 不能存 <code>1</code>。</p>
+            </article>
+            <article>
+              <h3>Compile-time Error</h3>
+              <p>編譯階段就被抓到的錯誤，程式不會開始執行。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content split-slide">
+          <div>
+            <p class="slide-kicker">JVM</p>
+            <h2>JVM 讓 Java 可以跨平台執行</h2>
+            <p class="slide-text">
+              Java 的 source code 通常會被編譯成 bytecode。Bytecode 不是直接給人閱讀的程式，
+              而是給 JVM 執行的中間形式。
+            </p>
+            <p class="slide-text">
+              因為不同作業系統可以安裝各自的 JVM，所以 Java 常被描述為「write once, run anywhere」的語言。
+            </p>
+          </div>
+          <div class="process-card">
+            <span>.java</span>
+            <span>Compiler</span>
+            <span>.class bytecode</span>
+            <span>JVM</span>
+            <span>Output</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Live Demo</p>
+          <h2>線上編譯器做了什麼</h2>
+          <p class="slide-text">
+            OneCompiler、Programiz 這類工具把 editor、compiler、runtime、output window 放在同一個網頁裡。
+            你按下 Run 時，程式會先被送去編譯；如果編譯成功，才會進入執行階段並顯示 output。
+          </p>
+          <div class="demo-steps">
+            <div><strong>Editor</strong><span>輸入 source code</span></div>
+            <div><strong>Run</strong><span>送去 compile，若成功再 execute</span></div>
+            <div><strong>Output</strong><span>顯示印出的結果或錯誤訊息</span></div>
+          </div>
+          <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 Java 執行器</a>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">First Java Program</p>
+          <h2>第一個 Java 程式：先看整體，不急著背每個字</h2>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Hello Java</h3>
+              <button class="copy-button" type="button" data-copy="slide-code-hello">Copy</button>
+            </div>
+            <pre><code id="slide-code-hello">public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, AP CSA!");
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="hello-explain">逐行說明</button>
+          <div class="reveal-panel" id="hello-explain">
+            <p><code>public class Main</code> 是線上 Java 執行器常用的外層 class。<code>main</code> 是程式開始執行的位置。<code>println</code> 會輸出一行文字。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content split-slide">
+          <div>
+            <p class="slide-kicker">Prediction Habit</p>
+            <h2>AP CSA 的練習節奏：先預測，再執行</h2>
+            <p class="slide-text">
+              如果一開始只按 Run，很容易忽略程式真正的執行順序。AP CSA 很重視 code tracing：
+              在執行前，你要能推理出每一步做了什麼，以及最後會產生什麼 output。
+            </p>
+          </div>
+          <div class="prompt-box large">
+            <h3>先預測</h3>
+            <p>這段程式會印出幾行？每一行的內容是什麼？如果把 <code>println</code> 改成 <code>print</code>，畫面會有什麼不同？</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Statements</p>
+          <h2>Statement：Java 中的一個完整指令</h2>
+          <p class="slide-text">
+            一個 Java statement 通常代表一個完整指令，大部分 statement 最後需要分號。
+            分號不是裝飾，它告訴 compiler：這個指令到這裡結束。
+          </p>
+          <div class="definition-grid">
+            <article>
+              <h3>合法</h3>
+              <pre><code>int age = 18;
+System.out.println(age);</code></pre>
+            </article>
+            <article>
+              <h3>錯誤</h3>
+              <pre><code>int age = 18
+System.out.println(age);</code></pre>
+            </article>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="semicolon-answer">先預測：compiler 會先抱怨哪裡？</button>
+          <div class="reveal-panel" id="semicolon-answer">
+            <p>通常錯誤會指向下一行或分號附近。除錯時要看該行，也要回頭看上一行是否少了分號、括號或引號。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Variables</p>
+          <h2>Variable：有名字、有型別、能存 value 的位置</h2>
+          <p class="slide-text">
+            變數像一個貼了標籤的儲存格。Java 要求每個變數有明確型別，因為 compiler 需要知道哪些 value 可以放進去。
+          </p>
+          <div class="variable-diagram">
+            <div class="var-part type">int</div>
+            <div class="var-part name">age</div>
+            <div class="var-part value">18</div>
+          </div>
+          <div class="definition-grid">
+            <article><h3>Data Type</h3><p><code>int</code> 說明這個變數可以存整數。</p></article>
+            <article><h3>Identifier</h3><p><code>age</code> 是變數名稱，用來在程式中找到這個值。</p></article>
+            <article><h3>Value</h3><p><code>18</code> 是目前被存入變數的資料。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Primitive Types</p>
+          <h2>AP CSA 第一階段最重要的三種 primitive types</h2>
+          <div class="type-grid">
+            <article>
+              <h3>int</h3>
+              <p>整數，沒有小數部分。</p>
+              <code>int score = 95;</code>
+            </article>
+            <article>
+              <h3>double</h3>
+              <p>可表示小數，也可存整數值的 floating-point 版本。</p>
+              <code>double height = 175.5;</code>
+            </article>
+            <article>
+              <h3>boolean</h3>
+              <p>只有 <code>true</code> 與 <code>false</code>，Java 不用 1/0 表示真假。</p>
+              <code>boolean ready = true;</code>
+            </article>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="string-note">那 String 呢？</button>
+          <div class="reveal-panel" id="string-note">
+            <p><code>String</code> 用來表示文字，但它不是 primitive type，而是 reference type。之後進入 object 時會再正式比較。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Type Rules</p>
+          <h2>Compiler 會檢查型別是否合理</h2>
+          <p class="slide-text">
+            Java 不只看 value 長得像什麼，還會看它的型別。<code>5</code> 和 <code>"5"</code> 對人來說都像五，
+            但對 Java 來說完全不同。
+          </p>
+          <div class="definition-grid">
+            <article>
+              <h3>合法</h3>
+              <pre><code>double x = 5;
+String text = "5";
+boolean done = false;</code></pre>
+            </article>
+            <article>
+              <h3>不合法</h3>
+              <pre><code>int y = 5.0;
+int z = "5";
+boolean ok = 1;</code></pre>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Assignment</p>
+          <h2><code>=</code> 的意思：先算右邊，再存進左邊</h2>
+          <p class="slide-text">
+            數學中的 <code>x = x + 1</code> 不成立，但 Java 中的 <code>x = x + 1;</code> 很常見。
+            因為 Java 的 <code>=</code> 是 assignment，不是普通數學等號。
+          </p>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Assignment Trace</h3>
+              <button class="copy-button" type="button" data-copy="slide-code-assignment">Copy</button>
+            </div>
+            <pre><code id="slide-code-assignment">int x = 5;
+System.out.println(x);
+
+x = x + 1;
+System.out.println(x);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="assignment-answer">揭曉輸出</button>
+          <div class="reveal-panel" id="assignment-answer">
+            <pre><code>5
+6</code></pre>
+            <p>第二次輸出前，右邊的 <code>x + 1</code> 先算成 <code>6</code>，再存回 <code>x</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Output</p>
+          <h2><code>print()</code> 與 <code>println()</code> 的差別</h2>
+          <p class="slide-text">
+            兩者都能輸出，但 <code>println()</code> 會在輸出後換行，
+            <code>print()</code> 會停在同一行。
+          </p>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Print Demo</h3>
+              <button class="copy-button" type="button" data-copy="slide-code-print">Copy</button>
+            </div>
+            <pre><code id="slide-code-print">System.out.print("AP ");
+System.out.print("CSA");
+System.out.println(" Java");
+System.out.println("Unit 1");</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="print-answer">揭曉輸出</button>
+          <div class="reveal-panel" id="print-answer">
+            <pre><code>AP CSA Java
+Unit 1</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Arithmetic</p>
+          <h2>運算優先順序：不要靠直覺猜 output</h2>
+          <p class="slide-text">
+            AP CSA 的選擇題常把簡短 expression 放進 <code>println</code>，你需要追蹤它最後會印出什麼。
+            先算括號，再算 <code>* / %</code>，最後算 <code>+ -</code>。同優先順序通常由左到右。
+          </p>
+          <div class="prompt-box">
+            <h3>先想一想</h3>
+            <p><code>2 + 3 * 4</code> 和 <code>(2 + 3) * 4</code> 結果一樣嗎？為什麼？</p>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="precedence-answer">揭曉答案</button>
+          <div class="reveal-panel" id="precedence-answer">
+            <p><code>2 + 3 * 4</code> 是 <code>14</code>。<code>(2 + 3) * 4</code> 是 <code>20</code>。括號會改變計算順序。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Integer Division</p>
+          <h2>AP CSA 高頻陷阱：<code>int / int</code> 仍然是 <code>int</code></h2>
+          <p class="slide-text">
+            Java 中，兩個整數相除時，小數部分會被直接移除，不會四捨五入。
+            這個觀念會在變數、method、FRQ、array index 計算中反覆出現。
+          </p>
+          <div class="question-row">
+            <div class="prompt-box">
+              <h3>先猜</h3>
+              <p><code>double answer = 5 / 2;</code> 的 answer 是 <code>2.5</code> 嗎？</p>
+            </div>
+            <button class="reveal-button" type="button" data-reveal="division-answer">揭曉</button>
+          </div>
+          <div class="reveal-panel" id="division-answer">
+            <p>不是。右邊 <code>5 / 2</code> 先做 integer division，得到 <code>2</code>，再存進 <code>double</code>，所以 answer 是 <code>2.0</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Modulo</p>
+          <h2><code>%</code> 是餘數，不是百分比</h2>
+          <p class="slide-text">
+            <code>%</code> 會取得除法後剩下的 remainder。它常用於判斷奇偶數、取得個位數、拆解整數。
+          </p>
+          <div class="definition-grid">
+            <article>
+              <h3>奇偶數</h3>
+              <code>number % 2</code>
+              <p>結果是 <code>0</code> 時，代表 number 是偶數。</p>
+            </article>
+            <article>
+              <h3>取得個位數</h3>
+              <code>583 % 10</code>
+              <p>結果是 <code>3</code>。</p>
+            </article>
+            <article>
+              <h3>移除個位數</h3>
+              <code>583 / 10</code>
+              <p>integer division 後結果是 <code>58</code>。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">String Concatenation</p>
+          <h2>當 <code>+</code> 遇到文字，就可能不再是加法</h2>
+          <p class="slide-text">
+            如果 <code>+</code> 的其中一邊已經是 <code>String</code>，Java 會把另一邊接成文字。這是 AP CSA 很愛考的 output tracing。
+          </p>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Predict Before Run</h3>
+              <button class="copy-button" type="button" data-copy="slide-code-concat">Copy</button>
+            </div>
+            <pre><code id="slide-code-concat">System.out.println("A" + 2 + 3);
+System.out.println(2 + 3 + "A");
+System.out.println("A" + (2 + 3));
+System.out.println("A" + 2 * 3 + 4);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="concat-answer">揭曉輸出</button>
+          <div class="reveal-panel" id="concat-answer">
+            <pre><code>A23
+5A
+A5
+A64</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Error Types</p>
+          <h2>寫程式時，錯誤不是同一種東西</h2>
+          <p class="slide-text">
+            AP CSA 不只是看你會不會背語法，也會看你能不能分析程式行為。
+            一開始先把錯誤分成三類：syntax / compile-time error、runtime error、logic error。
+          </p>
+          <div class="definition-grid">
+            <article>
+              <h3>Syntax Error</h3>
+              <p>語法格式錯誤，通常屬於 compile-time error。</p>
+            </article>
+            <article>
+              <h3>Runtime Error</h3>
+              <p>程式能編譯，但執行到某一步時失敗。</p>
+            </article>
+            <article>
+              <h3>Logic Error</h3>
+              <p>程式能編譯、能執行，但答案或行為不符合題目要求。</p>
+            </article>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="error-big-idea">揭曉核心觀念</button>
+          <div class="reveal-panel" id="error-big-idea">
+            <p>
+              重點不是「完全不要犯錯」，而是「看到錯誤時能分類」：
+              compiler 抓到的是寫法規則，runtime 抓到的是執行中狀態，logic error 則要靠測試與推理找出來。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Syntax Error</p>
+          <h2>Syntax Error：Java 語法格式不符合規則</h2>
+          <p class="slide-text">
+            <strong>Syntax</strong> 指的是程式語言的文法規則。就像英文句子有文法，Java 也有固定格式：
+            分號、括號、雙引號、大小寫、關鍵字位置都要符合規則。
+          </p>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Missing Semicolon</h3>
+              <button class="copy-button" type="button" data-copy="slide-code-syntax">Copy</button>
+            </div>
+            <pre><code id="slide-code-syntax">public class Main {
+    public static void main(String[] args) {
+        int score = 85
+        System.out.println("Score: " + score);
+    }
+}</code></pre>
+          </div>
+          <div class="question-row">
+            <div class="prompt-box">
+              <h3>先想一想</h3>
+              <p>這段程式還沒真正執行前，compiler 可能會抱怨哪裡？為什麼？</p>
+            </div>
+            <button class="reveal-button" type="button" data-reveal="syntax-explain">揭曉</button>
+          </div>
+          <div class="reveal-panel" id="syntax-explain">
+            <p>
+              <code>int score = 85</code> 後面少了分號。分號代表 statement 結束。Compiler 看到下一行時，仍然以為上一個指令還沒結束。
+            </p>
+            <p><strong>修正：</strong><code>int score = 85;</code></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Compile-time Error</p>
+          <h2>Compile-time Error：編譯階段就不通過</h2>
+          <p class="slide-text">
+            Syntax error 是 compile-time error 的一種，但 compile-time error 不只包含語法。
+            Type mismatch、找不到變數、class 名稱錯誤，也都可能讓 compiler 不讓程式開始執行。
+          </p>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Type Mismatch</h3>
+              <button class="copy-button" type="button" data-copy="slide-code-type-error">Copy</button>
+            </div>
+            <pre><code id="slide-code-type-error">public class Main {
+    public static void main(String[] args) {
+        int age = "17";
+        boolean passed = 1;
+
+        System.out.println(age);
+        System.out.println(passed);
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="type-error-explain">揭曉原因</button>
+          <div class="reveal-panel" id="type-error-explain">
+            <p>
+              <code>"17"</code> 是 <code>String</code>，不能直接存進 <code>int</code>。<code>1</code> 是 <code>int</code>，Java 不會把它自動視為 <code>true</code>。
+            </p>
+            <p><strong>修正：</strong><code>int age = 17;</code> 與 <code>boolean passed = true;</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Runtime Error</p>
+          <h2>Runtime Error：程式開始跑了，但中途失敗</h2>
+          <p class="slide-text">
+            <strong>Runtime</strong> 指的是程式正在執行的階段。Runtime error 的重點是：
+            compiler 看得懂這段程式，但實際執行到某一步時，發現狀態不可能繼續。
+          </p>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Division by Zero</h3>
+              <button class="copy-button" type="button" data-copy="slide-code-runtime">Copy</button>
+            </div>
+            <pre><code id="slide-code-runtime">public class Main {
+    public static void main(String[] args) {
+        int total = 120;
+        int groups = 0;
+
+        int minutesPerGroup = total / groups;
+        System.out.println(minutesPerGroup);
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="runtime-explain">揭曉原因</button>
+          <div class="reveal-panel" id="runtime-explain">
+            <p>
+              這段程式語法正確、型別也正確，所以可以通過編譯。但執行 <code>total / groups</code> 時，<code>groups</code> 是 <code>0</code>，
+              整數除以 0 無法執行，因此發生 runtime error。
+            </p>
+            <p><strong>AP CSA 連結：</strong>未來學 array 時，存取不存在的 index 也是典型 runtime error。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Logic Error</p>
+          <h2>Logic Error：最安靜，也最容易被忽略</h2>
+          <p class="slide-text">
+            Logic error 不一定會顯示紅色錯誤訊息。程式可以 compile，也可以 run，
+            但結果不符合題目要求。這種錯誤必須靠測試資料、trace code 與閱讀規格找出來。
+          </p>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Area Formula Bug</h3>
+              <button class="copy-button" type="button" data-copy="slide-code-logic">Copy</button>
+            </div>
+            <pre><code id="slide-code-logic">public class Main {
+    public static void main(String[] args) {
+        int length = 5;
+        int width = 3;
+
+        int area = length + width;
+        System.out.println("Area: " + area);
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="logic-explain">揭曉原因</button>
+          <div class="reveal-panel" id="logic-explain">
+            <p>
+              程式會輸出 <code>Area: 8</code>，但長方形面積應該是 <code>length * width</code>，也就是 <code>15</code>。
+              這不是 Java 語法問題，而是 algorithm 或 formula 寫錯。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Error Comparison</p>
+          <h2>三種錯誤怎麼判斷？</h2>
+          <div class="error-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>English Term</th>
+                  <th>中文理解</th>
+                  <th>會 compile 嗎？</th>
+                  <th>會 run 嗎？</th>
+                  <th>找錯方向</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Syntax / Compile-time Error</td>
+                  <td>語法或型別規則不通過</td>
+                  <td>No</td>
+                  <td>No</td>
+                  <td>看分號、括號、引號、大小寫、型別</td>
+                </tr>
+                <tr>
+                  <td>Runtime Error</td>
+                  <td>執行到某一步時失敗</td>
+                  <td>Yes</td>
+                  <td>Starts, then fails</td>
+                  <td>看當下 value 是否造成不可能操作</td>
+                </tr>
+                <tr>
+                  <td>Logic Error</td>
+                  <td>能執行，但答案錯</td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                  <td>看題目規格、測試資料、algorithm</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="slide-note">
+            判斷錯誤時，先問自己：這段程式是「寫法錯」、「跑到一半錯」，還是「答案錯」。
+          </p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Coding Practice</p>
+          <h2>現場練習：三位數拆解</h2>
+          <p class="slide-text">
+            這個練習把 integer division 與 modulo 合在一起，是 AP CSA 很常見的 number manipulation 思維。
+          </p>
+          <div class="deck-code">
+            <div class="code-head">
+              <h3>Challenge Starter</h3>
+              <button class="copy-button" type="button" data-copy="slide-code-digits">Copy</button>
+            </div>
+            <pre><code id="slide-code-digits">public class Main {
+    public static void main(String[] args) {
+        int number = 742;
+
+        int hundreds = number / 100;
+        int tens = (number / 10) % 10;
+        int ones = number % 10;
+
+        System.out.println("Hundreds: " + hundreds);
+        System.out.println("Tens: " + tens);
+        System.out.println("Ones: " + ones);
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="digits-explain">點我顯示拆解原理</button>
+          <div class="reveal-panel" id="digits-explain">
+            <p><code>/ 100</code> 取得百位。<code>/ 10</code> 先移除個位，再 <code>% 10</code> 取出新的個位，也就是原本的十位。<code>% 10</code> 直接取得個位。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP-style Check</p>
+          <h2>快速檢核：先選答案，再揭曉</h2>
+          <div class="multiple-choice">
+            <p>Consider the following code:</p>
+            <pre><code>int a = 7;
+int b = 2;
+double result = a / b;</code></pre>
+            <p>What value is stored in <code>result</code>?</p>
+            <div class="choices">
+              <span>A. 3</span>
+              <span>B. 3.0</span>
+              <span>C. 3.5</span>
+              <span>D. 4.0</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="mc-answer">揭曉答案</button>
+          <div class="reveal-panel" id="mc-answer">
+            <p>答案是 B。<code>a / b</code> 先做 <code>int / int</code>，得到 <code>3</code>，再存進 <code>double</code>，變成 <code>3.0</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>今天結束前，你要能回答三件事</h2>
+          <div class="exit-grid">
+            <div>Java source code 按下 Run 後，中間經過哪些階段？</div>
+            <div><code>double x = 5 / 2;</code> 為什麼不是 <code>2.5</code>？</div>
+            <div>看到 compile error 時，你第一件事會看什麼？</div>
+          </div>
+          <p class="slide-note">
+            下一堂課會接續 variables、expressions、Scanner input，並用更多 debugging 練習來分辨 compile-time error 與 logic error。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-1-practice.html">開始 Lesson 1 課後練習</a>
+            <a class="button" href="lesson-2-presentation.html">前往 Lesson 2</a>
+            <a class="button" href="lesson-1.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 1 課後練習｜Java 基礎、變數、型別與運算</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 1 課後練習：Java 編譯流程、變數、資料型別、運算、輸出預測、錯誤判斷與 AP-style 題目。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 1 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="unit-1-presentation.html">投影模式</a>
+        <a href="lesson-1.html">文章版</a>
+        <a href="lesson-2.html">下一課</a>
+        <a href="lesson-2-practice.html">Lesson 2 練習</a>
+        <a href="#concepts">觀念</a>
+        <a href="#tracing">輸出預測</a>
+        <a href="#debugging">錯誤判斷</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 1</p>
+          <h1>課後練習：Java 基礎、變數、型別與運算</h1>
+          <p class="lead">
+            先自己作答，再點開詳解。這份練習會檢查你是否真的理解 Java 編譯流程、
+            變數、資料型別、assignment、integer division、modulo、string concatenation 與錯誤類型。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>35</strong><span>題課後練習</span></div>
+            <div><strong>6</strong><span>主題分區</span></div>
+            <div><strong>詳解</strong><span>每題可點開</span></div>
+            <div><strong>AP-style</strong><span>選擇題與追蹤題</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 名詞與觀念</a>
+          <a href="#tracing">B. 輸出預測</a>
+          <a href="#debugging">C. 錯誤判斷</a>
+          <a href="#numbers">D. 運算與數字拆解</a>
+          <a href="#ap-style">E. AP-style 題</a>
+          <a href="#coding">F. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>名詞與觀念</h2>
+              <p>這一區先確認你是否理解 Java 程式執行前後的整體流程。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Vocabulary</span></div>
+              <h3>請把三個名詞配對到正確意思。</h3>
+              <div class="match-grid">
+                <div><strong>Problem</strong><span>?</span></div>
+                <div><strong>Algorithm</strong><span>?</span></div>
+                <div><strong>Program</strong><span>?</span></div>
+              </div>
+              <p>選項：想解決的事情、解決問題的一系列步驟、用程式語言寫出的可執行指令。</p>
+              <button class="reveal-button" type="button" data-reveal="p1">詳解</button>
+              <div class="reveal-panel" id="p1">
+                <p><strong>Problem</strong> 是想解決的事情。<strong>Algorithm</strong> 是解決問題的一系列步驟。<strong>Program</strong> 是用程式語言實作 algorithm 後得到的指令集合。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Java Flow</span></div>
+              <h3>請排出 Java 程式從文字到 output 的順序。</h3>
+              <p>JVM、Source Code、Compiler、Bytecode、Output</p>
+              <button class="reveal-button" type="button" data-reveal="p2">詳解</button>
+              <div class="reveal-panel" id="p2">
+                <p>正確順序是 <strong>Source Code → Compiler → Bytecode → JVM → Output</strong>。Source code 是你寫的 Java 文字；compiler 檢查並轉換；bytecode 交給 JVM；JVM 執行後產生 output。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Compiler</span></div>
+              <h3>Compiler 主要負責哪一件事？</h3>
+              <p>A. 幫你設計 algorithm　B. 檢查 Java 語法與型別　C. 顯示最後 output　D. 儲存網頁密碼</p>
+              <button class="reveal-button" type="button" data-reveal="p3">詳解</button>
+              <div class="reveal-panel" id="p3">
+                <p>答案是 B。Compiler 會檢查語法與型別，例如少分號、括號不完整、把 <code>"Hello"</code> 存進 <code>int</code>。它不是負責替你設計解法，也不是負責顯示最後 output。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Type</span></div>
+              <h3>Data type 和 data structure 有什麼不同？</h3>
+              <button class="reveal-button" type="button" data-reveal="p4">詳解</button>
+              <div class="reveal-panel" id="p4">
+                <p><strong>Data type</strong> 描述一個 value 是什麼種類，例如 <code>int</code>、<code>double</code>、<code>boolean</code>。<strong>Data structure</strong> 描述多個資料如何組織，例如之後會學的 array、ArrayList、2D array。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Type Rule</span></div>
+              <h3>下列哪一行是合法 Java？</h3>
+              <p>A. <code>int x = 3.14;</code>　B. <code>boolean ok = 1;</code>　C. <code>double y = 5;</code>　D. <code>int z = "5";</code></p>
+              <button class="reveal-button" type="button" data-reveal="p5">詳解</button>
+              <div class="reveal-panel" id="p5">
+                <p>答案是 C。整數 <code>5</code> 可以安全地放進 <code>double</code>，變成 <code>5.0</code>。A 不合法，因為 <code>3.14</code> 是 double。B 不合法，Java 的 boolean 只能是 <code>true</code> 或 <code>false</code>。D 不合法，<code>"5"</code> 是 String。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Assignment</span></div>
+              <h3>Java 中的 <code>=</code> 應該怎麼理解？</h3>
+              <p>A. 左右兩邊永遠相等　B. 先算右邊，再存進左邊　C. 比較兩個值是否一樣　D. 建立新的 class</p>
+              <button class="reveal-button" type="button" data-reveal="p6">詳解</button>
+              <div class="reveal-panel" id="p6">
+                <p>答案是 B。<code>=</code> 是 assignment operator。看到 <code>x = x + 1;</code> 時，先算右邊的 <code>x + 1</code>，再把結果存回左邊的 <code>x</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="tracing" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Output Tracing</p>
+              <h2>輸出預測</h2>
+              <p>先不要執行。請自己追蹤每一步，寫下 output，再點開詳解。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>println</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>System.out.println("A");
+System.out.print("B");
+System.out.println("C");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p7">詳解</button>
+              <div class="reveal-panel" id="p7">
+                <pre><code>A
+BC</code></pre>
+                <p><code>println("A")</code> 輸出 A 後換行。<code>print("B")</code> 不換行，所以接下來 <code>println("C")</code> 會接在 B 後面，形成 BC。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Assignment</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 4;
+System.out.println(x);
+x = x + 3;
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p8">詳解</button>
+              <div class="reveal-panel" id="p8">
+                <pre><code>4
+7</code></pre>
+                <p>第一次輸出時 <code>x</code> 是 <code>4</code>。執行 <code>x = x + 3;</code> 時，右邊先變成 <code>4 + 3</code>，也就是 <code>7</code>，再存回 <code>x</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Copy</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int a = 10;
+int b = a;
+a = 20;
+System.out.println(a);
+System.out.println(b);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p9">詳解</button>
+              <div class="reveal-panel" id="p9">
+                <pre><code>20
+10</code></pre>
+                <p><code>int b = a;</code> 是把 <code>a</code> 當下的 value 複製給 <code>b</code>。之後 <code>a</code> 改成 <code>20</code>，不會自動影響 <code>b</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Precedence</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>System.out.println(2 + 3 * 4);
+System.out.println((2 + 3) * 4);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p10">詳解</button>
+              <div class="reveal-panel" id="p10">
+                <pre><code>14
+20</code></pre>
+                <p>第一行先做乘法：<code>3 * 4 = 12</code>，再加 <code>2</code>，得到 <code>14</code>。第二行括號先算：<code>2 + 3 = 5</code>，再乘 <code>4</code>，得到 <code>20</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Integer Division</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>System.out.println(7 / 2);
+System.out.println(7.0 / 2);
+System.out.println(7 / 2.0);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p11">詳解</button>
+              <div class="reveal-panel" id="p11">
+                <pre><code>3
+3.5
+3.5</code></pre>
+                <p><code>7 / 2</code> 是 <code>int / int</code>，結果是 <code>3</code>。只要有一邊是 double，就會做 floating-point division，所以後兩行是 <code>3.5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Double Storage</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>double answer = 7 / 2;
+System.out.println(answer);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p12">詳解</button>
+              <div class="reveal-panel" id="p12">
+                <pre><code>3.0</code></pre>
+                <p>右邊先算。<code>7 / 2</code> 是 <code>int / int</code>，先得到 <code>3</code>。再把 <code>3</code> 存進 double 變數，所以顯示為 <code>3.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>String</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>System.out.println("A" + 1 + 2);
+System.out.println(1 + 2 + "A");
+System.out.println("A" + (1 + 2));</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p13">詳解</button>
+              <div class="reveal-panel" id="p13">
+                <pre><code>A12
+3A
+A3</code></pre>
+                <p>第一行一開始就是 String，所以後面的 <code>1</code> 和 <code>2</code> 會串接。第二行先做數字加法 <code>1 + 2</code>，得到 <code>3</code>，再接上 A。第三行括號先算，所以是 <code>A3</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Mixed Trace</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 10;
+int y = 3;
+System.out.println("Result: " + x / y);
+System.out.println("Left: " + x % y);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p14">詳解</button>
+              <div class="reveal-panel" id="p14">
+                <pre><code>Result: 3
+Left: 1</code></pre>
+                <p><code>x / y</code> 是 <code>10 / 3</code>，integer division 得到 <code>3</code>。<code>x % y</code> 是 <code>10 % 3</code>，餘數是 <code>1</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="debugging" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Debugging</p>
+              <h2>錯誤判斷</h2>
+              <p>請先判斷錯誤類型：syntax / compile-time error、runtime error、logic error。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Syntax Error</span></div>
+              <h3>這段程式會發生什麼錯誤？</h3>
+              <pre><code>int score = 90
+System.out.println(score);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p15">詳解</button>
+              <div class="reveal-panel" id="p15">
+                <p>這是 syntax error，也屬於 compile-time error。第一行少了分號。Compiler 看到下一行時，無法判斷上一個 statement 是否已經結束。</p>
+                <p>修正：<code>int score = 90;</code></p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Type Mismatch</span></div>
+              <h3>這段程式會發生什麼錯誤？</h3>
+              <pre><code>int age = "16";
+System.out.println(age);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p16">詳解</button>
+              <div class="reveal-panel" id="p16">
+                <p>這是 compile-time error。<code>"16"</code> 是 String，不是 int。Java 不會因為它看起來像數字就自動放進 <code>int</code>。</p>
+                <p>修正：如果要數字，寫 <code>int age = 16;</code>。如果要文字，寫 <code>String age = "16";</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Boolean</span></div>
+              <h3>這段程式會發生什麼錯誤？</h3>
+              <pre><code>boolean finished = 0;
+System.out.println(finished);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p17">詳解</button>
+              <div class="reveal-panel" id="p17">
+                <p>這是 compile-time error。Java 的 boolean value 只能是 <code>true</code> 或 <code>false</code>，不能用 <code>0</code> 或 <code>1</code>。</p>
+                <p>修正：<code>boolean finished = false;</code></p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Runtime Error</span></div>
+              <h3>這段程式會發生什麼錯誤？</h3>
+              <pre><code>int total = 100;
+int groups = 0;
+int each = total / groups;
+System.out.println(each);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p18">詳解</button>
+              <div class="reveal-panel" id="p18">
+                <p>這是 runtime error。程式語法與型別都可以通過編譯，但執行到 <code>total / groups</code> 時，<code>groups</code> 是 <code>0</code>，整數除以 0 無法執行。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Logic Error</span></div>
+              <h3>這段程式想算平均，但結果有什麼問題？</h3>
+              <pre><code>int score1 = 80;
+int score2 = 90;
+int score3 = 95;
+double average = (score1 + score2 + score3) / 3;
+System.out.println(average);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p19">詳解</button>
+              <div class="reveal-panel" id="p19">
+                <p>這是 logic issue。程式可以 compile，也可以 run，但右邊 <code>(score1 + score2 + score3) / 3</code> 是 <code>int / int</code>，小數部分會被移除。總分是 <code>265</code>，<code>265 / 3</code> 得到 <code>88</code>，存進 double 後是 <code>88.0</code>。</p>
+                <p>修正：使用 <code>3.0</code>，例如 <code>double average = (score1 + score2 + score3) / 3.0;</code></p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Logic Error</span></div>
+              <h3>這段程式想算長方形面積，但哪裡錯？</h3>
+              <pre><code>int length = 8;
+int width = 5;
+int area = length + width;
+System.out.println("Area: " + area);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p20">詳解</button>
+              <div class="reveal-panel" id="p20">
+                <p>這是 logic error。程式語法正確，也能執行，但面積公式寫錯。長方形面積應該是 <code>length * width</code>，不是 <code>length + width</code>。</p>
+                <p>正確輸出應該是 <code>Area: 40</code>，不是 <code>Area: 13</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="numbers" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Arithmetic</p>
+              <h2>運算與數字拆解</h2>
+              <p>這一區練習 integer division、modulo 與三位數拆解。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Modulo</span></div>
+              <h3>計算下列 expression。</h3>
+              <p><code>17 % 5</code></p>
+              <button class="reveal-button" type="button" data-reveal="p21">詳解</button>
+              <div class="reveal-panel" id="p21">
+                <p>答案是 <code>2</code>。因為 <code>17 = 5 * 3 + 2</code>，餘數是 <code>2</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Digit</span></div>
+              <h3>如果 <code>int number = 647;</code>，<code>number % 10</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="p22">詳解</button>
+              <div class="reveal-panel" id="p22">
+                <p>答案是 <code>7</code>。對正整數來說，<code>% 10</code> 可以取得個位數。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Digit</span></div>
+              <h3>如果 <code>int number = 647;</code>，<code>(number / 10) % 10</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="p23">詳解</button>
+              <div class="reveal-panel" id="p23">
+                <p>答案是 <code>4</code>。先做 <code>647 / 10</code>，integer division 得到 <code>64</code>。再做 <code>64 % 10</code>，取得個位數 <code>4</code>。這個結果就是原本的十位數。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Mixed</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int n = 586;
+System.out.println(n / 100);
+System.out.println((n / 10) % 10);
+System.out.println(n % 10);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p24">詳解</button>
+              <div class="reveal-panel" id="p24">
+                <pre><code>5
+8
+6</code></pre>
+                <p><code>n / 100</code> 取得百位。<code>(n / 10) % 10</code> 取得十位。<code>n % 10</code> 取得個位。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Expression</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 23;
+System.out.println(x / 10 + x % 10);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p25">詳解</button>
+              <div class="reveal-panel" id="p25">
+                <pre><code>5</code></pre>
+                <p><code>x / 10</code> 是 <code>2</code>，<code>x % 10</code> 是 <code>3</code>。相加得到 <code>5</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="ap-style" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. AP-style Multiple Choice</p>
+              <h2>AP-style 題</h2>
+              <p>每題先選答案，再打開詳解確認推理。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>MCQ</span></div>
+              <h3>What is printed?</h3>
+              <pre><code>System.out.println("Value: " + 3 + 4);</code></pre>
+              <div class="choices">
+                <span>A. Value: 7</span>
+                <span>B. Value: 34</span>
+                <span>C. 7</span>
+                <span>D. 34</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="p26">詳解</button>
+              <div class="reveal-panel" id="p26">
+                <p>答案是 B。<code>"Value: " + 3</code> 先變成 String <code>"Value: 3"</code>，再接上 <code>4</code>，所以是 <code>Value: 34</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>MCQ</span></div>
+              <h3>Which expression evaluates to <code>2.5</code>?</h3>
+              <div class="choices">
+                <span>A. <code>5 / 2</code></span>
+                <span>B. <code>5.0 / 2</code></span>
+                <span>C. <code>5 / 2 + 0.0</code></span>
+                <span>D. <code>(int) 5.0 / 2</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="p27">詳解</button>
+              <div class="reveal-panel" id="p27">
+                <p>答案是 B。<code>5.0 / 2</code> 有 double 參與，所以結果是 <code>2.5</code>。C 會先做 <code>5 / 2</code> 得到 <code>2</code>，再加 <code>0.0</code>，結果是 <code>2.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>MCQ</span></div>
+              <h3>What value is stored in <code>result</code>?</h3>
+              <pre><code>int a = 9;
+int b = 4;
+double result = a / b;</code></pre>
+              <div class="choices">
+                <span>A. 2</span>
+                <span>B. 2.0</span>
+                <span>C. 2.25</span>
+                <span>D. 3.0</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="p28">詳解</button>
+              <div class="reveal-panel" id="p28">
+                <p>答案是 B。右邊 <code>a / b</code> 是 <code>int / int</code>，先得到 <code>2</code>，再存進 double，所以是 <code>2.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>MCQ</span></div>
+              <h3>What is printed?</h3>
+              <pre><code>int x = 4;
+x = x + x;
+System.out.println(x);</code></pre>
+              <div class="choices">
+                <span>A. 4</span>
+                <span>B. 6</span>
+                <span>C. 8</span>
+                <span>D. 16</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="p29">詳解</button>
+              <div class="reveal-panel" id="p29">
+                <p>答案是 C。右邊先算 <code>x + x</code>，當時 <code>x</code> 是 <code>4</code>，所以右邊是 <code>8</code>。再把 <code>8</code> 存回 <code>x</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>MCQ</span></div>
+              <h3>Which line causes a compile-time error?</h3>
+              <pre><code>int a = 5;
+double b = a;
+boolean c = false;
+int d = "5";</code></pre>
+              <div class="choices">
+                <span>A. Line 1</span>
+                <span>B. Line 2</span>
+                <span>C. Line 3</span>
+                <span>D. Line 4</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="p30">詳解</button>
+              <div class="reveal-panel" id="p30">
+                <p>答案是 D。<code>"5"</code> 是 String，不能直接存進 <code>int</code>。<code>double b = a;</code> 合法，因為 int value 可以安全地轉成 double storage。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>MCQ</span></div>
+              <h3>What is printed?</h3>
+              <pre><code>int n = 345;
+System.out.println(n / 10);
+System.out.println(n % 10);</code></pre>
+              <div class="choices">
+                <span>A. 34 then 5</span>
+                <span>B. 35 then 4</span>
+                <span>C. 345 then 0</span>
+                <span>D. 3 then 45</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="p31">詳解</button>
+              <div class="reveal-panel" id="p31">
+                <p>答案是 A。<code>345 / 10</code> 做 integer division，得到 <code>34</code>。<code>345 % 10</code> 取得個位數，得到 <code>5</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Coding Practice</p>
+              <h2>程式練習</h2>
+              <p>這一區可以貼到 Java 執行器完成。先試著自己寫，再打開參考解法。</p>
+              <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Coding</span></div>
+              <h3>個人資訊輸出</h3>
+              <p>建立四個變數：名字、年齡、身高、是否準備好學 Java。最後輸出四行。</p>
+              <pre><code>Expected format:
+Name: Alex
+Age: 17
+Height: 175.5
+Ready: true</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p32">參考解法與說明</button>
+              <div class="reveal-panel" id="p32">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        String name = "Alex";
+        int age = 17;
+        double height = 175.5;
+        boolean ready = true;
+
+        System.out.println("Name: " + name);
+        System.out.println("Age: " + age);
+        System.out.println("Height: " + height);
+        System.out.println("Ready: " + ready);
+    }
+}</code></pre>
+                <p>這題練習四種常見資料：文字用 <code>String</code>，整數用 <code>int</code>，小數用 <code>double</code>，真假值用 <code>boolean</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Coding</span></div>
+              <h3>平均分數</h3>
+              <p>有三個分數 <code>80</code>、<code>90</code>、<code>95</code>。請計算平均並輸出 <code>Average: 88.33333333333333</code> 或等價的 double 結果。</p>
+              <button class="reveal-button" type="button" data-reveal="p33">參考解法與說明</button>
+              <div class="reveal-panel" id="p33">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int score1 = 80;
+        int score2 = 90;
+        int score3 = 95;
+
+        double average = (score1 + score2 + score3) / 3.0;
+        System.out.println("Average: " + average);
+    }
+}</code></pre>
+                <p>重點是使用 <code>3.0</code>。如果寫成 <code>/ 3</code>，右邊會做 integer division，小數部分會被移除。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Coding</span></div>
+              <h3>拆解三位數</h3>
+              <p>設定 <code>int number = 742;</code>，輸出百位、十位、個位。</p>
+              <button class="reveal-button" type="button" data-reveal="p34">參考解法與說明</button>
+              <div class="reveal-panel" id="p34">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int number = 742;
+
+        int hundreds = number / 100;
+        int tens = (number / 10) % 10;
+        int ones = number % 10;
+
+        System.out.println("Hundreds: " + hundreds);
+        System.out.println("Tens: " + tens);
+        System.out.println("Ones: " + ones);
+    }
+}</code></pre>
+                <p><code>/ 100</code> 取得百位。<code>/ 10</code> 先移除個位，接著 <code>% 10</code> 取得十位。<code>% 10</code> 直接取得個位。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Challenge</span></div>
+              <h3>修正錯誤並解釋原因</h3>
+              <p>下面程式想輸出平均，但有兩個問題。請修正並寫出原因。</p>
+              <pre><code>public class Main {
+    public static void main(String[] args) {
+        int score1 = 88
+        int score2 = 93;
+        int score3 = 100;
+
+        double average = (score1 + score2 + score3) / 3;
+        System.out.println("Average: " + average);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="p35">參考解法與說明</button>
+              <div class="reveal-panel" id="p35">
+                <pre><code>public class Main {
+    public static void main(String[] args) {
+        int score1 = 88;
+        int score2 = 93;
+        int score3 = 100;
+
+        double average = (score1 + score2 + score3) / 3.0;
+        System.out.println("Average: " + average);
+    }
+}</code></pre>
+                <p>第一個問題是 <code>int score1 = 88</code> 少了分號，這會造成 compile-time error。第二個問題是 <code>/ 3</code> 會做 integer division，平均值的小數部分會被移除；改成 <code>/ 3.0</code> 才會得到 double division。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 1 課後練習。先自己作答，再打開詳解檢查推理。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

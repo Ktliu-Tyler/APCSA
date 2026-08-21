@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 11 投影模式｜Loop Algorithms</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 11 投影模式：loop algorithms、sum、count、average、min/max、find any、find first、early exit、String traversal 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 11</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-11.html">文章版</a>
+        <a href="lesson-11-practice.html">課後練習</a>
+        <a href="lesson-10.html">上一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 11</p>
+          <h1>Loop Algorithms</h1>
+          <p class="slide-lead">
+            今天從「會寫 loop」進到「會用 loop 解題」：sum、count、average、min/max、
+            find any、find first、early exit、String traversal 與 AP-style tracing。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-11-practice.html">Lesson 11 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">From Loops To Algorithms</p>
+          <h2>Loop 不只是重複，而是逐步更新狀態</h2>
+          <div class="exit-grid">
+            <div>總和是多少？</div>
+            <div>符合的有幾個？</div>
+            <div>平均是多少？</div>
+            <div>最大或最小是多少？</div>
+            <div>有沒有找到？</div>
+            <div>第一個在哪裡？</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Core Structure</p>
+          <h2>大多數 loop algorithm 都有三個階段</h2>
+          <div class="big-flow">
+            <span>Initialization</span>
+            <span>Repeated Processing</span>
+            <span>Final Result</span>
+          </div>
+          <p class="slide-note">先建立狀態變數，每一輪更新它，最後使用它回答問題。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">State Variables</p>
+          <h2>每個變數都代表目前知道的資訊</h2>
+          <div class="type-grid operator-grid">
+            <div><strong><code>sum</code></strong><span>已處理資料的總和</span></div>
+            <div><strong><code>count</code></strong><span>已找到 match 的數量</span></div>
+            <div><strong><code>max</code></strong><span>目前看過最大值</span></div>
+            <div><strong><code>min</code></strong><span>目前看過最小值</span></div>
+            <div><strong><code>found</code></strong><span>是否已找到</span></div>
+            <div><strong><code>result</code></strong><span>目前建立的字串</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Sum</p>
+          <h2>Sum pattern：把值加進總和</h2>
+          <div class="deck-code">
+            <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 100; i++)
+{
+    sum += i;
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>sum</code> 從 0 開始，因為 0 不影響加法結果。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Count</p>
+          <h2>Count pattern：找到一個就加一</h2>
+          <div class="deck-code">
+            <pre><code>int count = 0;
+
+for (int i = 1; i &lt;= 20; i++)
+{
+    if (i % 3 == 0)
+    {
+        count++;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>count++</code> 的意思是「又找到一個」，不是把數值加進去。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Sum vs Count</p>
+          <h2>這段最後 <code>sum</code> 和 <code>count</code> 是多少？</h2>
+          <div class="multiple-choice">
+            <pre><code>int sum = 0;
+int count = 0;
+
+for (int i = 1; i &lt;= 20; i++)
+{
+    if (i % 5 == 0)
+    {
+        sum += i;
+        count++;
+    }
+}</code></pre>
+            <div class="choices">
+              <span>A. sum 20, count 4</span>
+              <span>B. sum 50, count 4</span>
+              <span>C. sum 4, count 50</span>
+              <span>D. sum 50, count 5</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l11-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l11-r1">
+            <p>答案是 B。符合的是 5、10、15、20，所以 <code>sum = 50</code>，<code>count = 4</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Average</p>
+          <h2>Average 通常是 loop 後才算</h2>
+          <div class="deck-code">
+            <pre><code>int sum = 0;
+int count = 0;
+
+for (...)
+{
+    if (match)
+    {
+        sum += value;
+        count++;
+    }
+}
+
+if (count &gt; 0)
+{
+    double average = (double) sum / count;
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Average Trap</p>
+          <h2>Integer division 會先發生</h2>
+          <div class="multiple-choice">
+            <pre><code>int sum = 17;
+int count = 4;
+
+double average = sum / count;</code></pre>
+            <div class="choices">
+              <span>A. 4.0</span>
+              <span>B. 4.25</span>
+              <span>C. 5.0</span>
+              <span>D. Compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l11-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l11-r2">
+            <p>答案是 A。<code>sum / count</code> 兩邊都是 int，所以先得到 4，再存成 4.0。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Min / Max</p>
+          <h2>Running max / min 記錄「目前看過最好」</h2>
+          <div class="definition-grid">
+            <article><h3>Maximum</h3><p><code>if (value &gt; max) max = value;</code></p></article>
+            <article><h3>Minimum</h3><p><code>if (value &lt; min) min = value;</code></p></article>
+            <article><h3>Initialization</h3><p>通常用第一個真實資料。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Max Bug</p>
+          <h2><code>max = 0</code> 不一定安全</h2>
+          <div class="deck-code">
+            <pre><code>Data:
+-8, -3, -20, -5
+
+int max = 0;</code></pre>
+          </div>
+          <p class="slide-note">真正最大是 -3，但程式可能錯誤保留 0。0 根本不是資料的一部分。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Find Any</p>
+          <h2>Find any：有沒有找到？</h2>
+          <div class="deck-code">
+            <pre><code>boolean found = false;
+
+for (int i = 1; i &lt;= 20; i++)
+{
+    if (i % 4 == 0 &amp;&amp; i % 6 == 0)
+    {
+        found = true;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">問題只問「有沒有」，所以狀態變數是 boolean flag。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Flag Bug</p>
+          <h2>這段最後 <code>found</code> 是什麼？</h2>
+          <div class="multiple-choice">
+            <pre><code>boolean found = false;
+
+for (int i = 1; i &lt;= 5; i++)
+{
+    if (i == 3)
+    {
+        found = true;
+    }
+    else
+    {
+        found = false;
+    }
+}</code></pre>
+            <div class="choices">
+              <span>A. true</span>
+              <span>B. false</span>
+              <span>C. 3</span>
+              <span>D. Compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l11-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l11-r3">
+            <p>答案是 B。i = 5 時 else 又把 <code>found</code> 改回 false。Find any 不應這樣重設 flag。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Find First</p>
+          <h2>Find first：找到後不能被後面覆寫</h2>
+          <div class="deck-code">
+            <pre><code>int first = -1;
+boolean found = false;
+int i = 1;
+
+while (i &lt;= 100 &amp;&amp; !found)
+{
+    if (i % 7 == 0 &amp;&amp; i % 9 == 0)
+    {
+        first = i;
+        found = true;
+    }
+    i++;
+}</code></pre>
+          </div>
+          <p class="slide-note">第一個同時是 7 和 9 的倍數是 63。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">First vs Last</p>
+          <h2>這段找的是 first 還是 last？</h2>
+          <div class="multiple-choice">
+            <pre><code>String s = "BANANA";
+int position = -1;
+
+for (int i = 0; i &lt; s.length(); i++)
+{
+    if (s.substring(i, i + 1).equals("A"))
+    {
+        position = i;
+    }
+}</code></pre>
+            <div class="choices">
+              <span>A. first A</span>
+              <span>B. last A</span>
+              <span>C. count of A</span>
+              <span>D. compile error</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l11-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l11-r4">
+            <p>答案是 B。A 在 index 1、3、5，每次 match 都覆寫，最後留下 5。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Early Exit</p>
+          <h2>哪些 algorithm 適合提早停止？</h2>
+          <div class="error-table-wrap">
+            <table class="error-table">
+              <thead><tr><th>Usually early exit</th><th>Usually scan all</th></tr></thead>
+              <tbody>
+                <tr><td>find any</td><td>sum</td></tr>
+                <tr><td>find first</td><td>count all</td></tr>
+                <tr><td>boolean existence</td><td>average</td></tr>
+                <tr><td>early return in method</td><td>min / max unless extra guarantee</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">String Traversal</p>
+          <h2>逐字處理 String 的標準 pattern</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; word.length(); i++)
+{
+    String letter = word.substring(i, i + 1);
+    ...
+}</code></pre>
+          </div>
+          <p class="slide-note">合法 index 是 0 到 <code>length() - 1</code>，所以不是 <code>i &lt;= word.length()</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">String Count</p>
+          <h2><code>"MISSISSIPPI"</code> 裡 <code>"I"</code> 出現幾次？</h2>
+          <div class="multiple-choice">
+            <pre><code>String word = "MISSISSIPPI";
+int count = 0;
+
+for (int i = 0; i &lt; word.length(); i++)
+{
+    if (word.substring(i, i + 1).equals("I"))
+    {
+        count++;
+    }
+}</code></pre>
+            <div class="choices">
+              <span>A. 2</span>
+              <span>B. 3</span>
+              <span>C. 4</span>
+              <span>D. 5</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l11-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l11-r5">
+            <p>答案是 C。<code>"I"</code> 出現 4 次。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Reverse Traversal</p>
+          <h2>反向走訪從 <code>length() - 1</code> 開始</h2>
+          <div class="deck-code">
+            <pre><code>String s = "CODE";
+String result = "";
+
+for (int i = s.length() - 1; i &gt;= 0; i--)
+{
+    result += s.substring(i, i + 1);
+}</code></pre>
+          </div>
+          <p class="slide-note">最後 <code>result</code> 是 <code>"EDOC"</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Substring Pairs</p>
+          <h2>長度 2 的 substring：最後起點是 <code>length() - 2</code></h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; s.length() - 1; i++)
+{
+    String pair = s.substring(i, i + 2);
+}</code></pre>
+          </div>
+          <p class="slide-note">例如 <code>"AAAA"</code> 中 overlapping 的 <code>"AA"</code> 有 3 個。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">One-Pass</p>
+          <h2>一次 traversal 可以維護多個狀態</h2>
+          <div class="deck-code">
+            <pre><code>int first = input.nextInt();
+int sum = first;
+int count = 1;
+int min = first;
+int max = first;
+
+for (int i = 1; i &lt; 5; i++)
+{
+    int value = input.nextInt();
+    sum += value;
+    count++;
+
+    if (value &lt; min) { min = value; }
+    if (value &gt; max) { max = value; }
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Complex Trace</p>
+          <h2>最後 <code>sum</code>、<code>count</code>、average 是多少？</h2>
+          <div class="multiple-choice">
+            <pre><code>int sum = 0;
+int count = 0;
+
+for (int i = 1; i &lt;= 8; i++)
+{
+    if (i % 3 != 0)
+    {
+        sum += i;
+        count++;
+    }
+}</code></pre>
+            <div class="choices">
+              <span>A. 27, 6, 4.5</span>
+              <span>B. 36, 8, 4.5</span>
+              <span>C. 9, 2, 4.5</span>
+              <span>D. 27, 8, 3.375</span>
+            </div>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l11-r6">揭曉答案</button>
+          <div class="reveal-panel" id="l11-r6">
+            <p>答案是 A。排除 3 和 6，加入 1、2、4、5、7、8，<code>sum = 27</code>、<code>count = 6</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Errors</p>
+          <h2>今天最常見的錯誤</h2>
+          <div class="exit-grid">
+            <div><code>sum++</code> 當作 sum algorithm</div>
+            <div><code>count += value</code> 當作 count</div>
+            <div>average 忘記 cast</div>
+            <div><code>max = 0</code> 或 <code>min = 0</code></div>
+            <div>找到後又把 <code>found</code> 設回 false</div>
+            <div>find first 被後面 match 覆寫</div>
+            <div><code>i &lt;= str.length()</code> 超界</div>
+            <div>只 trace <code>i</code>，忘記 trace state</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP SOP</p>
+          <h2>Loop algorithm 解題流程</h2>
+          <div class="big-flow">
+            <span>Question asks?</span>
+            <span>State variables</span>
+            <span>Initialization</span>
+            <span>Match condition</span>
+            <span>Update state</span>
+            <span>Final answer</span>
+          </div>
+          <p class="slide-note">先問題目要 sum、count、average、min/max、found、first 還是 result。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的六個小程式</h2>
+          <div class="exit-grid">
+            <div>1 到 50 的總和</div>
+            <div>1 到 100 中 5 的倍數總和</div>
+            <div>計算奇數數量</div>
+            <div>輸入 5 個整數找最大值</div>
+            <div>找第一個 13 的倍數</div>
+            <div>計算 String 中某字元出現次數</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-11-practice.html">開始 Lesson 11 課後練習</a>
+            <a class="button" href="lesson-11.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十二句</h2>
+          <div class="exit-grid">
+            <div>Loop algorithm 的核心是維護 state。</div>
+            <div><code>sum += value</code> 是加總。</div>
+            <div><code>count++</code> 是計數。</div>
+            <div>Average 通常 loop 後計算。</div>
+            <div>Average 要小心 integer division。</div>
+            <div>Min/max 通常用第一筆真實資料初始化。</div>
+            <div>Find any 使用 <code>found</code>。</div>
+            <div>Find first 要避免被覆寫。</div>
+            <div>Early exit 適合 find any / first。</div>
+            <div>String traversal 用 <code>i &lt; length()</code>。</div>
+            <div><code>substring</code> end index exclusive。</div>
+            <div>Trace 要追蹤所有狀態變數。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

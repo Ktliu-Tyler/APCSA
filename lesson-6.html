@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 6｜Boolean Expressions</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 6：boolean values、Boolean expressions、relational operators、= vs ==、numeric comparison、primitive vs reference comparison、null、String boolean expressions 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 6</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第六堂課導覽">
+        <a href="lesson-6-presentation.html">投影模式</a>
+        <a href="lesson-6-practice.html">課後練習</a>
+        <a href="lesson-5.html">上一課</a>
+        <a href="lesson-7.html">下一課</a>
+        <a href="#boolean">boolean</a>
+        <a href="#operators">Operators</a>
+        <a href="#primitive">Primitive</a>
+        <a href="#reference">Reference</a>
+        <a href="#string">String</a>
+        <a href="#errors">錯誤</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 6</p>
+          <h1>Boolean Expressions</h1>
+          <p class="lead">
+            前面幾堂課已經偷偷見過 <code>true</code>、<code>false</code>、<code>equals()</code> 和
+            <code>compareTo()</code>。這一課正式學會判斷一個 expression 最後會得到
+            <code>true</code> 還是 <code>false</code>，也就是所有 <code>if</code>、<code>while</code>、
+            <code>for</code> 與 AP tracing 題的地基。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-6-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-6-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-5.html">回 Lesson 5</a>
+            <a class="button" href="lesson-7.html">前往 Lesson 7</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#boolean">boolean</a>
+          <a href="#expression">Boolean Expression</a>
+          <a href="#operators">Relational Operators</a>
+          <a href="#assignment">= vs ==</a>
+          <a href="#precedence">Evaluation Order</a>
+          <a href="#primitive">Primitive Comparison</a>
+          <a href="#reference">Reference Comparison</a>
+          <a href="#null">null</a>
+          <a href="#string">String Boolean Expressions</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#ap-patterns">AP 題型</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>理解 <code>boolean</code> 是 primitive type，只有 <code>true</code> 和 <code>false</code>。</div>
+              <div>分辨 <code>true</code> 和 <code>"true"</code>，知道 Java Boolean 不能用 <code>0</code> / <code>1</code> 代替。</div>
+              <div>使用 <code>==</code>、<code>!=</code>、<code>&lt;</code>、<code>&gt;</code>、<code>&lt;=</code>、<code>&gt;=</code> 建立 Boolean expressions。</div>
+              <div>分辨 assignment <code>=</code> 與 comparison <code>==</code>。</div>
+              <div>判斷 arithmetic、method call 與 relational operators 的 evaluation order。</div>
+              <div>比較 <code>int</code>、<code>double</code> 與 integer division / casting 對 Boolean 結果的影響。</div>
+              <div>知道 primitive 使用 <code>==</code> 比較 value。</div>
+              <div>知道 reference types 使用 <code>==</code> 比較 reference。</div>
+              <div>安全使用 <code>== null</code>、<code>!= null</code>，並理解 <code>NullPointerException</code>。</div>
+              <div>用 <code>equals()</code>、<code>compareTo()</code>、<code>indexOf()</code> 建立 String Boolean expressions。</div>
+              <div>找出 chained comparison、String 使用 <code>&lt;</code>、Boolean 用 <code>1</code> 等 compile-time errors。</div>
+              <div>完成 AP-style Boolean tracing 與 reference diagram 題。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson6-flow-0" /> <span><strong>Boolean values</strong>：<code>true</code>、<code>false</code>、<code>boolean</code> variable。</span></label>
+              <label><input type="checkbox" data-progress="lesson6-flow-1" /> <span><strong>Relational operators</strong>：六個比較運算子與 return type。</span></label>
+              <label><input type="checkbox" data-progress="lesson6-flow-2" /> <span><strong>Evaluation order</strong>：先算 arithmetic / method call，再比較。</span></label>
+              <label><input type="checkbox" data-progress="lesson6-flow-3" /> <span><strong>Primitive vs reference</strong>：<code>==</code> 的意義取決於 type。</span></label>
+              <label><input type="checkbox" data-progress="lesson6-flow-4" /> <span><strong>String comparisons</strong>：<code>equals</code>、<code>compareTo</code>、<code>indexOf</code>。</span></label>
+              <label><input type="checkbox" data-progress="lesson6-flow-5" /> <span><strong>AP 題型</strong>：compile error、runtime error、綜合 tracing。</span></label>
+            </div>
+          </section>
+
+          <section id="boolean" class="article-section">
+            <p class="eyebrow">boolean</p>
+            <h2><code>boolean</code> 只有兩種值：<code>true</code> / <code>false</code></h2>
+            <p>
+              Java 中的 <code>boolean</code> 是 primitive type，用來表示真假。它沒有第三種狀態，也不能用
+              <code>0</code> 或 <code>1</code> 代替。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Boolean Variables</h3>
+                <button class="copy-button" type="button" data-copy="l6-code-boolean-vars">Copy</button>
+              </div>
+              <pre><code id="l6-code-boolean-vars">boolean isReady = true;
+boolean gameOver = false;
+
+int score = 90;
+boolean passed = score &gt;= 60;</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>程式</th>
+                    <th>Type</th>
+                    <th>合法嗎？</th>
+                    <th>重點</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>true</code></td>
+                    <td><code>boolean</code></td>
+                    <td>合法</td>
+                    <td>Boolean literal。</td>
+                  </tr>
+                  <tr>
+                    <td><code>"true"</code></td>
+                    <td><code>String</code></td>
+                    <td>不能放進 boolean variable</td>
+                    <td>有雙引號就是文字。</td>
+                  </tr>
+                  <tr>
+                    <td><code>boolean x = 1;</code></td>
+                    <td><code>int</code> 給 <code>boolean</code></td>
+                    <td>不合法</td>
+                    <td>Java 不把 <code>1</code> 當 true。</td>
+                  </tr>
+                  <tr>
+                    <td><code>boolean x = score &gt;= 60;</code></td>
+                    <td><code>boolean</code></td>
+                    <td>合法</td>
+                    <td>右邊先比較，結果存進 <code>x</code>。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="expression" class="article-section">
+            <p class="eyebrow">Boolean Expression</p>
+            <h2>Boolean expression 執行後會得到 <code>true</code> 或 <code>false</code></h2>
+            <p>
+              看到 Boolean expression，不要只看符號，要追蹤它最後的 type 和 value。AP 題目常把數學運算、
+              String method call、reference comparison 混在同一題。
+            </p>
+            <div class="question-list">
+              <article>
+                <h3>Numeric comparison</h3>
+                <pre><code>5 &gt; 3</code></pre>
+                <p>結果是 <code>true</code>。</p>
+              </article>
+              <article>
+                <h3>Equality comparison</h3>
+                <pre><code>10 == 4</code></pre>
+                <p>結果是 <code>false</code>。</p>
+              </article>
+              <article>
+                <h3>String method</h3>
+                <pre><code>"cat".equals("cat")</code></pre>
+                <p><code>equals()</code> 回傳 <code>boolean</code>，結果是 <code>true</code>。</p>
+              </article>
+              <article>
+                <h3>Ordering method</h3>
+                <pre><code>"apple".compareTo("banana") &lt; 0</code></pre>
+                <p><code>"apple"</code> 排在前面，所以結果是 <code>true</code>。</p>
+              </article>
+            </div>
+            <p class="callout">
+              Boolean variable 存的是某一次計算後的結果，不會因為原本 expression 中的 variable 之後改變而自動更新。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Boolean Tracing</h3>
+                <button class="copy-button" type="button" data-copy="l6-code-boolean-trace">Copy</button>
+              </div>
+              <pre><code id="l6-code-boolean-trace">int x = 5;
+boolean result = x &gt; 3;
+
+x = 1;
+
+System.out.println(result);</code></pre>
+            </div>
+            <p>
+              Output 是 <code>true</code>。<code>result = x &gt; 3;</code> 執行當下 <code>x</code> 是
+              <code>5</code>，之後 <code>x</code> 改成 <code>1</code> 不會重新計算 <code>result</code>。
+            </p>
+          </section>
+
+          <section id="operators" class="article-section">
+            <p class="eyebrow">Relational Operators</p>
+            <h2>六個 relational operators</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Operator</th>
+                    <th>意思</th>
+                    <th>範例</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>==</code></td><td>equal to</td><td><code>5 == 5</code></td><td><code>true</code></td></tr>
+                  <tr><td><code>!=</code></td><td>not equal to</td><td><code>5 != 8</code></td><td><code>true</code></td></tr>
+                  <tr><td><code>&lt;</code></td><td>less than</td><td><code>3 &lt; 10</code></td><td><code>true</code></td></tr>
+                  <tr><td><code>&gt;</code></td><td>greater than</td><td><code>10 &gt; 3</code></td><td><code>true</code></td></tr>
+                  <tr><td><code>&lt;=</code></td><td>less than or equal to</td><td><code>10 &lt;= 10</code></td><td><code>true</code></td></tr>
+                  <tr><td><code>&gt;=</code></td><td>greater than or equal to</td><td><code>80 &gt;= 80</code></td><td><code>true</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              AP 題最喜歡考 boundary value。例如條件是 <code>age &gt;= 18</code>，一定要特別檢查
+              <code>17</code>、<code>18</code>、<code>19</code>。
+            </p>
+            <div class="concept-card">
+              <pre><code>age = 17  -> 17 &gt;= 18 -> false
+age = 18  -> 18 &gt;= 18 -> true
+age = 19  -> 19 &gt;= 18 -> true</code></pre>
+            </div>
+          </section>
+
+          <section id="assignment" class="article-section">
+            <p class="eyebrow">= vs ==</p>
+            <h2><code>=</code> 是 assignment；<code>==</code> 是 comparison</h2>
+            <div class="definition-grid">
+              <article>
+                <h3><code>x = 5;</code></h3>
+                <p>把 <code>5</code> assignment 給 <code>x</code>。這會修改 variable。</p>
+              </article>
+              <article>
+                <h3><code>x == 5</code></h3>
+                <p>判斷 <code>x</code> 是否等於 <code>5</code>。這會產生 <code>true</code> / <code>false</code>。</p>
+              </article>
+              <article>
+                <h3>AP 看到等號</h3>
+                <p>先問：這裡是在改變值，還是在比較？</p>
+              </article>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Common Error</h3>
+                <button class="copy-button" type="button" data-copy="l6-code-equals-error">Copy</button>
+              </div>
+              <pre><code id="l6-code-equals-error">int x = 5;
+
+boolean wrong = x = 5;   // compile-time error
+boolean right = x == 5;  // true</code></pre>
+            </div>
+            <p>
+              如果 <code>x</code> 是 <code>int</code>，<code>x = 5</code> 是 assignment expression，不是
+              Boolean comparison；不能拿來存進 <code>boolean</code>。
+            </p>
+          </section>
+
+          <section id="precedence" class="article-section">
+            <p class="eyebrow">Evaluation Order</p>
+            <h2>先算 arithmetic / method call，再做 relational comparison</h2>
+            <p>
+              Relational operator 兩邊不一定是單一 variable，也可以是 expressions。解題時要先把左右兩邊算成明確的值。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Arithmetic Before Comparison</h3>
+                <button class="copy-button" type="button" data-copy="l6-code-precedence">Copy</button>
+              </div>
+              <pre><code id="l6-code-precedence">int x = 4;
+int y = 5;
+
+boolean result = x + 3 &lt; y * 2;</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>x + 3 = 4 + 3 = 7
+y * 2 = 5 * 2 = 10
+7 &lt; 10 -> true</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>目前常用優先順序</th>
+                    <th>例子</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>()</code></td><td><code>(2 + 3) * 4</code></td></tr>
+                  <tr><td><code>* / %</code></td><td><code>7 / 3</code>、<code>12 % 5</code></td></tr>
+                  <tr><td><code>+ -</code></td><td><code>x + 2</code></td></tr>
+                  <tr><td><code>&lt; &lt;= &gt; &gt;=</code></td><td><code>x + 2 &gt; 9</code></td></tr>
+                  <tr><td><code>== !=</code></td><td><code>3 &lt; 5 == true</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              <code>!</code>、<code>&amp;&amp;</code>、<code>||</code> 會在 Lesson 8 正式處理；本課先把單一 Boolean expression
+              追蹤穩。
+            </p>
+          </section>
+
+          <section id="primitive" class="article-section">
+            <p class="eyebrow">Primitive Comparison</p>
+            <h2>Primitive 使用 <code>==</code> 比較實際 value</h2>
+            <p>
+              對 <code>int</code>、<code>double</code>、<code>boolean</code> 這些 primitive types 來說，
+              <code>==</code> 比較的是實際值。
+            </p>
+            <div class="question-list">
+              <article>
+                <h3>int values</h3>
+                <pre><code>int a = 10;
+int b = 10;
+
+System.out.println(a == b);</code></pre>
+                <p>Output 是 <code>true</code>。</p>
+              </article>
+              <article>
+                <h3>copy once</h3>
+                <pre><code>int a = 10;
+int b = a;
+a = 20;
+
+System.out.println(a == b);</code></pre>
+                <p><code>b</code> 仍是 <code>10</code>，所以 output 是 <code>false</code>。</p>
+              </article>
+              <article>
+                <h3>int and double</h3>
+                <pre><code>int x = 5;
+double y = 5.0;
+
+System.out.println(x == y);</code></pre>
+                <p>數值相同，output 是 <code>true</code>。</p>
+              </article>
+              <article>
+                <h3>boolean values</h3>
+                <pre><code>boolean a = true;
+boolean b = false;
+
+System.out.println(a == b);</code></pre>
+                <p>Output 是 <code>false</code>。</p>
+              </article>
+            </div>
+            <p>
+              Integer division 和 casting 很常被包進 Boolean expression。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Integer Division vs Casting</h3>
+                <button class="copy-button" type="button" data-copy="l6-code-division">Copy</button>
+              </div>
+              <pre><code id="l6-code-division">System.out.println(5 / 2 == 2.5);
+System.out.println((double) 5 / 2 == 2.5);</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>5 / 2 = 2
+2 == 2.5 -> false
+
+(double) 5 / 2 = 2.5
+2.5 == 2.5 -> true</code></pre>
+            </div>
+            <p class="callout">
+              <code>double</code> 有 round-off error；考試遇到小數運算後的精確 <code>==</code>，不要假設一定安全。
+            </p>
+          </section>
+
+          <section id="reference" class="article-section">
+            <p class="eyebrow">Reference Comparison</p>
+            <h2>Reference type 使用 <code>==</code> 比較是否指向同一個 object</h2>
+            <p>
+              Lesson 4 學過 reference variable。現在要把它和 Boolean expression 接起來：對 object references，
+              <code>==</code> 不是問 contents 一不一樣，而是問兩個 variables 是否存著相同 reference。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Two Different Objects</h3>
+                <button class="copy-button" type="button" data-copy="l6-code-two-strings">Copy</button>
+              </div>
+              <pre><code id="l6-code-two-strings">String a = new String("cat");
+String b = new String("cat");
+
+System.out.println(a == b);
+System.out.println(a.equals(b));</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>a ----> String Object A "cat"
+
+b ----> String Object B "cat"
+
+a == b       -> false
+a.equals(b) -> true</code></pre>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Alias</h3>
+                <button class="copy-button" type="button" data-copy="l6-code-alias">Copy</button>
+              </div>
+              <pre><code id="l6-code-alias">String a = new String("cat");
+String b = a;
+
+System.out.println(a == b);</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>a --+
+    +--> String Object "cat"
+b --+
+
+a == b -> true</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Expression</th>
+                    <th>比較什麼？</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>primitive a == b</code></td><td>primitive values</td></tr>
+                  <tr><td><code>object a == b</code></td><td>object references</td></tr>
+                  <tr><td><code>object a != b</code></td><td>references 是否不同</td></tr>
+                  <tr><td><code>String.equals()</code></td><td>String contents</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="null" class="article-section">
+            <p class="eyebrow">null</p>
+            <h2><code>== null</code> 是安全的 reference comparison</h2>
+            <p>
+              <code>null</code> 表示 reference variable 目前沒有指向任何 object。你可以用 <code>== null</code>
+              或 <code>!= null</code> 安全地檢查 reference。
+            </p>
+            <div class="question-list">
+              <article>
+                <h3>Safe</h3>
+                <pre><code>String name = null;
+boolean result = name == null;</code></pre>
+                <p>合法，<code>result</code> 是 <code>true</code>。</p>
+              </article>
+              <article>
+                <h3>Also safe</h3>
+                <pre><code>String name = "Alice";
+boolean result = name != null;</code></pre>
+                <p>合法，<code>result</code> 是 <code>true</code>。</p>
+              </article>
+              <article>
+                <h3>Runtime error</h3>
+                <pre><code>String name = null;
+boolean result = name.equals("Alice");</code></pre>
+                <p><code>name</code> 沒有 object 可以呼叫 method，所以會發生 <code>NullPointerException</code>。</p>
+              </article>
+            </div>
+            <p class="callout">
+              看到 <code>null</code> + method call，先警覺 runtime error；看到 <code>== null</code> 則只是安全比較。
+            </p>
+          </section>
+
+          <section id="string" class="article-section">
+            <p class="eyebrow">String Boolean Expressions</p>
+            <h2>String methods 常常直接產生或組成 Boolean expression</h2>
+            <p>
+              Lesson 5 的 <code>String</code> methods 會在 Boolean 題中大量出現。重點不是背答案，
+              而是先判斷 method return type，再做比較。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Expression</th>
+                    <th>Type</th>
+                    <th>常見用途</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>s.length()</code></td><td><code>int</code></td><td><code>s.length() &gt;= 8</code></td></tr>
+                  <tr><td><code>s.indexOf("AP")</code></td><td><code>int</code></td><td><code>s.indexOf("AP") &gt;= 0</code> 表示找得到。</td></tr>
+                  <tr><td><code>s.substring(0, 3)</code></td><td><code>String</code></td><td><code>s.substring(0, 3).equals("pro")</code></td></tr>
+                  <tr><td><code>s.equals("yes")</code></td><td><code>boolean</code></td><td>直接就是 Boolean expression。</td></tr>
+                  <tr><td><code>s.compareTo("cat")</code></td><td><code>int</code></td><td><code>&lt; 0</code> 前面，<code>== 0</code> 相同，<code>&gt; 0</code> 後面。</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="question-list">
+              <article>
+                <h3>length</h3>
+                <pre><code>String s = "computer";
+boolean result = s.length() &gt;= 8;</code></pre>
+                <p><code>length()</code> 是 <code>8</code>，所以結果是 <code>true</code>。</p>
+              </article>
+              <article>
+                <h3>indexOf</h3>
+                <pre><code>String s = "computer";
+boolean result = s.indexOf("xyz") &gt;= 0;</code></pre>
+                <p><code>indexOf("xyz")</code> 是 <code>-1</code>，所以結果是 <code>false</code>。</p>
+              </article>
+              <article>
+                <h3>substring + equals</h3>
+                <pre><code>String s = "computer";
+boolean result = s.substring(0, 3).equals("com");</code></pre>
+                <p><code>substring(0, 3)</code> 是 <code>"com"</code>，所以結果是 <code>true</code>。</p>
+              </article>
+              <article>
+                <h3>compareTo</h3>
+                <pre><code>String a = "dog";
+String b = "cat";
+boolean result = a.compareTo(b) &lt; 0;</code></pre>
+                <p><code>"dog"</code> 排在 <code>"cat"</code> 後面，<code>compareTo()</code> 為 positive，所以結果是 <code>false</code>。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Errors</p>
+            <h2>AP Boolean 題常見錯誤</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>錯誤寫法</th>
+                    <th>問題</th>
+                    <th>正確觀念</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>boolean x = 1;</code></td><td>Java 不用 <code>1</code> 表示 true。</td><td>使用 <code>true</code> 或 Boolean expression。</td></tr>
+                  <tr><td><code>boolean b = 0 &lt; x &lt; 10;</code></td><td>Java 不支援 chained comparison。</td><td>Lesson 8 會用 compound Boolean 改寫。</td></tr>
+                  <tr><td><code>x =&gt; 5</code></td><td>沒有 <code>=&gt;</code> 這個 operator。</td><td>使用 <code>x &gt;= 5</code>。</td></tr>
+                  <tr><td><code>x =&lt; 5</code></td><td>沒有 <code>=&lt;</code> 這個 operator。</td><td>使用 <code>x &lt;= 5</code>。</td></tr>
+                  <tr><td><code>name &lt; "John"</code></td><td>String 不能用 <code>&lt;</code> 比大小。</td><td>用 <code>name.compareTo("John") &lt; 0</code>。</td></tr>
+                  <tr><td><code>String a = null; a.equals("x")</code></td><td>runtime error。</td><td>先確認 <code>a != null</code>，或理解 <code>== null</code> 是安全比較。</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="ap-patterns" class="article-section">
+            <p class="eyebrow">AP Patterns</p>
+            <h2>AP-style 題型整理</h2>
+            <div class="question-list">
+              <article>
+                <h3>Modulo condition</h3>
+                <pre><code>int x = 12;
+boolean result = x % 3 == 0;</code></pre>
+                <p><code>12 % 3 = 0</code>，所以 <code>result = true</code>。</p>
+              </article>
+              <article>
+                <h3>Integer division trap</h3>
+                <pre><code>int a = 7;
+int b = 3;
+boolean result = a / b &gt; 2;</code></pre>
+                <p><code>7 / 3 = 2</code>，<code>2 &gt; 2</code> 是 <code>false</code>。</p>
+              </article>
+              <article>
+                <h3>Reference + alias</h3>
+                <pre><code>String a = new String("hello");
+String b = a;
+boolean result = a == b;</code></pre>
+                <p><code>b = a</code> 複製 reference，所以結果是 <code>true</code>。</p>
+              </article>
+              <article>
+                <h3>String method Boolean</h3>
+                <pre><code>String s = "programming";
+boolean result = s.substring(0, 3).equals("pro");</code></pre>
+                <p>結果是 <code>true</code>。</p>
+              </article>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Final Trace Example</h3>
+                <button class="copy-button" type="button" data-copy="l6-code-final-trace">Copy</button>
+              </div>
+              <pre><code id="l6-code-final-trace">String first = new String("Java");
+String second = first;
+String third = null;
+
+boolean a = first == second;
+boolean b = first == third;
+boolean c = third == null;
+boolean d = first != null;
+
+System.out.println(a);
+System.out.println(b);
+System.out.println(c);
+System.out.println(d);</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>first --+
+        +--> "Java"
+second -+
+
+third -> null
+
+Output:
+true
+false
+true
+true</code></pre>
+            </div>
+          </section>
+
+          <section id="practice" class="article-section">
+            <p class="eyebrow">Practice</p>
+            <h2>練習題與可完成的小程式</h2>
+            <p>
+              完整課後題本已整理成 Boolean vocabulary、relational operators、numeric tracing、reference comparison、
+              null、String Boolean expressions、compile/runtime errors 與 mini coding exercises。
+            </p>
+            <div class="inline-actions">
+              <a class="button primary" href="lesson-6-practice.html">開始 Lesson 6 課後練習</a>
+              <a class="button" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            </div>
+            <div class="practice-set">
+              <article>
+                <h3>檢查是否成年</h3>
+                <p>使用 <code>age &gt;= 18</code> 建立 Boolean variable。</p>
+              </article>
+              <article>
+                <h3>檢查偶數</h3>
+                <p>使用 <code>num % 2 == 0</code>。</p>
+              </article>
+              <article>
+                <h3>檢查文字是否存在</h3>
+                <p>使用 <code>word.indexOf("AP") &gt;= 0</code>。</p>
+              </article>
+              <article>
+                <h3>Reference diagram</h3>
+                <p>看到 <code>new</code>、assignment、<code>==</code>、<code>null</code> 就畫 reference。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Boolean value</strong><span><code>true</code> / <code>false</code>，不是 <code>0</code> / <code>1</code>。</span></div>
+              <div><strong>boolean</strong><span>primitive type。</span></div>
+              <div><strong><code>=</code></strong><span>assignment，會修改 variable。</span></div>
+              <div><strong><code>==</code></strong><span>comparison，結果是 <code>boolean</code>。</span></div>
+              <div><strong>Relational operators</strong><span><code>==</code>、<code>!=</code>、<code>&lt;</code>、<code>&gt;</code>、<code>&lt;=</code>、<code>&gt;=</code>。</span></div>
+              <div><strong>Primitive</strong><span><code>==</code> 比較 value。</span></div>
+              <div><strong>Reference</strong><span><code>==</code> 比較是否指向同一 object。</span></div>
+              <div><strong>String contents</strong><span>用 <code>equals()</code>。</span></div>
+              <div><strong>String ordering</strong><span>用 <code>compareTo()</code> 的正負號。</span></div>
+              <div><strong>null</strong><span><code>ref == null</code> 安全；<code>ref.method()</code> 可能 runtime error。</span></div>
+              <div><strong>Chained comparison</strong><span><code>0 &lt; x &lt; 10</code> 在 Java 不合法。</span></div>
+              <div><strong>Tracing SOP</strong><span>先算 method / arithmetic，再做 relational comparison；reference 題先畫圖。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十句</summary>
+              <p>A Boolean expression evaluates to true or false.</p>
+              <p><code>=</code> means assignment; <code>==</code> means comparison.</p>
+              <p>Primitive <code>==</code> compares values.</p>
+              <p>Object <code>==</code> compares references.</p>
+              <p>Use <code>equals()</code> to compare String contents.</p>
+              <p>Use <code>compareTo()</code> to compare String ordering.</p>
+              <p>A reference can safely be compared with <code>null</code> using <code>==</code> or <code>!=</code>.</p>
+              <p>Relational expressions produce Boolean values.</p>
+              <p>Java does not support <code>0 &lt; x &lt; 10</code>.</p>
+              <p>Arithmetic is evaluated before the final relational comparison.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 6｜Boolean Expressions。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

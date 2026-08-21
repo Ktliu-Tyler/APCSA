@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 4 課後練習｜Objects &amp; References</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 4 課後練習：class vs object、reference variable、primitive copy、reference copy、aliases、object counting、null 與 NullPointerException。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 4 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-4-presentation.html">投影模式</a>
+        <a href="lesson-4.html">文章版</a>
+        <a href="lesson-3.html">上一課</a>
+        <a href="#concepts">觀念</a>
+        <a href="#copying">Copy</a>
+        <a href="#null">null</a>
+        <a href="#ap-style">AP 題型</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 4</p>
+          <h1>課後練習：Objects &amp; References</h1>
+          <p class="lead">
+            先自己畫圖或 trace，再打開詳解。這份題本會檢查你是否能分辨 class/object/reference、
+            正確判斷 primitive copy 與 reference copy、數 objects、處理 <code>null</code>，
+            並解釋 <code>NullPointerException</code>。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>40</strong><span>題課後練習</span></div>
+            <div><strong>6</strong><span>主題分區</span></div>
+            <div><strong>Diagrams</strong><span>畫箭頭追蹤</span></div>
+            <div><strong>AP-style</strong><span>選擇題與除錯題</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 名詞與觀念</a>
+          <a href="#class-object">B. Class / Object / new</a>
+          <a href="#copying">C. Primitive vs Reference Copy</a>
+          <a href="#state">D. Alias、State 與 Reassignment</a>
+          <a href="#null">E. null 與錯誤類型</a>
+          <a href="#ap-style">F. AP-style 綜合題</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>名詞與觀念</h2>
+              <p>這一區先確認本課最基本的 vocabulary。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Class</span></div>
+              <h3>Class 和 object 的差別是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p1">詳解</button>
+              <div class="reveal-panel" id="l4p1">
+                <p>Class 是設計規格或 blueprint；object 是根據 class 建立出來、實際存在並可被程式操作的 instance。例：<code>Scanner</code> 是 class，某一個透過 <code>new Scanner(System.in)</code> 建立的實體是 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Instance</span></div>
+              <h3><em>instance of a class</em> 是什麼意思？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p2">詳解</button>
+              <div class="reveal-panel" id="l4p2">
+                <p>可以理解成「根據某個 class 建立出來的 object」。例如某個 Scanner object 是 an instance of the <code>Scanner</code> class。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Reference</span></div>
+              <h3>Reference variable 儲存的是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p3">詳解</button>
+              <div class="reveal-panel" id="l4p3">
+                <p>Reference variable 儲存 object reference，也就是讓程式找到某個 object 的資訊。它不是直接儲存整個 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Primitive</span></div>
+              <h3>Primitive variable 和 reference variable 最大差異是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p4">詳解</button>
+              <div class="reveal-panel" id="l4p4">
+                <p>Primitive variable 直接儲存 primitive value，例如 <code>int x = 5;</code>。Reference variable 儲存 object reference，例如 <code>Scanner input</code> 儲存的是指向 Scanner object 的 reference。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>State</span></div>
+              <h3>Object state 是什麼？請舉一個例子。</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p5">詳解</button>
+              <div class="reveal-panel" id="l4p5">
+                <p>Object state 是 object 目前內部資料的狀態。例如 Car object 可能有 <code>speed = 50</code>、<code>battery = 80</code>、<code>gear = 3</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Behavior</span></div>
+              <h3>Object behavior 在 Java 中通常用什麼表示？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p6">詳解</button>
+              <div class="reveal-panel" id="l4p6">
+                <p>通常用 methods 表示。例：Car object 可能有 <code>accelerate()</code>、<code>brake()</code>；Scanner object 有 <code>nextInt()</code>、<code>nextDouble()</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="class-object" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Class, Object, new</p>
+              <h2>Class / Object / new / Constructor</h2>
+              <p>這一區練習拆解 object creation 與 constructor call。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Scanner</span></div>
+              <h3>拆解這一行：<code>Scanner input = new Scanner(System.in);</code></h3>
+              <button class="reveal-button" type="button" data-reveal="l4p7">詳解</button>
+              <div class="reveal-panel" id="l4p7">
+                <p><code>Scanner</code> 是 reference type / class name。<code>input</code> 是 reference variable。<code>new</code> 建立 object。<code>Scanner(System.in)</code> 是 constructor call。整行把新 Scanner object 的 reference 存進 <code>input</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Constructor</span></div>
+              <h3>Constructor call 和 method call 的差異是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p8">詳解</button>
+              <div class="reveal-panel" id="l4p8">
+                <p>Constructor call 用於建立並初始化 object，通常和 <code>new</code> 一起出現，例如 <code>new Scanner(System.in)</code>。Method call 是對 class 或 object 執行某個操作，例如 <code>input.nextInt()</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Object Creation</span></div>
+              <h3>下列哪一行一定會建立新的 Scanner object？</h3>
+              <div class="choices">
+                <span>A. <code>Scanner b = a;</code></span>
+                <span>B. <code>Scanner b;</code></span>
+                <span>C. <code>b = null;</code></span>
+                <span>D. <code>Scanner b = new Scanner(System.in);</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l4p9">詳解</button>
+              <div class="reveal-panel" id="l4p9">
+                <p>答案是 D。關鍵是 <code>new Scanner(System.in)</code>。A 只複製 reference，B 只宣告 reference variable，C 讓 reference variable 不指向 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Declaration</span></div>
+              <h3>這三行宣告了幾個 reference variables？建立了幾個 Scanner objects？</h3>
+              <pre><code>Scanner a;
+Scanner b;
+Scanner c;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p10">詳解</button>
+              <div class="reveal-panel" id="l4p10">
+                <p>宣告了 3 個 reference variables，但建立了 0 個 Scanner objects。沒有 <code>new Scanner(...)</code>，就沒有明確建立 Scanner object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Count</span></div>
+              <h3>這段程式建立了幾個 Scanner objects？</h3>
+              <pre><code>Scanner a = new Scanner(System.in);
+Scanner b = new Scanner(System.in);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p11">詳解</button>
+              <div class="reveal-panel" id="l4p11">
+                <p>建立了 2 個 Scanner objects，因為 <code>new Scanner(System.in)</code> 執行兩次。實際程式通常不建議刻意建立多個 Scanner 讀同一個 <code>System.in</code>，這裡只用來練習 reference tracing。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="copying" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Copying</p>
+              <h2>Primitive Copy vs Reference Copy</h2>
+              <p>請先在紙上追蹤 value 或畫 reference diagram。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Primitive Copy</span></div>
+              <h3>預測 output。</h3>
+              <pre><code>int x = 4;
+int y = x;
+
+x = x + 3;
+
+System.out.println(x + " " + y);</code></pre>
+              <div class="choices">
+                <span>A. <code>4 4</code></span>
+                <span>B. <code>7 4</code></span>
+                <span>C. <code>7 7</code></span>
+                <span>D. <code>4 7</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l4p12">詳解</button>
+              <div class="reveal-panel" id="l4p12">
+                <p>答案是 B。<code>int y = x;</code> 複製的是 primitive value <code>4</code>。之後 <code>x</code> 變成 <code>7</code>，<code>y</code> 仍然是 <code>4</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Primitive Copy</span></div>
+              <h3>最後 <code>a</code> 和 <code>b</code> 是多少？</h3>
+              <pre><code>int a = 7;
+int b = a;
+
+b = 20;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p13">詳解</button>
+              <div class="reveal-panel" id="l4p13">
+                <p><code>a = 7</code>，<code>b = 20</code>。修改 <code>b</code> 不會影響 <code>a</code>，因為它們是兩份獨立 primitive values。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Reference Copy</span></div>
+              <h3>哪個敘述正確？</h3>
+              <pre><code>Scanner first = new Scanner(System.in);
+Scanner second = first;</code></pre>
+              <div class="choices">
+                <span>A. Java 建立兩個 Scanner objects</span>
+                <span>B. <code>first</code> 是 object，<code>second</code> 是 variable</span>
+                <span>C. <code>first</code> 和 <code>second</code> reference 到同一個 object</span>
+                <span>D. <code>second</code> 是 <code>first</code> 的 primitive copy</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l4p14">詳解</button>
+              <div class="reveal-panel" id="l4p14">
+                <p>答案是 C。<code>Scanner second = first;</code> 複製的是 reference，不是 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Diagram</span></div>
+              <h3>請畫出最後的 reference diagram。</h3>
+              <pre><code>Scanner a = new Scanner(System.in);
+Scanner b = a;
+Scanner c = b;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p15">詳解</button>
+              <div class="reveal-panel" id="l4p15">
+                <pre><code>a ----\
+b -----&gt; Scanner object
+c ----/</code></pre>
+                <p><code>new</code> 只有一次，因此只有一個 Scanner object。<code>b = a</code> 和 <code>c = b</code> 都只是複製 reference。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Count</span></div>
+              <h3>有幾個 Scanner objects？有幾個 Scanner reference variables？</h3>
+              <pre><code>Scanner a = new Scanner(System.in);
+Scanner b = a;
+Scanner c = b;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p16">詳解</button>
+              <div class="reveal-panel" id="l4p16">
+                <p>有 1 個 Scanner object，3 個 Scanner reference variables。變數數量不等於 object 數量。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>new</span></div>
+              <h3>這段程式最後有幾個 Scanner objects？</h3>
+              <pre><code>Scanner a = new Scanner(System.in);
+Scanner b = a;
+
+a = new Scanner(System.in);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p17">詳解</button>
+              <div class="reveal-panel" id="l4p17">
+                <p>建立了 2 個 Scanner objects。第一個由第一行 <code>new</code> 建立，第二個由第三行 <code>new</code> 建立。最後 <code>a</code> 指向第二個 object，<code>b</code> 指向第一個 object。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="state" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Alias and Reassignment</p>
+              <h2>Alias、State 與 Reassignment</h2>
+              <p>這一區練習「多個 references 指向同一 object」和「reference variable 可以改指向別處」。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Alias</span></div>
+              <h3>什麼是 aliases？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p18">詳解</button>
+              <div class="reveal-panel" id="l4p18">
+                <p>當兩個或多個 reference variables 指向同一個 object 時，它們稱為 aliases。例如 <code>Scanner second = first;</code> 之後，<code>first</code> 和 <code>second</code> 是同一個 Scanner object 的 aliases。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>State</span></div>
+              <h3>如果 <code>a</code> 和 <code>b</code> 指向同一個 object，透過 <code>a</code> 修改 object state，透過 <code>b</code> 看到什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p19">詳解</button>
+              <div class="reveal-panel" id="l4p19">
+                <p>透過 <code>b</code> 看到的是修改後的同一個 object state。因為根本只有一個 object，只是有兩個 references 指向它。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Reassignment</span></div>
+              <h3>執行 <code>a = b;</code> 後發生什麼？</h3>
+              <pre><code>SomeClass a = new SomeClass();
+SomeClass b = new SomeClass();
+
+a = b;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p20">詳解</button>
+              <div class="reveal-panel" id="l4p20">
+                <p>Java 把 <code>b</code> 裡的 reference 複製給 <code>a</code>。最後 <code>a</code> 和 <code>b</code> 指向原本 <code>b</code> 指向的 object。原本 <code>a</code> 指向的 object 如果沒有其他 reference，就再也無法被程式使用。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Object</span></div>
+              <h3><code>a = b;</code> 會把 Object B 搬進 <code>a</code> 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p21">詳解</button>
+              <div class="reveal-panel" id="l4p21">
+                <p>不會。Object 本身沒有被搬動，也沒有被複製。變的是 <code>a</code> 裡儲存的 reference。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Static vs Instance</span></div>
+              <h3><code>Math.sqrt(25)</code> 和 <code>input.nextInt()</code> 的呼叫方式差在哪？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p22">詳解</button>
+              <div class="reveal-panel" id="l4p22">
+                <p><code>Math.sqrt(25)</code> 是透過 class 呼叫 static method。<code>input.nextInt()</code> 是對 <code>input</code> 指向的 Scanner object 呼叫 method。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="null" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. null and Errors</p>
+              <h2><code>null</code> 與錯誤類型</h2>
+              <p>這一區練習 reference type 的特殊值 <code>null</code>。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>null</span></div>
+              <h3><code>null</code> 代表什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p23">詳解</button>
+              <div class="reveal-panel" id="l4p23">
+                <p><code>null</code> 表示 reference variable 目前沒有 reference 到任何 object。它不是 object，不是 0，也不是空字串。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Compile</span></div>
+              <h3>下列何者可以合法 compile？</h3>
+              <div class="choices">
+                <span>A. <code>int x = null;</code></span>
+                <span>B. <code>double x = null;</code></span>
+                <span>C. <code>boolean x = null;</code></span>
+                <span>D. <code>String x = null;</code></span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l4p24">詳解</button>
+              <div class="reveal-panel" id="l4p24">
+                <p>答案是 D。<code>String</code> 是 reference type，所以可以儲存 <code>null</code>。<code>int</code>、<code>double</code>、<code>boolean</code> 是 primitive types，不能儲存 <code>null</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Runtime</span></div>
+              <h3>這段程式的錯誤類型最接近哪一個？</h3>
+              <pre><code>String text = null;
+System.out.println(text.length());</code></pre>
+              <div class="choices">
+                <span>A. Syntax error</span>
+                <span>B. Compile-time type error</span>
+                <span>C. Runtime error</span>
+                <span>D. Logic error only</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l4p25">詳解</button>
+              <div class="reveal-panel" id="l4p25">
+                <p>答案是 C，更具體是 <code>NullPointerException</code>。宣告 <code>String text = null;</code> 是合法的，但執行 <code>text.length()</code> 時沒有 String object 可用。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Empty String</span></div>
+              <h3><code>null</code>、<code>""</code>、<code>" "</code> 差在哪？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p26">詳解</button>
+              <div class="reveal-panel" id="l4p26">
+                <p><code>null</code> 表示沒有 String object。<code>""</code> 是有一個 String object，長度為 0。<code>" "</code> 也是 String object，內容是一個空白字元，長度為 1。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>null Reassignment</span></div>
+              <h3>最後 Scanner object 是否仍存在？</h3>
+              <pre><code>Scanner a = new Scanner(System.in);
+Scanner b = a;
+
+a = null;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p27">詳解</button>
+              <div class="reveal-panel" id="l4p27">
+                <pre><code>a -> null
+
+b -> Scanner object</code></pre>
+                <p>Scanner object 仍可透過 <code>b</code> 使用。<code>a = null</code> 只讓 <code>a</code> 不再指向 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>null to Object</span></div>
+              <h3>這段程式最後 <code>input</code> 是什麼狀態？</h3>
+              <pre><code>Scanner input = null;
+input = new Scanner(System.in);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p28">詳解</button>
+              <div class="reveal-panel" id="l4p28">
+                <p>最後 <code>input</code> 指向一個新建立的 Scanner object。Reference variable 可以從 <code>null</code> 變成指向 object。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="ap-style" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. AP-style</p>
+              <h2>AP-style 綜合題</h2>
+              <p>這一區把本課觀念混在一起，請用 reference diagram 解題。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Vocabulary</span></div>
+              <h3>在這行程式中，<code>keyboard</code> 最精確是什麼？</h3>
+              <pre><code>Scanner keyboard = new Scanner(System.in);</code></pre>
+              <div class="choices">
+                <span>A. class</span>
+                <span>B. object</span>
+                <span>C. reference variable</span>
+                <span>D. constructor</span>
+              </div>
+              <button class="reveal-button" type="button" data-reveal="l4p29">詳解</button>
+              <div class="reveal-panel" id="l4p29">
+                <p>答案是 C。<code>keyboard</code> 是 reference variable，儲存對新 Scanner object 的 reference。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Constructor</span></div>
+              <h3>在 <code>new Scanner(System.in)</code> 中，<code>Scanner(System.in)</code> 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p30">詳解</button>
+              <div class="reveal-panel" id="l4p30">
+                <p>它是 constructor call。配合 <code>new</code> 建立並初始化 Scanner object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Diagram</span></div>
+              <h3>最後的 reference diagram 是哪一個概念？</h3>
+              <pre><code>Scanner a = new Scanner(System.in);
+Scanner b = a;
+Scanner c = b;
+
+b = null;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p31">詳解</button>
+              <div class="reveal-panel" id="l4p31">
+                <pre><code>a ----\
+       > Scanner object
+c ----/
+
+b -> null</code></pre>
+                <p><code>b = null</code> 只改變 <code>b</code>。<code>a</code> 和 <code>c</code> 仍指向原本 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Count</span></div>
+              <h3>總共執行了幾次 <code>new Scanner(...)</code>？建立幾個 Scanner objects？</h3>
+              <pre><code>Scanner a = new Scanner(System.in);
+Scanner b = a;
+
+a = new Scanner(System.in);
+Scanner c = a;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p32">詳解</button>
+              <div class="reveal-panel" id="l4p32">
+                <p><code>new Scanner(...)</code> 執行 2 次，所以建立 2 個 Scanner objects。最後 <code>b</code> 指向第一個 object，<code>a</code> 和 <code>c</code> 指向第二個 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Compile vs Runtime</span></div>
+              <h3>判斷這兩段分別是 compile-time error、runtime error，還是合法執行。</h3>
+              <pre><code>int a = null;</code></pre>
+              <pre><code>String b = null;
+System.out.println(b.length());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p33">詳解</button>
+              <div class="reveal-panel" id="l4p33">
+                <p>第一段是 compile-time error，因為 <code>int</code> 不能儲存 <code>null</code>。第二段是 runtime error，宣告合法，但執行 <code>b.length()</code> 時 <code>b</code> 沒有指向 String object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Misconception</span></div>
+              <h3>「兩個 reference variables 就一定有兩個 objects」這句話對嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p34">詳解</button>
+              <div class="reveal-panel" id="l4p34">
+                <p>不對。例如 <code>Scanner b = a;</code> 會讓兩個 reference variables 指向同一個 object。要看建立 object 的 <code>new</code> 實際執行幾次。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Dot Operator</span></div>
+              <h3><code>input.nextInt()</code> 可以怎麼理解？</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p35">詳解</button>
+              <div class="reveal-panel" id="l4p35">
+                <p>可以理解成對 <code>input</code> 指向的 Scanner object 呼叫 <code>nextInt()</code> method。<code>input</code> 是 reference variable，不是 Scanner object 本身。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Debugging</span></div>
+              <h3>這段程式為什麼危險？如何修正？</h3>
+              <pre><code>String name = null;
+System.out.println("Length: " + name.length());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p36">詳解</button>
+              <div class="reveal-panel" id="l4p36">
+                <p><code>name</code> 是 <code>null</code>，沒有 String object，所以 <code>name.length()</code> 會造成 <code>NullPointerException</code>。可以先讓 <code>name</code> 指向真正的 String，例如 <code>String name = "Alex";</code>，或在呼叫 method 前檢查 <code>name != null</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>Trace</span></div>
+              <h3>請畫最後 reference diagram。</h3>
+              <pre><code>SomeClass x = new SomeClass();
+SomeClass y = x;
+
+x = null;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p37">詳解</button>
+              <div class="reveal-panel" id="l4p37">
+                <pre><code>x -> null
+
+y -> Object A</code></pre>
+                <p>Object A 還存在，因為 <code>y</code> 仍然 reference 到它。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Reverse Explanation</span></div>
+              <h3>解釋為什麼 <code>Scanner b = a;</code> 不會建立新的 Scanner object。</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p38">詳解</button>
+              <div class="reveal-panel" id="l4p38">
+                <p>因為這行沒有 <code>new Scanner(...)</code>。它只是宣告 <code>b</code>，並把 <code>a</code> 裡的 reference 複製給 <code>b</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Final Challenge</span></div>
+              <h3>完整追蹤：建立幾個 objects？最後誰指向誰？</h3>
+              <pre><code>SomeClass a = new SomeClass();
+SomeClass b = a;
+SomeClass c = new SomeClass();
+
+b = c;
+c = null;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l4p39">詳解</button>
+              <div class="reveal-panel" id="l4p39">
+                <p>建立 2 個 objects。先是 Object A：<code>a</code> 和 <code>b</code> 指向它。接著 Object B：<code>c</code> 指向它。執行 <code>b = c;</code> 後，<code>b</code> 指向 Object B。執行 <code>c = null;</code> 後，<code>c</code> 不指向任何 object。最後 <code>a</code> 指向 Object A，<code>b</code> 指向 Object B，<code>c</code> 是 <code>null</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Exit Ticket</span></div>
+              <h3>用一句話總結本課最重要的差異。</h3>
+              <button class="reveal-button" type="button" data-reveal="l4p40">參考答案</button>
+              <div class="reveal-panel" id="l4p40">
+                <p>Primitive variable 裡放的是 value；reference type variable 裡放的是找到 object 的 reference。因此 <code>int b = a;</code> 複製 value，而 <code>SomeClass b = a;</code> 複製 reference，不複製 object。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 4 課後練習。先畫圖或 trace，再打開詳解檢查推理。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>
