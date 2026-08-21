@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>登入｜AP CSA Java 課程</title>
+    <meta name="robots" content="noindex" />
+    <meta
+      name="description"
+      content="AP CSA Java 課程登入頁。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js" defer></script>
+  </head>
+  <body class="login-body">
+    <main class="login-shell">
+      <section class="login-panel" aria-labelledby="login-title">
+        <div class="login-brand">
+          <span class="brand-mark">CSA</span>
+          <div>
+            <p class="eyebrow">AP Computer Science A</p>
+            <h1 id="login-title">課程登入</h1>
+          </div>
+        </div>
+
+        <form class="login-form" data-login-form>
+          <noscript>
+            <p class="login-message">請啟用 JavaScript 後再登入課程。</p>
+          </noscript>
+
+          <label>
+            <span>帳號</span>
+            <input name="username" type="text" autocomplete="username" required autofocus />
+          </label>
+
+          <label>
+            <span>密碼</span>
+            <input name="password" type="password" autocomplete="current-password" required />
+          </label>
+
+          <p class="login-message" data-login-message hidden></p>
+
+          <button class="button primary login-submit" type="submit">登入</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

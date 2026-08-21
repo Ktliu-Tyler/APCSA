@@ -120,12 +120,111 @@ a {
   background: var(--teal);
 }
 
+.auth-logout {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 1px solid var(--coral);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--coral);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
 .button:hover,
 .nav a:hover,
 .filter-button:hover,
-.copy-button:hover {
+.copy-button:hover,
+.auth-logout:hover {
   transform: translateY(-1px);
   border-color: var(--teal);
+}
+
+.auth-logout:hover {
+  border-color: var(--coral);
+  background: #fff4f1;
+}
+
+.login-body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background:
+    linear-gradient(135deg, rgba(18, 131, 124, 0.12), rgba(213, 85, 64, 0.1)),
+    var(--paper);
+}
+
+.login-shell {
+  width: min(460px, 100%);
+}
+
+.login-panel {
+  padding: 32px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.login-brand h1 {
+  max-width: none;
+  font-size: 32px;
+}
+
+.login-form {
+  display: grid;
+  gap: 16px;
+}
+
+.login-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.login-form input {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  font: inherit;
+  background: #fff;
+}
+
+.login-form input:focus {
+  outline: 3px solid rgba(18, 131, 124, 0.18);
+  border-color: var(--teal);
+}
+
+.login-message {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #f0b6a9;
+  border-radius: 8px;
+  color: #9f3728;
+  background: #fff4f1;
+  font-weight: 800;
+}
+
+.login-submit {
+  width: 100%;
+  margin-top: 4px;
 }
 
 .hero-band,
@@ -1800,7 +1899,8 @@ pre code .code-comment {
   .button,
   .filter-button,
   .presentation-actions a,
-  .deck-button {
+  .deck-button,
+  .auth-logout {
     width: 100%;
   }
 
