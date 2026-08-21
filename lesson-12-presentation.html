@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 12 投影模式｜Nested Loops</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 12 投影模式：nested loops、outer/inner execution、row-column patterns、dependent bounds、pairs、runtime 與 AP-style tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 12</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-12.html">文章版</a>
+        <a href="lesson-12-practice.html">課後練習</a>
+        <a href="lesson-11.html">上一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 12</p>
+          <h1>Nested Loops</h1>
+          <p class="slide-lead">
+            今天把 loop 放進 loop：outer / inner execution、row-column thinking、
+            pattern output、pairs、dependent bounds、runtime intuition 與 AP-style tracing。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-12-practice.html">Lesson 12 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">From Single Loop</p>
+          <h2>單層 loop 只走一條線；nested loop 可以走一張表</h2>
+          <div class="exit-grid">
+            <div>印出方格或表格</div>
+            <div>印出三角形 pattern</div>
+            <div>產生乘法表</div>
+            <div>列出所有 row / column</div>
+            <div>列出所有 pair</div>
+            <div>預備 2D arrays</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Core Syntax</p>
+          <h2>Nested loop = loop inside loop</h2>
+          <div class="deck-code">
+            <pre><code>for (int row = 0; row &lt; 3; row++)
+{
+    for (int col = 0; col &lt; 4; col++)
+    {
+        System.out.println(row + " " + col);
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">outer loop 控制大輪次；inner loop 控制每一輪內部細節。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Execution Rule</p>
+          <h2>Outer 每跑一次，inner 都重新完整跑一次</h2>
+          <div class="big-flow">
+            <span>outer value fixed</span>
+            <span>inner initializes</span>
+            <span>inner completes</span>
+            <span>outer updates</span>
+            <span>inner starts again</span>
+          </div>
+          <p class="slide-note"><code>j</code> 不會從上一輪結束後的值繼續，它會重新 initialization。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Trace</p>
+          <h2>這段程式輸出幾行？</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 1; i &lt;= 3; i++)
+{
+    for (int j = 1; j &lt;= 2; j++)
+    {
+        System.out.println(i + " " + j);
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l12-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l12-r1">
+            <p>6 行。外層 3 次，每次內層 2 次。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Trace Output</p>
+          <h2>完整輸出順序</h2>
+          <div class="deck-code">
+            <pre><code>1 1
+1 2
+2 1
+2 2
+3 1
+3 2</code></pre>
+          </div>
+          <p class="slide-note">固定 <code>i = 1</code>，把 <code>j</code> 全部跑完；再進到 <code>i = 2</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Row / Column Thinking</p>
+          <h2>把 nested loops 想成一張表</h2>
+          <div class="type-grid">
+            <div><strong>Outer</strong><span>row / group / item</span></div>
+            <div><strong>Inner</strong><span>column / detail / comparison</span></div>
+            <div><strong>Total</strong><span>rows × columns</span></div>
+          </div>
+          <p class="slide-note">Pattern 題先問：有幾列？每列幾個？每個位置印什麼？</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Counting Iterations</p>
+          <h2>固定範圍：外層次數 × 內層次數</h2>
+          <div class="deck-code">
+            <pre><code>int count = 0;
+
+for (int r = 0; r &lt; 3; r++)
+{
+    for (int c = 0; c &lt; 4; c++)
+    {
+        count++;
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l12-r2">count 是多少？</button>
+          <div class="reveal-panel" id="l12-r2">
+            <p><code>12</code>。3 rows × 4 columns。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Pattern Output</p>
+          <h2><code>print</code> 留在同一列，<code>println</code> 換到下一列</h2>
+          <div class="deck-code">
+            <pre><code>for (int row = 1; row &lt;= 3; row++)
+{
+    for (int col = 1; col &lt;= 5; col++)
+    {
+        System.out.print("*");
+    }
+    System.out.println();
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Rectangle Pattern</p>
+          <h2>上一張會印出什麼？</h2>
+          <button class="reveal-button" type="button" data-reveal="l12-r3">揭曉</button>
+          <div class="reveal-panel" id="l12-r3">
+            <pre><code>*****
+*****
+*****</code></pre>
+          </div>
+          <p class="slide-note">inner loop 印完一整列，outer loop 才進下一列。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Dependent Bounds</p>
+          <h2>inner bound 用到 outer variable，就會改變每列長度</h2>
+          <div class="deck-code">
+            <pre><code>for (int row = 1; row &lt;= 5; row++)
+{
+    for (int col = 1; col &lt;= row; col++)
+    {
+        System.out.print("*");
+    }
+    System.out.println();
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Increasing Triangle</p>
+          <h2>每列長度是 1, 2, 3, 4, 5</h2>
+          <div class="deck-code">
+            <pre><code>*
+**
+***
+****
+*****</code></pre>
+          </div>
+          <p class="slide-note">總數是 <code>1 + 2 + 3 + 4 + 5 = 15</code>，不是 <code>5 * 5</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Dependent Count</p>
+          <h2>這段 inner body 執行幾次？</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 1; i &lt;= 4; i++)
+{
+    for (int j = 1; j &lt;= i; j++)
+    {
+        System.out.println(j);
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l12-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l12-r4">
+            <p><code>1 + 2 + 3 + 4 = 10</code> 次。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Decreasing Triangle</p>
+          <h2>反向控制 row，就能縮短每列</h2>
+          <div class="deck-code">
+            <pre><code>for (int row = 5; row &gt;= 1; row--)
+{
+    for (int col = 1; col &lt;= row; col++)
+    {
+        System.out.print("*");
+    }
+    System.out.println();
+}</code></pre>
+          </div>
+          <p class="slide-note">輸出是 5、4、3、2、1 顆星。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Row vs Column Values</p>
+          <h2>印 row 或印 column，pattern 會不同</h2>
+          <div class="type-grid two-col">
+            <div><strong><code>System.out.print(row);</code></strong><span>1 / 22 / 333</span></div>
+            <div><strong><code>System.out.print(col);</code></strong><span>1 / 12 / 123</span></div>
+          </div>
+          <p class="slide-note">看到 pattern 請先判斷要使用 outer variable 還是 inner variable。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Multiplication Table</p>
+          <h2>乘法表：每一格都是 row × column</h2>
+          <div class="deck-code">
+            <pre><code>for (int row = 1; row &lt;= 9; row++)
+{
+    for (int col = 1; col &lt;= 9; col++)
+    {
+        System.out.print(row * col + "\t");
+    }
+    System.out.println();
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">All Ordered Pairs</p>
+          <h2>每個 i 都配每個 j</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 1; i &lt;= 3; i++)
+{
+    for (int j = 1; j &lt;= 3; j++)
+    {
+        System.out.println(i + "," + j);
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">總共有 9 組，包含 self-pair，也包含方向不同的 pair。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Unique Pairs</p>
+          <h2>如果不想重複，讓 j 從 i + 1 開始</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 1; i &lt;= 4; i++)
+{
+    for (int j = i + 1; j &lt;= 4; j++)
+    {
+        System.out.println(i + "," + j);
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l12-r5">會印出哪些 pair？</button>
+          <div class="reveal-panel" id="l12-r5">
+            <pre><code>1,2
+1,3
+1,4
+2,3
+2,4
+3,4</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Pair Conditions</p>
+          <h2>完整 nested loops 也能用 if 篩選 pair</h2>
+          <div class="deck-code">
+            <pre><code>int count = 0;
+
+for (int i = 1; i &lt;= 4; i++)
+{
+    for (int j = 1; j &lt;= 4; j++)
+    {
+        if (i &lt; j)
+        {
+            count++;
+        }
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">答案也是 6；但用 <code>j = i + 1</code> 可以少寫 if。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Nested Trace</p>
+          <h2>Trace 時要追蹤 i、j、sum</h2>
+          <div class="deck-code">
+            <pre><code>int sum = 0;
+
+for (int i = 1; i &lt;= 3; i++)
+{
+    for (int j = 1; j &lt;= i; j++)
+    {
+        sum += i + j;
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l12-r6">sum 最後是多少？</button>
+          <div class="reveal-panel" id="l12-r6">
+            <p><code>24</code>。加入的值依序是 2、3、4、4、5、6。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Accumulator Scope</p>
+          <h2>放在 outer 外面：總累積；放在 outer 裡面：每列重算</h2>
+          <div class="deck-code">
+            <pre><code>int total = 0;
+
+for (int row = 1; row &lt;= 3; row++)
+{
+    int rowSum = 0;
+
+    for (int col = 1; col &lt;= 4; col++)
+    {
+        rowSum += col;
+        total += col;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>rowSum</code> 每列歸零；<code>total</code> 一路累積。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Runtime Intuition</p>
+          <h2>Nested loops 常代表平方級工作量</h2>
+          <div class="type-grid">
+            <div><strong>One loop</strong><span><code>O(n)</code></span></div>
+            <div><strong>n by n</strong><span><code>O(n^2)</code></span></div>
+            <div><strong>n by m</strong><span><code>O(nm)</code></span></div>
+            <div><strong>Triangle</strong><span>仍接近 <code>O(n^2)</code></span></div>
+            <div><strong>Fixed sizes</strong><span>用實際次數計算</span></div>
+            <div><strong>AP trace</strong><span>先列前幾輪</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Bugs</p>
+          <h2>Nested loop 最常見六種錯誤</h2>
+          <div class="exit-grid">
+            <div>inner condition 用錯變數</div>
+            <div>inner update 改錯變數</div>
+            <div><code>println</code> 放錯位置</div>
+            <div>row accumulator 沒有每列歸零</div>
+            <div>把三角形算成矩形</div>
+            <div>pair 重複或自己跟自己配對</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Debug This</p>
+          <h2>這段 inner loop 的 bug 是什麼？</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; 3; i++)
+{
+    for (int j = 0; i &lt; 4; j++)
+    {
+        System.out.println(j);
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">inner condition 應該檢查 <code>j</code>，不是 <code>i</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP SOP</p>
+          <h2>Nested loop 解題流程</h2>
+          <div class="big-flow">
+            <span>Identify outer role</span>
+            <span>Identify inner role</span>
+            <span>List first rows</span>
+            <span>Track state</span>
+            <span>Check bounds</span>
+            <span>Answer output/count</span>
+          </div>
+          <p class="slide-note">不要急著心算。把前兩個 outer values 寫出來，答案通常會很清楚。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的六個小程式</h2>
+          <div class="exit-grid">
+            <div>3 × 5 星星矩形</div>
+            <div>遞增三角形</div>
+            <div>遞減三角形</div>
+            <div>1 到 9 乘法表</div>
+            <div>所有 ordered pairs</div>
+            <div>所有 unique pairs</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-12-practice.html">開始 Lesson 12 課後練習</a>
+            <a class="button" href="lesson-12.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十二句</h2>
+          <div class="exit-grid">
+            <div>Nested loop 是 loop inside loop。</div>
+            <div>inner loop 對每個 outer value 都完整執行。</div>
+            <div>inner variable 每次重新 initialization。</div>
+            <div>outer 常控制 row。</div>
+            <div>inner 常控制 column。</div>
+            <div>矩形次數是 rows × columns。</div>
+            <div>三角形次數要逐列加總。</div>
+            <div><code>print</code> 不換行。</div>
+            <div><code>println</code> 通常放在 inner loop 後。</div>
+            <div><code>j = i + 1</code> 可以產生 unique pairs。</div>
+            <div>row accumulator 要每列重設。</div>
+            <div>兩層 n loop 通常是 <code>O(n^2)</code>。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>
