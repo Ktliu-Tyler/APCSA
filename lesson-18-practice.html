@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 18 課後練習｜Array Algorithms</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 18 課後練習：array traversal、sum、count、average、max/min、linear search、copy、reverse、shift、insert/remove-like logic、parallel arrays。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 18 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-18-presentation.html">投影模式</a>
+        <a href="lesson-18.html">文章版</a>
+        <a href="lesson-16-practice.html">上一個已部署練習</a>
+        <a href="#concepts">概念</a>
+        <a href="#sum-count">Sum / Count</a>
+        <a href="#max-search">Max / Search</a>
+        <a href="#copy-shift">Copy / Shift</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 18</p>
+          <h1>課後練習：Array Algorithms</h1>
+          <p class="lead">
+            這份題本練習 array traversal、sum、count、average、max/min、linear search、copy、
+            reverse、shift、insert/remove-like logic、parallel arrays 與 array parameter mutation。
+            每題先自己 trace，再打開詳解。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>index</strong><span>Bound thinking</span></div>
+            <div><strong>AP-style</strong><span>Array tracing</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#traversal">B. Traversal</a>
+          <a href="#sum-count">C. Sum / Count / Average</a>
+          <a href="#max-search">D. Max / Min / Search</a>
+          <a href="#copy-shift">E. Copy / Reverse / Shift</a>
+          <a href="#parallel">F. Insert / Remove / Parallel</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先把 traversal、index、enhanced for、reference copy 這幾個核心語言釐清。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Traversal</span></div>
+              <h3>Array traversal 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p1">詳解</button>
+              <div class="reveal-panel" id="l18p1">
+                <p>Traversal 是逐一走訪 array 中的元素，通常用 loop 檢查或更新每一格。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Bounds</span></div>
+              <h3>若 <code>arr.length</code> 是 5，valid indexes 是哪些？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p2">詳解</button>
+              <div class="reveal-panel" id="l18p2">
+                <p>Valid indexes 是 <code>0</code>、<code>1</code>、<code>2</code>、<code>3</code>、<code>4</code>。最後一格是 <code>arr.length - 1</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Loop Bound</span></div>
+              <h3>為什麼 traversal 常寫 <code>i &lt; arr.length</code>，不是 <code>i &lt;= arr.length</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p3">詳解</button>
+              <div class="reveal-panel" id="l18p3">
+                <p>因為 <code>arr.length</code> 不是 valid index。若用 <code>&lt;=</code>，最後會嘗試存取 <code>arr[arr.length]</code>，造成 bounds error。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Enhanced For</span></div>
+              <h3>Enhanced for loop 適合哪類 array algorithms？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p4">詳解</button>
+              <div class="reveal-panel" id="l18p4">
+                <p>適合只需要讀取每個元素值的 algorithm，例如 sum、count、average、max/min、檢查是否存在某個值。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Traditional For</span></div>
+              <h3>何時通常需要 traditional for loop？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p5">詳解</button>
+              <div class="reveal-panel" id="l18p5">
+                <p>需要 index、修改 array、比較相鄰元素、reverse、shift、insert/remove-like logic、parallel arrays 時，通常需要 traditional for loop。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Reference Copy</span></div>
+              <h3><code>int[] b = a;</code> 會複製整個 array 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p6">詳解</button>
+              <div class="reveal-panel" id="l18p6">
+                <p>不會。這只複製 reference value，讓 <code>a</code> 和 <code>b</code> 指向同一個 array。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="traversal" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Traversal</p>
+              <h2>走訪與 bounds tracing</h2>
+              <p>這組題目練習每一圈 loop 會走到哪些 indexes，以及哪些寫法會越界。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Output</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>int[] nums = {4, 7, 2, 9};
+
+for (int i = 0; i &lt; nums.length; i++)
+{
+    System.out.print(nums[i] + " ");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p7">詳解</button>
+              <div class="reveal-panel" id="l18p7">
+                <p>印出 <code>4 7 2 9 </code>。Loop 依序走訪 index 0、1、2、3。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Every Other</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>int[] nums = {4, 7, 2, 9, 5};
+
+for (int i = 0; i &lt; nums.length; i += 2)
+{
+    System.out.print(nums[i] + " ");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p8">詳解</button>
+              <div class="reveal-panel" id="l18p8">
+                <p>印出 <code>4 2 5 </code>。Indexes 是 0、2、4。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Reverse Traversal</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>int[] nums = {4, 7, 2};
+
+for (int i = nums.length - 1; i &gt;= 0; i--)
+{
+    System.out.print(nums[i] + " ");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p9">詳解</button>
+              <div class="reveal-panel" id="l18p9">
+                <p>印出 <code>2 7 4 </code>。Index 從 2 走到 0。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Bounds Error</span></div>
+              <h3>以下 loop 有什麼問題？</h3>
+              <pre><code>for (int i = 0; i &lt;= nums.length; i++)
+{
+    System.out.println(nums[i]);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p10">詳解</button>
+              <div class="reveal-panel" id="l18p10">
+                <p>最後一圈 <code>i == nums.length</code>，會存取 invalid index，造成 <code>ArrayIndexOutOfBoundsException</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Adjacent</span></div>
+              <h3>若要比較 <code>arr[i]</code> 和 <code>arr[i + 1]</code>，loop 條件應該到哪裡？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p11">詳解</button>
+              <div class="reveal-panel" id="l18p11">
+                <p>通常寫 <code>i &lt; arr.length - 1</code>。這樣最大的 <code>i + 1</code> 才會是 <code>arr.length - 1</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Mutation</span></div>
+              <h3>以下程式執行後 array 內容是什麼？</h3>
+              <pre><code>int[] nums = {1, 2, 3};
+
+for (int i = 0; i &lt; nums.length; i++)
+{
+    nums[i] *= 2;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p12">詳解</button>
+              <div class="reveal-panel" id="l18p12">
+                <p>Array 變成 <code>{2, 4, 6}</code>。這是直接修改每一格元素。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="sum-count" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Sum / Count / Average</p>
+              <h2>Accumulator 和 counter</h2>
+              <p>Sum 是加值，count 是加次數；average 要小心 casting 和除以 0。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Sum Trace</span></div>
+              <h3>以下程式最後 <code>sum</code> 是多少？</h3>
+              <pre><code>int[] nums = {4, 7, 2, 9};
+int sum = 0;
+
+for (int value : nums)
+{
+    sum += value;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p13">詳解</button>
+              <div class="reveal-panel" id="l18p13">
+                <p><code>sum</code> 是 <code>22</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Conditional Sum</span></div>
+              <h3>以下程式最後 <code>sum</code> 是多少？</h3>
+              <pre><code>int[] nums = {4, 17, 2, 19};
+int sum = 0;
+
+for (int value : nums)
+{
+    if (value &gt; 10)
+    {
+        sum += value;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p14">詳解</button>
+              <div class="reveal-panel" id="l18p14">
+                <p>只加 <code>17</code> 和 <code>19</code>，所以 <code>sum</code> 是 <code>36</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Count Trace</span></div>
+              <h3>以下程式最後 <code>count</code> 是多少？</h3>
+              <pre><code>int[] nums = {4, 17, 2, 19};
+int count = 0;
+
+for (int value : nums)
+{
+    if (value &gt; 10)
+    {
+        count++;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p15">詳解</button>
+              <div class="reveal-panel" id="l18p15">
+                <p><code>count</code> 是 <code>2</code>，因為有兩個元素大於 10。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Even Count</span></div>
+              <h3>寫出條件：計算偶數數量時，<code>if</code> 裡應該放什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p16">詳解</button>
+              <div class="reveal-panel" id="l18p16">
+                <pre><code>if (value % 2 == 0)
+{
+    count++;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Average</span></div>
+              <h3>若 <code>sum</code> 是 5，<code>nums.length</code> 是 2，<code>sum / nums.length</code> 的結果是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p17">詳解</button>
+              <div class="reveal-panel" id="l18p17">
+                <p>若兩者都是 <code>int</code>，結果是 <code>2</code>，不是 <code>2.5</code>。這是 integer division。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Casting</span></div>
+              <h3>如何讓平均得到 <code>2.5</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p18">詳解</button>
+              <div class="reveal-panel" id="l18p18">
+                <pre><code>double average = (double) sum / nums.length;</code></pre>
+                <p>至少把其中一個 operand 轉成 <code>double</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Conditional Average</span></div>
+              <h3>Conditional average 為什麼通常需要 <code>sum</code> 和 <code>count</code> 兩個變數？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p19">詳解</button>
+              <div class="reveal-panel" id="l18p19">
+                <p>因為要加總符合條件的元素，也要知道符合條件的元素有幾個，最後才除以符合條件的 count。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Divide by Zero</span></div>
+              <h3>Conditional average 在除以前要檢查什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p20">詳解</button>
+              <div class="reveal-panel" id="l18p20">
+                <p>要檢查 <code>count &gt; 0</code>，避免沒有符合條件的元素時除以 0。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="max-search" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Max / Min / Search</p>
+              <h2>Best-so-far 與 sentinel index</h2>
+              <p>最大/最小值通常用第一格初始化；搜尋 index 常用 <code>-1</code> 代表未找到。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Max Init</span></div>
+              <h3>為什麼 <code>int max = 0;</code> 不一定安全？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p21">詳解</button>
+              <div class="reveal-panel" id="l18p21">
+                <p>如果 array 全是負數，<code>0</code> 可能根本不在 array 裡，答案會錯。通常用 <code>max = arr[0]</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Max Trace</span></div>
+              <h3>以下程式最後 <code>max</code> 是多少？</h3>
+              <pre><code>int[] nums = {-8, -3, -10};
+int max = nums[0];
+
+for (int value : nums)
+{
+    if (value &gt; max)
+    {
+        max = value;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p22">詳解</button>
+              <div class="reveal-panel" id="l18p22">
+                <p><code>max</code> 是 <code>-3</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Min Condition</span></div>
+              <h3>找 minimum 時，<code>if</code> 條件應該用 <code>&gt;</code> 還是 <code>&lt;</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p23">詳解</button>
+              <div class="reveal-panel" id="l18p23">
+                <p>用 <code>&lt;</code>。若目前元素比 best-so-far 更小，就更新 <code>min</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Max Index</span></div>
+              <h3>為什麼找最高分學生時，常追蹤 <code>maxIndex</code> 而不是只追蹤 <code>maxScore</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p24">詳解</button>
+              <div class="reveal-panel" id="l18p24">
+                <p>因為 <code>maxIndex</code> 可以同時拿到 <code>scores[maxIndex]</code> 和 <code>names[maxIndex]</code>，特別適合 parallel arrays。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>First vs Last Max</span></div>
+              <h3>在 max index algorithm 中，使用 <code>&gt;</code> 和 <code>&gt;=</code> 對 duplicate maximum 有什麼差別？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p25">詳解</button>
+              <div class="reveal-panel" id="l18p25">
+                <p><code>&gt;</code> 保留第一次出現的最大值；<code>&gt;=</code> 會更新到最後一次出現的最大值。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Search Boolean</span></div>
+              <h3>以下 method 找到 target 時應回傳什麼？</h3>
+              <pre><code>public static boolean contains(int[] arr, int target)</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p26">詳解</button>
+              <div class="reveal-panel" id="l18p26">
+                <p>找到時回傳 <code>true</code>；走完整個 array 都沒找到才回傳 <code>false</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Search Index</span></div>
+              <h3>找 target index 時，為什麼常初始化 <code>index = -1</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p27">詳解</button>
+              <div class="reveal-panel" id="l18p27">
+                <p>因為 <code>-1</code> 不是 valid index，可以當作 not found 的 sentinel value。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Early Return Bug</span></div>
+              <h3>為什麼下面這個 search method 錯了？</h3>
+              <pre><code>public static boolean contains(int[] arr, int target)
+{
+    for (int value : arr)
+    {
+        if (value == target)
+        {
+            return true;
+        }
+        return false;
+    }
+    return false;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p28">詳解</button>
+              <div class="reveal-panel" id="l18p28">
+                <p><code>return false;</code> 放在 loop 裡，第一個元素不是 target 時就提早結束，沒有檢查後面的元素。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="copy-shift" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Copy / Reverse / Shift</p>
+              <h2>Index mapping 和搬移方向</h2>
+              <p>Copy 要建立新 array；reverse 要想對稱 index；shift 要避免覆蓋還沒搬的資料。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Reference Copy</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>int[] a = {1, 2, 3};
+int[] b = a;
+b[0] = 99;
+System.out.println(a[0]);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p29">詳解</button>
+              <div class="reveal-panel" id="l18p29">
+                <p>印出 <code>99</code>。<code>a</code> 和 <code>b</code> 指向同一個 array。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Element Copy</span></div>
+              <h3>真正複製 array 的標準步驟是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p30">詳解</button>
+              <div class="reveal-panel" id="l18p30">
+                <pre><code>int[] copy = new int[arr.length];
+for (int i = 0; i &lt; arr.length; i++)
+{
+    copy[i] = arr[i];
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Reverse Mapping</span></div>
+              <h3>建立 reversed copy 時，<code>result[i]</code> 應該對應原 array 的哪一格？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p31">詳解</button>
+              <div class="reveal-panel" id="l18p31">
+                <p><code>result[i] = arr[arr.length - 1 - i];</code>。這是反轉時最重要的 index mapping。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>In-place Reverse</span></div>
+              <h3>In-place reverse 為什麼只需要跑到 <code>arr.length / 2</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p32">詳解</button>
+              <div class="reveal-panel" id="l18p32">
+                <p>因為每次交換左右對稱兩格。若跑完整個 array，會把已經交換好的元素又交換回去。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Right Shift</span></div>
+              <h3>Right shift 時應該從哪個方向開始搬？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p33">詳解</button>
+              <div class="reveal-panel" id="l18p33">
+                <p>從右往左。這樣才不會先覆蓋還沒搬走的資料。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Left Shift</span></div>
+              <h3>Left shift 時應該從哪個方向開始搬？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p34">詳解</button>
+              <div class="reveal-panel" id="l18p34">
+                <p>從左往右。通常寫 <code>for (int i = 0; i &lt; arr.length - 1; i++)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Right Shift Trace</span></div>
+              <h3>以下 right shift 後 array 前四格變成什麼？</h3>
+              <pre><code>int[] arr = {1, 2, 3, 4};
+
+for (int i = arr.length - 1; i &gt; 0; i--)
+{
+    arr[i] = arr[i - 1];
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p35">詳解</button>
+              <div class="reveal-panel" id="l18p35">
+                <p>變成 <code>{1, 1, 2, 3}</code>。最左邊的格子通常要另外放新值或保留。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Left Shift Trace</span></div>
+              <h3>以下 left shift 後 array 前四格變成什麼？</h3>
+              <pre><code>int[] arr = {1, 2, 3, 4};
+
+for (int i = 0; i &lt; arr.length - 1; i++)
+{
+    arr[i] = arr[i + 1];
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p36">詳解</button>
+              <div class="reveal-panel" id="l18p36">
+                <p>變成 <code>{2, 3, 4, 4}</code>。最後一格通常要另外清除或視為無效。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="parallel" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Insert / Remove / Parallel</p>
+              <h2>固定長度與同步 index</h2>
+              <p>Array 的 length 不會變；parallel arrays 必須讓同一個 index 永遠對應同一筆資料。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>Fixed Length</span></div>
+              <h3>Array remove-like operation 會讓 <code>arr.length</code> 變小嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p37">詳解</button>
+              <div class="reveal-panel" id="l18p37">
+                <p>不會。Array length 固定。通常用 logical size 追蹤目前有效元素數量。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Insert Direction</span></div>
+              <h3>在 index 2 插入元素前，為什麼要先 right shift？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p38">詳解</button>
+              <div class="reveal-panel" id="l18p38">
+                <p>因為要空出 index 2 的位置。Right shift 必須從右往左，避免覆蓋資料。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Remove Direction</span></div>
+              <h3>移除 index 2 的元素後，為什麼要 left shift？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p39">詳解</button>
+              <div class="reveal-panel" id="l18p39">
+                <p>因為要用右邊元素蓋掉被移除的位置，讓有效元素保持連續。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Logical Size</span></div>
+              <h3>若 array capacity 是 10，但目前只有 6 個有效元素，應該用哪個變數控制 insert/remove？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p40">詳解</button>
+              <div class="reveal-panel" id="l18p40">
+                <p>應用 logical size，例如 <code>size</code>。<code>arr.length</code> 只是 capacity，不是有效元素數量。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Parallel Arrays</span></div>
+              <h3>Parallel arrays 的核心關係是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p41">詳解</button>
+              <div class="reveal-panel" id="l18p41">
+                <p>相同 index 對應同一筆資料，例如 <code>names[i]</code> 和 <code>scores[i]</code> 是同一個學生的名字與分數。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Max Index</span></div>
+              <h3>若 <code>scores[maxIndex]</code> 是最高分，如何印出最高分學生名字？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p42">詳解</button>
+              <div class="reveal-panel" id="l18p42">
+                <pre><code>System.out.println(names[maxIndex]);</code></pre>
+                <p>Parallel arrays 用相同 index 連結資料。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>Parallel Remove</span></div>
+              <h3>從 parallel arrays 移除一筆資料時，只移動 <code>names</code> 不移動 <code>scores</code> 會怎樣？</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p43">詳解</button>
+              <div class="reveal-panel" id="l18p43">
+                <p>資料會不同步，同一個 index 不再代表同一個學生。所有 parallel arrays 都要同步 shift。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Array Parameter</span></div>
+              <h3>以下 method 執行後 caller 看到的 array 會改變嗎？</h3>
+              <pre><code>public static void change(int[] arr)
+{
+    arr[0] = 99;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p44">詳解</button>
+              <div class="reveal-panel" id="l18p44">
+                <p>會。這是透過 parameter 修改同一個 array object 的元素。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding / Trace</p>
+              <h2>方法撰寫與 final tracing</h2>
+              <p>最後六題把本課 pattern 寫成 AP-style methods。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Write Sum</span></div>
+              <h3>寫 <code>sumArray</code>，回傳 array 中所有元素總和。</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p45">詳解</button>
+              <div class="reveal-panel" id="l18p45">
+                <pre><code>public static int sumArray(int[] arr)
+{
+    int sum = 0;
+    for (int value : arr)
+    {
+        sum += value;
+    }
+    return sum;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Write Count</span></div>
+              <h3>寫 <code>countPositive</code>，回傳正數數量。</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p46">詳解</button>
+              <div class="reveal-panel" id="l18p46">
+                <pre><code>public static int countPositive(int[] arr)
+{
+    int count = 0;
+    for (int value : arr)
+    {
+        if (value &gt; 0)
+        {
+            count++;
+        }
+    }
+    return count;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Write Find Index</span></div>
+              <h3>寫 <code>findIndex</code>，找到 target 回傳 index，找不到回傳 <code>-1</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p47">詳解</button>
+              <div class="reveal-panel" id="l18p47">
+                <pre><code>public static int findIndex(int[] arr, int target)
+{
+    for (int i = 0; i &lt; arr.length; i++)
+    {
+        if (arr[i] == target)
+        {
+            return i;
+        }
+    }
+    return -1;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Write Reversed Copy</span></div>
+              <h3>寫 <code>reversedCopy</code>，回傳新的反轉 array，不修改原 array。</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p48">詳解</button>
+              <div class="reveal-panel" id="l18p48">
+                <pre><code>public static int[] reversedCopy(int[] arr)
+{
+    int[] result = new int[arr.length];
+    for (int i = 0; i &lt; arr.length; i++)
+    {
+        result[i] = arr[arr.length - 1 - i];
+    }
+    return result;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Write Reverse In Place</span></div>
+              <h3>寫 <code>reverseInPlace</code>，直接修改原 array。</h3>
+              <button class="reveal-button" type="button" data-reveal="l18p49">詳解</button>
+              <div class="reveal-panel" id="l18p49">
+                <pre><code>public static void reverseInPlace(int[] arr)
+{
+    for (int i = 0; i &lt; arr.length / 2; i++)
+    {
+        int opposite = arr.length - 1 - i;
+        int temp = arr[i];
+        arr[i] = arr[opposite];
+        arr[opposite] = temp;
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>public static void mystery(int[] arr)
+{
+    for (int i = arr.length - 1; i &gt; 0; i--)
+    {
+        arr[i] = arr[i - 1];
+    }
+    arr[0] = 0;
+}
+
+int[] nums = {3, 5, 7, 9};
+mystery(nums);
+
+for (int value : nums)
+{
+    System.out.print(value + " ");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l18p50">詳解</button>
+              <div class="reveal-panel" id="l18p50">
+                <p>印出 <code>0 3 5 7 </code>。Method 做 right shift，再把第一格設成 0。Array parameter mutation 會被 caller 看見。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 18 課後練習。先選 traversal，再確認初始值、loop bounds、更新規則與是否 mutation。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

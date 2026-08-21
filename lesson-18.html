@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 18｜Array Algorithms</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 18：array traversal、sum、count、average、max/min、linear search、copy、reverse、shift、insert/remove-like logic、parallel arrays 與 array parameter mutation。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 18</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第十八堂課導覽">
+        <a href="lesson-18-presentation.html">投影模式</a>
+        <a href="lesson-18-practice.html">課後練習</a>
+        <a href="lesson-16.html">上一個已部署課程</a>
+        <a href="#traversal">Traversal</a>
+        <a href="#sum-count">Sum / Count</a>
+        <a href="#max-search">Max / Search</a>
+        <a href="#copy-reverse">Copy / Reverse</a>
+        <a href="#shift">Shift</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 18</p>
+          <h1>Array Algorithms：Traversal、Sum、Search、Copy、Reverse 與 Shift</h1>
+          <p class="lead">
+            Array 真正出現在 AP CSA 題目時，通常不是只問 <code>arr[2]</code>，而是要求你完成一段 algorithm：
+            加總、計數、平均、最大/最小、搜尋、複製、反轉、移動、模擬插入/刪除，或同時處理 parallel arrays。
+            這堂課把這些 pattern 整理成可重複使用的解題流程。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-18-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-18-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-16.html">回 Lesson 16</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#traversal">Traversal</a>
+          <a href="#for-loops">Traditional vs Enhanced</a>
+          <a href="#sum-count">Sum / Count</a>
+          <a href="#average">Average</a>
+          <a href="#max-search">Max / Min / Search</a>
+          <a href="#copy-reverse">Copy / Reverse</a>
+          <a href="#shift">Shift</a>
+          <a href="#insert-remove">Insert / Remove-like</a>
+          <a href="#parallel">Parallel Arrays</a>
+          <a href="#array-parameters">Array Parameters</a>
+          <a href="#patterns">Pattern Thinking</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>使用 traditional for loop 走訪每個 valid array index。</div>
+              <div>判斷何時可以用 enhanced for loop，何時必須使用 index。</div>
+              <div>寫出 sum、conditional sum、count、average、conditional average。</div>
+              <div>正確初始化 maximum / minimum，避免 <code>max = 0</code> 的陷阱。</div>
+              <div>寫出 linear search，回傳 boolean、index 或 count。</div>
+              <div>分辨 reference copy 和 element-by-element copy。</div>
+              <div>建立 reversed copy，並寫出 in-place reverse。</div>
+              <div>依照方向正確執行 left shift / right shift。</div>
+              <div>用 fixed-size array 模擬 insert / remove-like logic。</div>
+              <div>使用 max index / target index 同步處理 parallel arrays。</div>
+            </div>
+            <div class="progress-card">
+              <h3>Array algorithm SOP</h3>
+              <label><input type="checkbox" data-progress="lesson18-flow-1" /> <span><strong>Choose traversal</strong>：需要 index 就用 traditional for；只讀 value 可用 enhanced for。</span></label>
+              <label><input type="checkbox" data-progress="lesson18-flow-2" /> <span><strong>Initialize answer</strong>：sum 取 0、count 取 0、max/min 通常取第一格。</span></label>
+              <label><input type="checkbox" data-progress="lesson18-flow-3" /> <span><strong>Update inside loop</strong>：每一圈只做當下元素需要的更新。</span></label>
+              <label><input type="checkbox" data-progress="lesson18-flow-4" /> <span><strong>Check bounds</strong>：最後一個 valid index 是 <code>arr.length - 1</code>。</span></label>
+              <label><input type="checkbox" data-progress="lesson18-flow-5" /> <span><strong>Return or mutate</strong>：確認 method 是回傳答案，還是修改原 array。</span></label>
+            </div>
+          </section>
+
+          <section id="traversal" class="article-section">
+            <p class="eyebrow">Traversal</p>
+            <h2>Array algorithm 的核心是逐一走訪元素</h2>
+            <p>
+              Traversal 是「從 array 的某個位置開始，依序檢查每個需要的元素」。AP CSA 的 array 題，
+              多半就是在 traversal 中累積答案或修改元素。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>array traversal</span>
+                <button class="copy-button" type="button" data-copy="l18-code-traversal">Copy</button>
+              </div>
+              <pre><code id="l18-code-traversal">int[] nums = {4, 7, 2, 9};
+
+for (int i = 0; i &lt; nums.length; i++)
+{
+    System.out.println(nums[i]);
+}</code></pre>
+            </div>
+            <p>
+              這個 loop 會使用 index <code>0</code> 到 <code>nums.length - 1</code>。條件一定是
+              <code>i &lt; nums.length</code>，不是 <code>i &lt;= nums.length</code>。
+            </p>
+          </section>
+
+          <section id="for-loops" class="article-section">
+            <p class="eyebrow">Traditional vs Enhanced For</p>
+            <h2>需要 index，就不要硬用 enhanced for</h2>
+            <div class="contrast-grid">
+              <div>
+                <h3>Traditional For</h3>
+                <pre><code>for (int i = 0; i &lt; arr.length; i++)
+{
+    arr[i] = arr[i] + 1;
+}</code></pre>
+                <p>有 index，適合修改、相鄰比較、reverse、shift、parallel arrays。</p>
+              </div>
+              <div>
+                <h3>Enhanced For</h3>
+                <pre><code>for (int value : arr)
+{
+    sum += value;
+}</code></pre>
+                <p>只有 value，適合只讀元素：sum、count、max/min、是否存在某值。</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="sum-count" class="article-section">
+            <p class="eyebrow">Sum / Count</p>
+            <h2>Sum 累加值，count 累加次數</h2>
+            <p>
+              Sum 和 count 是最常見的 accumulator pattern。Sum 的 identity value 是 <code>0</code>；
+              count 也是從 <code>0</code> 開始，但只有條件成立時 <code>count++</code>。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>sum and count</span>
+                <button class="copy-button" type="button" data-copy="l18-code-sum-count">Copy</button>
+              </div>
+              <pre><code id="l18-code-sum-count">int sum = 0;
+int count = 0;
+
+for (int value : nums)
+{
+    sum += value;
+
+    if (value &gt; 10)
+    {
+        count++;
+    }
+}</code></pre>
+            </div>
+            <div class="callout warn">
+              <strong>常見混淆</strong>
+              <span><code>sum += value;</code> 是把元素值加進去；<code>count++;</code> 是符合條件的元素多一個，不是把元素值加進去。</span>
+            </div>
+          </section>
+
+          <section id="average" class="article-section">
+            <p class="eyebrow">Average</p>
+            <h2>Average = sum / count，但要注意 integer division</h2>
+            <p>
+              平均需要先加總，再除以元素數量。若希望得到小數，必須至少讓其中一邊是 <code>double</code>。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>average with casting</span>
+                <button class="copy-button" type="button" data-copy="l18-code-average">Copy</button>
+              </div>
+              <pre><code id="l18-code-average">int sum = 0;
+
+for (int value : nums)
+{
+    sum += value;
+}
+
+double average = (double) sum / nums.length;</code></pre>
+            </div>
+            <p>
+              Conditional average 需要兩個變數：符合條件的 sum，以及符合條件的 count。除以前要確認
+              <code>count &gt; 0</code>，避免除以 0。
+            </p>
+          </section>
+
+          <section id="max-search" class="article-section">
+            <p class="eyebrow">Max / Min / Search</p>
+            <h2>Best-so-far 和 linear search 是 array 題的主力</h2>
+            <p>
+              找最大值或最小值時，安全初始化通常是第一個元素。不要把 <code>max</code> 設成
+              <code>0</code>，因為 array 可能全是負數。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>max value and max index</span>
+                <button class="copy-button" type="button" data-copy="l18-code-max">Copy</button>
+              </div>
+              <pre><code id="l18-code-max">int maxIndex = 0;
+
+for (int i = 1; i &lt; scores.length; i++)
+{
+    if (scores[i] &gt; scores[maxIndex])
+    {
+        maxIndex = i;
+    }
+}
+
+int maxScore = scores[maxIndex];</code></pre>
+            </div>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>linear search index</span>
+                <button class="copy-button" type="button" data-copy="l18-code-search">Copy</button>
+              </div>
+              <pre><code id="l18-code-search">int index = -1;
+
+for (int i = 0; i &lt; nums.length; i++)
+{
+    if (nums[i] == target)
+    {
+        index = i;
+        break;
+    }
+}</code></pre>
+            </div>
+            <p>
+              <code>-1</code> 常用作 sentinel index，代表「尚未找到」。若題目要找最後一次出現，
+              就不要在找到後立刻 <code>break</code>。
+            </p>
+          </section>
+
+          <section id="copy-reverse" class="article-section">
+            <p class="eyebrow">Copy / Reverse</p>
+            <h2>Array copy 要分清楚 reference copy 和 element copy</h2>
+            <p>
+              <code>int[] b = a;</code> 只複製 reference，兩個 variables 指向同一個 array。
+              真正複製 array 需要建立新 array，逐格複製元素。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>copy and reversed copy</span>
+                <button class="copy-button" type="button" data-copy="l18-code-copy-reverse">Copy</button>
+              </div>
+              <pre><code id="l18-code-copy-reverse">int[] copy = new int[arr.length];
+
+for (int i = 0; i &lt; arr.length; i++)
+{
+    copy[i] = arr[i];
+}
+
+int[] reversed = new int[arr.length];
+
+for (int i = 0; i &lt; arr.length; i++)
+{
+    reversed[i] = arr[arr.length - 1 - i];
+}</code></pre>
+            </div>
+            <p>
+              In-place reverse 則會直接修改原 array，通常只跑到 <code>arr.length / 2</code>，每次交換對稱位置。
+            </p>
+          </section>
+
+          <section id="shift" class="article-section">
+            <p class="eyebrow">Shift</p>
+            <h2>Right shift 從右往左；left shift 從左往右</h2>
+            <p>
+              Shift 的核心是避免尚未搬走的資料被覆蓋。Right shift 時，要先從右邊開始搬；
+              left shift 時，要先從左邊開始搬。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>shift direction</span>
+                <button class="copy-button" type="button" data-copy="l18-code-shift">Copy</button>
+              </div>
+              <pre><code id="l18-code-shift">for (int i = arr.length - 1; i &gt; 0; i--)
+{
+    arr[i] = arr[i - 1]; // right shift
+}
+
+for (int i = 0; i &lt; arr.length - 1; i++)
+{
+    arr[i] = arr[i + 1]; // left shift
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="insert-remove" class="article-section">
+            <p class="eyebrow">Insert / Remove-like Logic</p>
+            <h2>Array 長度固定，所以 insert/remove 通常是模擬</h2>
+            <p>
+              Java array 的 <code>.length</code> 不會改變。若題目說「insert」或「remove」，常常會搭配一個
+              logical size，表示目前有效元素數量。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>insert and remove-like logic</span>
+                <button class="copy-button" type="button" data-copy="l18-code-insert-remove">Copy</button>
+              </div>
+              <pre><code id="l18-code-insert-remove">for (int i = size; i &gt; index; i--)
+{
+    arr[i] = arr[i - 1];
+}
+arr[index] = value;
+size++;
+
+for (int i = index; i &lt; size - 1; i++)
+{
+    arr[i] = arr[i + 1];
+}
+size--;</code></pre>
+            </div>
+            <p>
+              Insert 要先右移空出位置；remove 要左移蓋掉要刪的位置。兩者都不會讓 array 本身變長或變短。
+            </p>
+          </section>
+
+          <section id="parallel" class="article-section">
+            <p class="eyebrow">Parallel Arrays</p>
+            <h2>Parallel arrays 用相同 index 連結不同資料</h2>
+            <p>
+              若 <code>names[i]</code> 和 <code>scores[i]</code> 描述同一個學生，就需要用 traditional for loop
+              保留 index。找最高分時，最有用的是 <code>maxIndex</code>，因為它能同時拿到 name 和 score。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>parallel arrays max index</span>
+                <button class="copy-button" type="button" data-copy="l18-code-parallel">Copy</button>
+              </div>
+              <pre><code id="l18-code-parallel">int maxIndex = 0;
+
+for (int i = 1; i &lt; scores.length; i++)
+{
+    if (scores[i] &gt; scores[maxIndex])
+    {
+        maxIndex = i;
+    }
+}
+
+System.out.println(names[maxIndex] + ": " + scores[maxIndex]);</code></pre>
+            </div>
+          </section>
+
+          <section id="array-parameters" class="article-section">
+            <p class="eyebrow">Array Parameters</p>
+            <h2>Array parameter 的 mutation 會被 caller 看見</h2>
+            <p>
+              Array 是 object。Method parameter 拿到的是 reference value 的 copy；透過 parameter 修改元素，
+              會修改 caller 看到的同一個 array。但重新指定 parameter 只會改 local parameter。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>mutation vs reassignment</span>
+                <button class="copy-button" type="button" data-copy="l18-code-array-param">Copy</button>
+              </div>
+              <pre><code id="l18-code-array-param">public static void mutate(int[] arr)
+{
+    arr[0] = 99;
+}
+
+public static void replace(int[] arr)
+{
+    arr = new int[] {1, 2, 3};
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="patterns" class="article-section">
+            <p class="eyebrow">Pattern Thinking</p>
+            <h2>題目文字對應到 algorithm pattern</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>題目文字</th><th>Pattern</th><th>核心變數</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>總和 / 所有正數加起來</td><td>Accumulator</td><td><code>sum</code></td></tr>
+                  <tr><td>有幾個 / count how many</td><td>Counter</td><td><code>count</code></td></tr>
+                  <tr><td>平均</td><td>Sum + Count</td><td><code>sum</code>、<code>count</code></td></tr>
+                  <tr><td>最大 / 最小</td><td>Best so far</td><td><code>max</code>、<code>min</code> 或 index</td></tr>
+                  <tr><td>是否出現</td><td>Flag / early return</td><td><code>found</code></td></tr>
+                  <tr><td>出現在哪一格</td><td>Sentinel index</td><td><code>index = -1</code></td></tr>
+                  <tr><td>反轉 / 搬動</td><td>Index mapping</td><td><code>arr.length - 1 - i</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Mistakes</p>
+            <h2>Array algorithms 常見錯誤</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>錯誤</th><th>原因</th><th>修法</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>i &lt;= arr.length</code></td><td>最後會用到 invalid index</td><td>改成 <code>i &lt; arr.length</code></td></tr>
+                  <tr><td><code>max = 0</code></td><td>若全是負數會錯</td><td><code>max = arr[0]</code> 或 <code>maxIndex = 0</code></td></tr>
+                  <tr><td>Average 用 integer division</td><td><code>sum / length</code> 兩邊都是 int</td><td><code>(double) sum / length</code></td></tr>
+                  <tr><td><code>int[] b = a</code> 當成 copy</td><td>只是 reference copy</td><td>建立 new array 並逐格複製</td></tr>
+                  <tr><td>Right shift 從左往右</td><td>資料先被覆蓋</td><td>從右往左搬</td></tr>
+                  <tr><td>Remove 後以為 <code>.length</code> 變小</td><td>Array fixed size</td><td>使用 logical size</td></tr>
+                  <tr><td>Parallel arrays 不同步 shift/remove</td><td>同一 index 失去對應</td><td>所有 parallel arrays 同步搬動</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Traversal</strong><span>大多 array algorithms 都是走訪元素並更新答案。</span></div>
+              <div><strong>Bounds</strong><span>Valid index 是 <code>0</code> 到 <code>arr.length - 1</code>。</span></div>
+              <div><strong>Sum</strong><span>初始化 <code>sum = 0</code>，每圈加元素值。</span></div>
+              <div><strong>Count</strong><span>初始化 <code>count = 0</code>，條件成立時 <code>count++</code>。</span></div>
+              <div><strong>Average</strong><span>需要 casting，conditional average 要避免除以 0。</span></div>
+              <div><strong>Max / Min</strong><span>用第一格初始化，或追蹤 best index。</span></div>
+              <div><strong>Search</strong><span><code>-1</code> 常代表 not found。</span></div>
+              <div><strong>Copy</strong><span>真正 copy 需要 new array 和 element-by-element copy。</span></div>
+              <div><strong>Reverse</strong><span>Copy reverse 用 index mapping；in-place reverse 用 swap。</span></div>
+              <div><strong>Shift</strong><span>Right shift 從右往左；left shift 從左往右。</span></div>
+              <div><strong>Parallel</strong><span>相同 index 表示同一筆資料，各 array 必須同步。</span></div>
+              <div><strong>Parameters</strong><span>修改元素是 mutation；重新指定 parameter 不會換掉 caller 的 array variable。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十五句</summary>
+              <p>Most array algorithms are built on traversal.</p>
+              <p>The last valid index is <code>arr.length - 1</code>.</p>
+              <p>Use traditional for loops when you need an index.</p>
+              <p>Enhanced for loops are good when only values are needed.</p>
+              <p>Sum accumulates values; count accumulates occurrences.</p>
+              <p>Average requires avoiding integer division.</p>
+              <p>Maximum and minimum should usually initialize from the array.</p>
+              <p>Linear search checks elements one by one.</p>
+              <p><code>-1</code> often means not found.</p>
+              <p>Array assignment copies a reference, not the elements.</p>
+              <p>Element-by-element copy creates an independent array.</p>
+              <p>Right shift must move from right to left.</p>
+              <p>Left shift must move from left to right.</p>
+              <p>Array length does not change during insert/remove-like operations.</p>
+              <p>Parallel arrays must keep their indexes synchronized.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 18｜Array Algorithms。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

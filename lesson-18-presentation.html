@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 18 投影模式｜Array Algorithms</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 18 投影模式：array traversal、sum、count、average、max/min、linear search、copy、reverse、shift、insert/remove-like logic 與 parallel arrays。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 18</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-18.html">文章版</a>
+        <a href="lesson-18-practice.html">課後練習</a>
+        <a href="lesson-16.html">上一個已部署課程</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 18</p>
+          <h1>Array Algorithms</h1>
+          <p class="slide-lead">
+            今天把 array 變成可以解題的工具：traversal、sum、count、average、max/min、
+            linear search、copy、reverse、shift、insert/remove-like logic 與 parallel arrays。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-18-practice.html">Lesson 18 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Big Idea</p>
+          <h2>Array 題很少只問一格，更多是問一段 algorithm</h2>
+          <div class="exit-grid">
+            <div>sum</div>
+            <div>count</div>
+            <div>average</div>
+            <div>max / min</div>
+            <div>search</div>
+            <div>copy / reverse / shift</div>
+          </div>
+          <p class="slide-note">核心都是 traversal + update rule。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Traversal</p>
+          <h2>最重要的 array loop</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; arr.length; i++)
+{
+    // use arr[i]
+}</code></pre>
+          </div>
+          <p class="slide-note">Valid indexes are <code>0</code> through <code>arr.length - 1</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>為什麼不能寫 <code>i &lt;= arr.length</code>？</h2>
+          <button class="reveal-button" type="button" data-reveal="l18-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l18-r1">
+            <p><code>arr.length</code> 不是 valid index。最後會存取 <code>arr[arr.length]</code>，造成 bounds error。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Traditional vs Enhanced For</p>
+          <h2>需要 index，就用 traditional for</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Traditional</h3>
+              <p>有 <code>i</code> 和 <code>arr[i]</code>。</p>
+              <p>適合修改、shift、reverse、parallel arrays。</p>
+            </div>
+            <div>
+              <h3>Enhanced</h3>
+              <p>只有 value。</p>
+              <p>適合只讀元素：sum、count、max。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Algorithm Model</p>
+          <h2>多數 array algorithms 可以拆成三步</h2>
+          <div class="big-flow">
+            <span>Initialize</span>
+            <span>Traverse</span>
+            <span>Update answer</span>
+          </div>
+          <p class="slide-note">題目不同，通常只是 update rule 不同。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Sum</p>
+          <h2>Accumulator pattern</h2>
+          <div class="deck-code">
+            <pre><code>int sum = 0;
+
+for (int value : nums)
+{
+    sum += value;
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>0</code> 是加法 identity value。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Count</p>
+          <h2>Counter pattern</h2>
+          <div class="deck-code">
+            <pre><code>int count = 0;
+
+for (int value : nums)
+{
+    if (value &gt; 10)
+    {
+        count++;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">Sum 加元素值；count 加符合條件的次數。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>這段最後 <code>sum</code> 和 <code>count</code> 各是多少？</h2>
+          <div class="deck-code">
+            <pre><code>int[] nums = {4, 17, 2, 19};
+int sum = 0;
+int count = 0;
+
+for (int value : nums)
+{
+    if (value &gt; 10)
+    {
+        sum += value;
+        count++;
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l18-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l18-r2">
+            <p><code>sum = 36</code>，<code>count = 2</code>。符合條件的是 17 和 19。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Average</p>
+          <h2>Average 要小心 integer division</h2>
+          <div class="deck-code">
+            <pre><code>double average = (double) sum / nums.length;</code></pre>
+          </div>
+          <p class="slide-note">Conditional average 還要檢查 <code>count &gt; 0</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Maximum</p>
+          <h2>Best-so-far 不要亂初始化成 0</h2>
+          <div class="deck-code">
+            <pre><code>int max = nums[0];
+
+for (int value : nums)
+{
+    if (value &gt; max)
+    {
+        max = value;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">若 array 全是負數，<code>max = 0</code> 會錯。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Max Index</p>
+          <h2>需要知道「誰」最大，就追蹤 index</h2>
+          <div class="deck-code">
+            <pre><code>int maxIndex = 0;
+
+for (int i = 1; i &lt; scores.length; i++)
+{
+    if (scores[i] &gt; scores[maxIndex])
+    {
+        maxIndex = i;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">Max index 對 parallel arrays 特別有用。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Linear Search</p>
+          <h2>Search 逐一檢查元素</h2>
+          <div class="deck-code">
+            <pre><code>public static boolean contains(int[] arr, int target)
+{
+    for (int value : arr)
+    {
+        if (value == target)
+        {
+            return true;
+        }
+    }
+    return false;
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Find Index</p>
+          <h2><code>-1</code> 常代表 not found</h2>
+          <div class="deck-code">
+            <pre><code>int index = -1;
+
+for (int i = 0; i &lt; arr.length; i++)
+{
+    if (arr[i] == target)
+    {
+        index = i;
+        break;
+    }
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>這個 search method 錯在哪裡？</h2>
+          <div class="deck-code">
+            <pre><code>for (int value : arr)
+{
+    if (value == target)
+    {
+        return true;
+    }
+    return false;
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l18-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l18-r3">
+            <p><code>return false</code> 放在 loop 裡，第一格不是 target 就提早結束，沒有檢查後面。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Copy Array</p>
+          <h2>Reference copy 不等於 element copy</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Reference Copy</h3>
+              <pre><code>int[] b = a;</code></pre>
+              <p>同一個 array。</p>
+            </div>
+            <div>
+              <h3>Element Copy</h3>
+              <pre><code>int[] b = new int[a.length];
+for (int i = 0; i &lt; a.length; i++)
+{
+    b[i] = a[i];
+}</code></pre>
+              <p>新的 array。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Reversed Copy</p>
+          <h2>Reverse mapping：<code>arr.length - 1 - i</code></h2>
+          <div class="deck-code">
+            <pre><code>int[] result = new int[arr.length];
+
+for (int i = 0; i &lt; arr.length; i++)
+{
+    result[i] = arr[arr.length - 1 - i];
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">In-place Reverse</p>
+          <h2>直接修改原 array，要交換對稱位置</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; arr.length / 2; i++)
+{
+    int opposite = arr.length - 1 - i;
+    int temp = arr[i];
+    arr[i] = arr[opposite];
+    arr[opposite] = temp;
+}</code></pre>
+          </div>
+          <p class="slide-note">只跑一半，避免交換回去。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Shift</p>
+          <h2>Shift direction 決定資料會不會被覆蓋</h2>
+          <div class="big-flow">
+            <span>Right shift</span>
+            <span>move right-to-left</span>
+            <span>Left shift</span>
+            <span>move left-to-right</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Right Shift</p>
+          <h2>Right shift 從右往左</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = arr.length - 1; i &gt; 0; i--)
+{
+    arr[i] = arr[i - 1];
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Left Shift</p>
+          <h2>Left shift 從左往右</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; arr.length - 1; i++)
+{
+    arr[i] = arr[i + 1];
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>Right shift 後這個 array 變成什麼？</h2>
+          <div class="deck-code">
+            <pre><code>int[] arr = {1, 2, 3, 4};
+
+for (int i = arr.length - 1; i &gt; 0; i--)
+{
+    arr[i] = arr[i - 1];
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l18-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l18-r4">
+            <p><code>{1, 1, 2, 3}</code>。第一格通常要另外放入新值或保留。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Insert-like Logic</p>
+          <h2>Array 長度固定，insert 通常搭配 logical size</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = size; i &gt; index; i--)
+{
+    arr[i] = arr[i - 1];
+}
+arr[index] = value;
+size++;</code></pre>
+          </div>
+          <p class="slide-note">先 right shift 空出位置。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Remove-like Logic</p>
+          <h2>Remove 後 left shift，array length 不會變</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = index; i &lt; size - 1; i++)
+{
+    arr[i] = arr[i + 1];
+}
+size--;</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Parallel Arrays</p>
+          <h2>相同 index 表示同一筆資料</h2>
+          <div class="deck-code">
+            <pre><code>String[] names = {"Amy", "Ben", "Cara"};
+int[] scores = {90, 75, 98};
+
+System.out.println(names[2] + ": " + scores[2]);</code></pre>
+          </div>
+          <p class="slide-note">Parallel arrays 幾乎一定需要 index。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Parallel Arrays + Max</p>
+          <h2>用 maxIndex 同時取得名字和分數</h2>
+          <div class="deck-code">
+            <pre><code>int maxIndex = 0;
+
+for (int i = 1; i &lt; scores.length; i++)
+{
+    if (scores[i] &gt; scores[maxIndex])
+    {
+        maxIndex = i;
+    }
+}
+
+System.out.println(names[maxIndex]);</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Array Parameters</p>
+          <h2>修改 array 元素會被 caller 看見</h2>
+          <div class="deck-code">
+            <pre><code>public static void change(int[] arr)
+{
+    arr[0] = 99;
+}</code></pre>
+          </div>
+          <p class="slide-note">Array 是 object；parameter copy 了 reference value。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>這段最後印出什麼？</h2>
+          <div class="deck-code">
+            <pre><code>int[] a = {1, 2, 3};
+int[] b = a;
+b[0] = 99;
+System.out.println(a[0]);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l18-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l18-r5">
+            <p><code>99</code>。<code>a</code> 和 <code>b</code> reference 同一個 array。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Pattern Map</p>
+          <h2>題目文字到 algorithm pattern</h2>
+          <div class="exit-grid">
+            <div>總和 → sum</div>
+            <div>有幾個 → count</div>
+            <div>平均 → sum + count</div>
+            <div>最大 → best so far</div>
+            <div>在哪裡 → index / -1</div>
+            <div>同步資料 → parallel arrays</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Mistakes</p>
+          <h2>Lesson 18 最常見錯誤</h2>
+          <div class="exit-grid">
+            <div><code>i &lt;= arr.length</code></div>
+            <div><code>max = 0</code></div>
+            <div>average integer division</div>
+            <div>reference copy 當成 array copy</div>
+            <div>right shift 方向錯</div>
+            <div>parallel arrays 沒同步</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Final Trace</p>
+          <h2>最後挑戰：印出什麼？</h2>
+          <div class="deck-code">
+            <pre><code>int[] nums = {3, 5, 7, 9};
+
+for (int i = nums.length - 1; i &gt; 0; i--)
+{
+    nums[i] = nums[i - 1];
+}
+nums[0] = 0;
+
+for (int value : nums)
+{
+    System.out.print(value + " ");
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l18-r6">揭曉答案</button>
+          <div class="reveal-panel" id="l18-r6">
+            <p><code>0 3 5 7 </code>。先 right shift，再把第一格改成 0。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的六個 method 練習</h2>
+          <div class="exit-grid">
+            <div><code>sumArray(int[] arr)</code></div>
+            <div><code>countPositive(int[] arr)</code></div>
+            <div><code>findIndex(int[] arr, int target)</code></div>
+            <div><code>reversedCopy(int[] arr)</code></div>
+            <div><code>reverseInPlace(int[] arr)</code></div>
+            <div><code>highestName(String[] names, int[] scores)</code></div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-18-practice.html">開始 Lesson 18 課後練習</a>
+            <a class="button" href="lesson-18.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十二句</h2>
+          <div class="exit-grid">
+            <div>Traversal is the core of array algorithms。</div>
+            <div>Last valid index is <code>arr.length - 1</code>。</div>
+            <div>Use traditional for when index matters。</div>
+            <div>Sum accumulates values。</div>
+            <div>Count accumulates occurrences。</div>
+            <div>Average needs casting。</div>
+            <div>Max/min should initialize from array values。</div>
+            <div>Linear search checks one by one。</div>
+            <div><code>-1</code> can mean not found。</div>
+            <div>Array assignment copies references。</div>
+            <div>Right shift moves right-to-left。</div>
+            <div>Parallel arrays must stay synchronized。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>
