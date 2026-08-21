@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 15 課後練習｜Instance Methods &amp; References</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 15 課後練習：instance methods、receiver object、return vs side effect、pass-by-value、object parameters、aliasing、mutation vs reassignment、object returns 與 method contracts。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 15 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-15-presentation.html">投影模式</a>
+        <a href="lesson-15.html">文章版</a>
+        <a href="lesson-14-practice.html">上一課練習</a>
+        <a href="lesson-16-practice.html">下一課練習</a>
+        <a href="#concepts">概念</a>
+        <a href="#receiver">Receiver</a>
+        <a href="#parameters">Parameters</a>
+        <a href="#aliasing">Aliasing</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 15</p>
+          <h1>課後練習：Instance Methods &amp; References</h1>
+          <p class="lead">
+            這份題本練習 instance method 的 receiver object、return value 與 side effect、
+            Java pass-by-value、object parameter、aliasing、mutation vs reassignment、object return 與 method contract。
+            每題先自己 trace，再打開詳解。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>References</strong><span>Object aliases</span></div>
+            <div><strong>AP-style</strong><span>Tracing 陷阱</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#receiver">B. Receiver / Side Effect</a>
+          <a href="#parameters">C. Pass-by-Value</a>
+          <a href="#mutation">D. Mutation vs Reassignment</a>
+          <a href="#aliasing">E. Aliasing / Object Return</a>
+          <a href="#contracts">F. Contracts / null / private</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先確認你能用精準語言說明 instance method、receiver、reference 與 aliasing。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Instance Method</span></div>
+              <h3>什麼是 instance method？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p1">詳解</button>
+              <div class="reveal-panel" id="l15p1">
+                <p>Instance method 是在某個 object 上呼叫的 method，通常可以讀取或修改那個 receiver object 的 instance variables。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Receiver Object</span></div>
+              <h3>在 <code>s.getScore()</code> 中，哪一個是 receiver object？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p2">詳解</button>
+              <div class="reveal-panel" id="l15p2">
+                <p><code>s</code> 是 receiver object。意思是：在 <code>s</code> 指到的那個 <code>Student</code> object 上執行 <code>getScore</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Same Method Code</span></div>
+              <h3>同一個 method code 可以在不同 object 上產生不同結果嗎？為什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p3">詳解</button>
+              <div class="reveal-panel" id="l15p3">
+                <p>可以。因為每次 method call 都有自己的 receiver object，method 讀到的是那個 object 的 instance variables。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Return vs Side Effect</span></div>
+              <h3>Return value 和 side effect 的差別是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p4">詳解</button>
+              <div class="reveal-panel" id="l15p4">
+                <p>Return value 是 method 回傳給 caller 的值；side effect 是 method 改變了某個 object 的 state，例如修改 instance variable。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Pass-by-Value</span></div>
+              <h3>Java 的 parameter passing 規則是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p5">詳解</button>
+              <div class="reveal-panel" id="l15p5">
+                <p>Java always passes by value。Primitive parameter 拿到 primitive value 的 copy；object parameter 拿到 reference value 的 copy。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Aliasing</span></div>
+              <h3><code>Student b = a;</code> 代表複製 object 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p6">詳解</button>
+              <div class="reveal-panel" id="l15p6">
+                <p>不是。這是複製 reference value，讓 <code>a</code> 和 <code>b</code> 指向同一個 object，因此形成 aliases。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="receiver" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Receiver / Side Effect</p>
+              <h2>Receiver object 與 state trace</h2>
+              <p>Instance method 題目要先找 receiver，再判斷 method 是否改變 state。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Trace</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>Student a = new Student("Ada", 80);
+Student b = new Student("Ben", 90);
+System.out.println(a.getScore());
+System.out.println(b.getScore());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p7">詳解</button>
+              <div class="reveal-panel" id="l15p7">
+                <p>印出 <code>80</code> 再印出 <code>90</code>。兩次呼叫的 receiver object 不同，所以讀到不同 object 的 <code>score</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Mutation</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>Student a = new Student("Ada", 80);
+Student b = new Student("Ben", 90);
+a.setScore(75);
+System.out.println(b.getScore());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p8">詳解</button>
+              <div class="reveal-panel" id="l15p8">
+                <p>印出 <code>90</code>。<code>a.setScore(75)</code> 修改的是 <code>a</code> 指到的 object，不會改到 <code>b</code> 指到的 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Return Only</span></div>
+              <h3>若 <code>doubledScore</code> 寫成下面這樣，呼叫後原本的 score 會變嗎？</h3>
+              <pre><code>public int doubledScore()
+{
+    return score * 2;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p9">詳解</button>
+              <div class="reveal-panel" id="l15p9">
+                <p>不會。這個 method 只計算並 return 一個值，沒有 assignment 改變 instance variable。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Side Effect</span></div>
+              <h3>若 <code>doubleScore</code> 寫成下面這樣，呼叫後原本的 score 會變嗎？</h3>
+              <pre><code>public void doubleScore()
+{
+    score = score * 2;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p10">詳解</button>
+              <div class="reveal-panel" id="l15p10">
+                <p>會。<code>score = score * 2;</code> 修改 receiver object 的 instance variable，所以是 side effect。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Return and Mutate</span></div>
+              <h3>以下 method 有 return value、side effect，還是兩者都有？</h3>
+              <pre><code>public int incrementAndGet()
+{
+    score++;
+    return score;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p11">詳解</button>
+              <div class="reveal-panel" id="l15p11">
+                <p>兩者都有。<code>score++</code> 改變 object state；<code>return score;</code> 回傳更新後的值。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Void Method</span></div>
+              <h3><code>void</code> method 可以改變 object state 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p12">詳解</button>
+              <div class="reveal-panel" id="l15p12">
+                <p>可以。<code>void</code> 只代表沒有 return value，不代表不能有 side effect。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Non-void Method</span></div>
+              <h3>有 return type 的 method 一定沒有 side effect 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p13">詳解</button>
+              <div class="reveal-panel" id="l15p13">
+                <p>不一定。Method 可以同時修改 state 並 return value，題目要看 method body，不要只看 return type。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Shadowing</span></div>
+              <h3>以下 method 中，<code>score</code> 和 <code>this.score</code> 分別代表什麼？</h3>
+              <pre><code>public void setScore(int score)
+{
+    this.score = score;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p14">詳解</button>
+              <div class="reveal-panel" id="l15p14">
+                <p><code>score</code> 是 parameter；<code>this.score</code> 是 receiver object 的 instance variable。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="parameters" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Pass-by-Value</p>
+              <h2>Parameters 與 reference value 的 copy</h2>
+              <p>重點句：object parameter 拿到的是 reference value 的 copy，不是 object 的 copy。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Primitive Parameter</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>public static void addOne(int x)
+{
+    x++;
+}
+
+int n = 5;
+addOne(n);
+System.out.println(n);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p15">詳解</button>
+              <div class="reveal-panel" id="l15p15">
+                <p>印出 <code>5</code>。<code>x</code> 是 <code>n</code> 的 value copy，改 <code>x</code> 不會改 caller 的 <code>n</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Object Parameter</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>public static void changeScore(Student st)
+{
+    st.setScore(100);
+}
+
+Student s = new Student("Ada", 80);
+changeScore(s);
+System.out.println(s.getScore());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p16">詳解</button>
+              <div class="reveal-panel" id="l15p16">
+                <p>印出 <code>100</code>。<code>st</code> 和 <code>s</code> 當下指向同一個 object，透過 <code>st</code> mutation 會改到那個 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Reassignment</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>public static void replace(Student st)
+{
+    st = new Student("Ben", 50);
+}
+
+Student s = new Student("Ada", 80);
+replace(s);
+System.out.println(s.getScore());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p17">詳解</button>
+              <div class="reveal-panel" id="l15p17">
+                <p>印出 <code>80</code>。<code>st = new Student(...)</code> 只改 parameter variable <code>st</code> 指向哪裡，不會讓 caller 的 <code>s</code> 改指向新 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Reference Copy</span></div>
+              <h3>Object parameter 得到的是什麼的 copy？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p18">詳解</button>
+              <div class="reveal-panel" id="l15p18">
+                <p>得到的是 reference value 的 copy。兩個 reference variables 可以指到同一個 object，但它們本身仍是兩個不同的 variables。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Reference Variable</span></div>
+              <h3><code>Student s;</code> 這個 variable 本身儲存整個 Student object 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p19">詳解</button>
+              <div class="reveal-panel" id="l15p19">
+                <p>不是。Reference variable 儲存的是可以找到 object 的 reference value；object 本身是由 <code>new</code> 建立的。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Terminology</span></div>
+              <h3>為什麼說 Java 不是 pass-by-reference？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p20">詳解</button>
+              <div class="reveal-panel" id="l15p20">
+                <p>因為 method 不能透過 reassignment parameter 來改變 caller 的 variable。Java 傳入的是 value；對 object variable 來說，那個 value 是 reference value。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Trace Mutation</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>public static void changeScore(Student st)
+{
+    st.setScore(st.getScore() + 5);
+}
+
+Student s = new Student("Ada", 80);
+changeScore(s);
+System.out.println(s.getScore());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p21">詳解</button>
+              <div class="reveal-panel" id="l15p21">
+                <p>印出 <code>85</code>。<code>st</code> 指到與 <code>s</code> 相同的 object，<code>setScore</code> mutation 會保留下來。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Trace Reassignment</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>public static void replaceThenChange(Student st)
+{
+    st = new Student("Ben", 50);
+    st.setScore(99);
+}
+
+Student s = new Student("Ada", 80);
+replaceThenChange(s);
+System.out.println(s.getScore());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p22">詳解</button>
+              <div class="reveal-panel" id="l15p22">
+                <p>印出 <code>80</code>。新 object 和後面的 <code>setScore(99)</code> 都只影響 local parameter <code>st</code> 現在指到的 object。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="mutation" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Mutation vs Reassignment</p>
+              <h2>先 mutation 還是先 reassignment，結果差很多</h2>
+              <p>遇到 object parameter 題，逐行標記每個 variable 指向哪個 object。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Mutation Then Reassignment</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>public static void modify(Counter c)
+{
+    c.add(5);
+    c = new Counter(100);
+    c.add(1);
+}
+
+Counter a = new Counter(10);
+modify(a);
+System.out.println(a.getCount());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p23">詳解</button>
+              <div class="reveal-panel" id="l15p23">
+                <p>印出 <code>15</code>。第一行 <code>c.add(5)</code> 改到 <code>a</code> 的 object；之後 <code>c</code> 改指向新 object，<code>c.add(1)</code> 不影響 <code>a</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Reassignment Then Mutation</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>public static void modify(Counter c)
+{
+    c = new Counter(100);
+    c.add(1);
+}
+
+Counter a = new Counter(10);
+modify(a);
+System.out.println(a.getCount());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p24">詳解</button>
+              <div class="reveal-panel" id="l15p24">
+                <p>印出 <code>10</code>。parameter 先被 reassigned 到新 object，所以後面的 mutation 沒有改到 <code>a</code> 指的 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Two Parameters</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>public static void mix(Counter x, Counter y)
+{
+    x.add(2);
+    y = x;
+    y.add(3);
+}
+
+Counter a = new Counter(10);
+Counter b = new Counter(20);
+mix(a, b);
+System.out.println(a.getCount() + " " + b.getCount());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p25">詳解</button>
+              <div class="reveal-panel" id="l15p25">
+                <p>印出 <code>15 20</code>。<code>x.add(2)</code> 讓 <code>a</code> 變 12；<code>y = x</code> 只改 local <code>y</code>，之後 <code>y.add(3)</code> 又改到 <code>a</code>，所以 <code>a</code> 變 15，<code>b</code> 不變。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Parameter Assignments</span></div>
+              <h3>以下 method 會交換 caller 的兩個 variables 嗎？</h3>
+              <pre><code>public static void swap(Counter x, Counter y)
+{
+    Counter temp = x;
+    x = y;
+    y = temp;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p26">詳解</button>
+              <div class="reveal-panel" id="l15p26">
+                <p>不會。這只交換 local parameter variables <code>x</code> 和 <code>y</code> 的 reference values，不會改 caller 的 variables。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Mutating Two Objects</span></div>
+              <h3>以下 method 會讓 caller 看到改變嗎？</h3>
+              <pre><code>public static void bonus(Player p, Player q)
+{
+    p.addPoints(10);
+    q.addPoints(20);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p27">詳解</button>
+              <div class="reveal-panel" id="l15p27">
+                <p>會。這個 method 沒有 reassignment parameter，而是透過 references 呼叫 mutator methods，所以兩個 objects 的 state 都會被修改。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Local New Object</span></div>
+              <h3>以下程式建立的新 object，caller 能直接取得嗎？</h3>
+              <pre><code>public static void reset(Box b)
+{
+    b = new Box(0);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p28">詳解</button>
+              <div class="reveal-panel" id="l15p28">
+                <p>不能。新 object 的 reference 只存在 local parameter <code>b</code> 中；method 結束後 caller 的 variable 沒有被改指向新 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Reset By Mutation</span></div>
+              <h3>若真的要讓 caller 的 Box 變成 0，下列哪個做法比較合理？</h3>
+              <pre><code>public static void reset(Box b)
+{
+    b.setValue(0);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p29">詳解</button>
+              <div class="reveal-panel" id="l15p29">
+                <p>這個做法合理，前提是 <code>Box</code> 有 <code>setValue</code> mutator。它修改原本 object 的 state，而不是讓 local parameter 指向別的 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Compile vs Logic</span></div>
+              <h3><code>st = new Student("Ben", 50);</code> 在 object parameter method 裡通常是 compile error 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p30">詳解</button>
+              <div class="reveal-panel" id="l15p30">
+                <p>通常不是 compile error，只是常見 logic error。它合法地改變 local parameter <code>st</code>，但不會改 caller 的 variable。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="aliasing" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Aliasing / Object Return</p>
+              <h2>Reference assignment、object return 與 alias</h2>
+              <p>看到 <code>=</code> 時問自己：這是在複製 reference，還是在建立新 object？</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Alias Trace</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>Counter a = new Counter(10);
+Counter b = a;
+b.add(3);
+System.out.println(a.getCount());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p31">詳解</button>
+              <div class="reveal-panel" id="l15p31">
+                <p>印出 <code>13</code>。<code>a</code> 和 <code>b</code> 是 aliases，指向同一個 <code>Counter</code> object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Two New Objects</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>Counter a = new Counter(10);
+Counter b = new Counter(10);
+b.add(3);
+System.out.println(a.getCount());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p32">詳解</button>
+              <div class="reveal-panel" id="l15p32">
+                <p>印出 <code>10</code>。這裡有兩次 <code>new</code>，代表兩個不同 objects；改 <code>b</code> 不會改 <code>a</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Break Alias</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>Counter a = new Counter(10);
+Counter b = a;
+b = new Counter(0);
+b.add(4);
+System.out.println(a.getCount());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p33">詳解</button>
+              <div class="reveal-panel" id="l15p33">
+                <p>印出 <code>10</code>。<code>b = new Counter(0)</code> 讓 <code>b</code> 改指向新 object，之後 <code>b.add(4)</code> 不影響 <code>a</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Return Existing Object</span></div>
+              <h3>若 method 回傳 existing object，caller 可能和原本 object alias 嗎？</h3>
+              <pre><code>public Student getLeader()
+{
+    return leader;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p34">詳解</button>
+              <div class="reveal-panel" id="l15p34">
+                <p>可能。<code>return leader;</code> 回傳的是 reference value，caller 取得後可能與 field <code>leader</code> 指向同一個 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Return New Object</span></div>
+              <h3>以下 method 會回傳 existing object 還是 new object？</h3>
+              <pre><code>public Student makeCopy()
+{
+    return new Student(name, score);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p35">詳解</button>
+              <div class="reveal-panel" id="l15p35">
+                <p>回傳 new object。每次呼叫 <code>new Student(...)</code> 都會建立一個新的 object，通常不會和原本 receiver alias。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Object Return Trace</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>Student a = new Student("Ada", 80);
+Student b = a.getSelf();
+b.setScore(90);
+System.out.println(a.getScore());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p36">詳解</button>
+              <div class="reveal-panel" id="l15p36">
+                <p>如果 <code>getSelf</code> 寫成 <code>return this;</code>，會印出 <code>90</code>。<code>a</code> 和 <code>b</code> 指向同一個 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>Copy Return Trace</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>Student a = new Student("Ada", 80);
+Student b = a.copy();
+b.setScore(90);
+System.out.println(a.getScore());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p37">詳解</button>
+              <div class="reveal-panel" id="l15p37">
+                <p>如果 <code>copy</code> 使用 <code>return new Student(name, score);</code>，會印出 <code>80</code>。<code>b</code> 是新 object，不會 alias <code>a</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Assignment Count</span></div>
+              <h3>判斷是否 alias 時，最重要要數什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p38">詳解</button>
+              <div class="reveal-panel" id="l15p38">
+                <p>通常要數 <code>new</code> 的次數與 reference assignment。一次 <code>new</code> 只建立一個 object；多個 variables 可以指向那同一個 object。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="contracts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Contracts / null / private</p>
+              <h2>Method contracts 與 object parameter 細節</h2>
+              <p>AP 題常用 precondition / postcondition 描述 method 應該保證的行為。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Precondition</span></div>
+              <h3>Precondition 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p39">詳解</button>
+              <div class="reveal-panel" id="l15p39">
+                <p>Precondition 是 caller 必須在呼叫 method 前保證為真的條件。例如 <code>other != null</code> 或 <code>amount &gt;= 0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Postcondition</span></div>
+              <h3>Postcondition 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p40">詳解</button>
+              <div class="reveal-panel" id="l15p40">
+                <p>Postcondition 是 method 執行完必須成立的結果，例如 receiver 的 score 增加、或回傳值代表兩個 objects 的比較結果。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Private Access</span></div>
+              <h3>同一個 class 的 instance method 可以讀取另一個同 class object 的 private fields 嗎？</h3>
+              <pre><code>public boolean hasSameScore(Student other)
+{
+    return score == other.score;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p41">詳解</button>
+              <div class="reveal-panel" id="l15p41">
+                <p>可以。Access control 是以 class 為單位，不是以 object 為單位；同一個 <code>Student</code> class 的 code 可以存取另一個 <code>Student</code> object 的 private field。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>null</span></div>
+              <h3>若 <code>other</code> 可能是 <code>null</code>，以下 method 有什麼風險？</h3>
+              <pre><code>public boolean hasSameScore(Student other)
+{
+    return score == other.score;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p42">詳解</button>
+              <div class="reveal-panel" id="l15p42">
+                <p>若 <code>other</code> 是 <code>null</code>，<code>other.score</code> 會造成 <code>NullPointerException</code>。若沒有 precondition，就需要先檢查 <code>other != null</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>Receiver vs Parameter</span></div>
+              <h3>在 <code>a.hasSameScore(b)</code> 中，哪個是 receiver？哪個是 parameter object？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p43">詳解</button>
+              <div class="reveal-panel" id="l15p43">
+                <p><code>a</code> 是 receiver object；<code>b</code> 的 reference value 被傳給 parameter <code>other</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Contract Reading</span></div>
+              <h3>若 specification 說「does not modify either object」，你的 implementation 要避免什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p44">詳解</button>
+              <div class="reveal-panel" id="l15p44">
+                <p>要避免修改 receiver object 或 parameter object 的 fields，也要避免呼叫會產生 mutation 的 mutator methods。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding / Trace</p>
+              <h2>程式練習與 final tracing</h2>
+              <p>最後六題把今天的觀念放進 AP-style method writing 與 trace。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Write Method</span></div>
+              <h3>為 <code>Player</code> 寫一個 <code>hasMorePointsThan</code> method。假設有 field <code>private int points;</code>，且 <code>other</code> 不為 <code>null</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p45">詳解</button>
+              <div class="reveal-panel" id="l15p45">
+                <pre><code>public boolean hasMorePointsThan(Player other)
+{
+    return points &gt; other.points;
+}</code></pre>
+                <p><code>points</code> 是 receiver 的 field；<code>other.points</code> 是 parameter object 的 field。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Write Method</span></div>
+              <h3>為 <code>Student</code> 寫 <code>copyScoreTo(Student other)</code>，把 receiver 的 score 複製到 <code>other</code>。假設 <code>other</code> 不為 <code>null</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p46">詳解</button>
+              <div class="reveal-panel" id="l15p46">
+                <pre><code>public void copyScoreTo(Student other)
+{
+    other.score = score;
+}</code></pre>
+                <p>這個 method 會 mutate parameter object <code>other</code>，但不改 receiver 的 <code>score</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Write Method</span></div>
+              <h3>為 <code>BankAccount</code> 寫 <code>transferTo(BankAccount other, double amount)</code>。假設 <code>other</code> 不為 <code>null</code>、<code>amount &gt;= 0</code>、餘額足夠。</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p47">詳解</button>
+              <div class="reveal-panel" id="l15p47">
+                <pre><code>public void transferTo(BankAccount other, double amount)
+{
+    balance -= amount;
+    other.balance += amount;
+}</code></pre>
+                <p>Receiver 的 <code>balance</code> 減少，parameter object 的 <code>balance</code> 增加；這是兩個 objects 的 mutation。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Object Return</span></div>
+              <h3>為 <code>Player</code> 寫 <code>higher(Player other)</code>，回傳 points 較高的 existing object。假設 <code>other</code> 不為 <code>null</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p48">詳解</button>
+              <div class="reveal-panel" id="l15p48">
+                <pre><code>public Player higher(Player other)
+{
+    if (points &gt;= other.points)
+    {
+        return this;
+    }
+    return other;
+}</code></pre>
+                <p>這會回傳 existing object 的 reference，caller 取得後可能和原本的 object alias。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Transfer Trace</span></div>
+              <h3>若 <code>a</code> balance 是 100，<code>b</code> balance 是 40，執行 <code>a.transferTo(b, 25);</code> 後兩者 balance 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l15p49">詳解</button>
+              <div class="reveal-panel" id="l15p49">
+                <p><code>a</code> 是 receiver，所以 <code>a</code> 變 <code>75</code>；<code>b</code> 是 parameter object，所以 <code>b</code> 變 <code>65</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>最後挑戰：以下程式印出什麼？</h3>
+              <pre><code>public static void mystery(Counter x, Counter y)
+{
+    x.add(1);
+    y = x;
+    y.add(2);
+    x = new Counter(50);
+    x.add(3);
+}
+
+Counter a = new Counter(10);
+Counter b = a;
+mystery(a, b);
+System.out.println(a.getCount());
+System.out.println(b.getCount());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l15p50">詳解</button>
+              <div class="reveal-panel" id="l15p50">
+                <p>印出 <code>13</code> 再印出 <code>13</code>。一開始 <code>a</code> 與 <code>b</code> alias。<code>x.add(1)</code> 讓 object 變 11；<code>y = x</code> local 仍指同一個 object；<code>y.add(2)</code> 變 13。後面 <code>x = new Counter(50)</code> 只改 local <code>x</code>，不影響 <code>a</code> 或 <code>b</code>。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 15 課後練習。先找 receiver，再追蹤 reference value、mutation 與 reassignment。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

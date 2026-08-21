@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 15 投影模式｜Instance Methods &amp; References</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 15 投影模式：receiver object、return vs side effect、Java pass-by-value、object parameters、aliasing、mutation vs reassignment、object returns 與 method contracts。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 15</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-15.html">文章版</a>
+        <a href="lesson-15-practice.html">課後練習</a>
+        <a href="lesson-14.html">上一課</a>
+        <a href="lesson-16.html">下一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 15</p>
+          <h1>Instance Methods &amp; References</h1>
+          <p class="slide-lead">
+            今天把 object 真正動起來：method call 的 receiver object、return 與 side effect、
+            Java pass-by-value、object parameter、aliasing、mutation vs reassignment 與 method contract。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-15-practice.html">Lesson 15 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">From Lesson 14</p>
+          <h2>Constructor 建好 object，instance methods 讓 object 做事</h2>
+          <div class="big-flow">
+            <span>new object</span>
+            <span>state exists</span>
+            <span>method call</span>
+            <span>read or mutate state</span>
+          </div>
+          <p class="slide-note">接下來每一題都先問：這個 method 是在誰身上執行？</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Receiver Object</p>
+          <h2>Dot 左邊是 receiver object</h2>
+          <div class="deck-code">
+            <pre><code>Student s = new Student("Ada", 80);
+System.out.println(s.getScore());
+s.setScore(90);</code></pre>
+          </div>
+          <p class="slide-note"><code>s</code> 是 receiver。Method body 裡沒有寫 object name 的 field，通常就是 receiver 的 field。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>在 <code>a.transferTo(b, 20)</code> 中，誰是 receiver？誰是 parameter object？</h2>
+          <button class="reveal-button" type="button" data-reveal="l15-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l15-r1">
+            <p><code>a</code> 是 receiver object；<code>b</code> 的 reference value 被傳給 method 的 parameter。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Same Method Code</p>
+          <h2>同一份 method code，在不同 object 上讀不同 state</h2>
+          <div class="deck-code">
+            <pre><code>Student a = new Student("Ada", 80);
+Student b = new Student("Ben", 92);
+
+System.out.println(a.getScore()); // 80
+System.out.println(b.getScore()); // 92</code></pre>
+          </div>
+          <p class="slide-note">Receiver 不同，method 讀取的 instance variables 就不同。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Fields Inside Instance Methods</p>
+          <h2>沒有特別標明 object 時，field 指 receiver 的 state</h2>
+          <div class="deck-code">
+            <pre><code>public int getScore()
+{
+    return score;
+}
+
+public void setScore(int newScore)
+{
+    score = newScore;
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>score</code> 是 receiver object 的 instance variable。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Return Value</p>
+          <h2>Return value 是交回 caller 的值</h2>
+          <div class="deck-code">
+            <pre><code>public int doubledScore()
+{
+    return score * 2;
+}</code></pre>
+          </div>
+          <p class="slide-note">這段 code 沒有改變 <code>score</code>，只是計算後回傳。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Side Effect</p>
+          <h2>Side effect 是 method 改變了某個 object 的 state</h2>
+          <div class="deck-code">
+            <pre><code>public void doubleScore()
+{
+    score = score * 2;
+}</code></pre>
+          </div>
+          <p class="slide-note">這段 code 會 mutate receiver object。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>這個 method 是 return only、side effect，還是兩者都有？</h2>
+          <div class="deck-code">
+            <pre><code>public int incrementAndGet()
+{
+    score++;
+    return score;
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l15-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l15-r2">
+            <p>兩者都有。<code>score++</code> 修改 receiver state；<code>return score;</code> 回傳更新後的值。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Pass-by-Value</p>
+          <h2>Java always passes by value</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Primitive parameter</h3>
+              <p>得到 primitive value 的 copy。</p>
+            </div>
+            <div>
+              <h3>Object parameter</h3>
+              <p>得到 reference value 的 copy。</p>
+            </div>
+          </div>
+          <p class="slide-note">這一句是 Lesson 15 的核心：reference value 被 copy，不是 object 被 copy。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Primitive Trace</p>
+          <h2>改 parameter 不會改 caller 的 primitive variable</h2>
+          <div class="deck-code">
+            <pre><code>public static void addOne(int x)
+{
+    x++;
+}
+
+int n = 5;
+addOne(n);
+System.out.println(n); // 5</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Reference Parameter</p>
+          <h2>Object parameter 可以透過 reference mutation 同一個 object</h2>
+          <div class="big-flow">
+            <span>caller variable</span>
+            <span>copy reference value</span>
+            <span>parameter variable</span>
+            <span>same object</span>
+          </div>
+          <p class="slide-note">兩個 variables 不同，但可能指向同一個 object。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Object Parameter Mutation</p>
+          <h2>Mutating through parameter is visible to caller</h2>
+          <div class="deck-code">
+            <pre><code>public static void changeScore(Student st)
+{
+    st.setScore(100);
+}
+
+Student s = new Student("Ada", 80);
+changeScore(s);
+System.out.println(s.getScore()); // 100</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Parameter Reassignment</p>
+          <h2>Reassigning the parameter is local</h2>
+          <div class="deck-code">
+            <pre><code>public static void replace(Student st)
+{
+    st = new Student("Ben", 50);
+}
+
+Student s = new Student("Ada", 80);
+replace(s);
+System.out.println(s.getScore()); // 80</code></pre>
+          </div>
+          <p class="slide-note"><code>st</code> 改指向新 object，不代表 <code>s</code> 也改指向新 object。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>這段最後印出什麼？</h2>
+          <div class="deck-code">
+            <pre><code>public static void modify(Counter c)
+{
+    c.add(5);
+    c = new Counter(100);
+    c.add(1);
+}
+
+Counter a = new Counter(10);
+modify(a);
+System.out.println(a.getCount());</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l15-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l15-r3">
+            <p><code>15</code>。第一個 mutation 改到 caller 的 object；reassignment 後的 mutation 只改到新 local object。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Aliasing</p>
+          <h2>Reference assignment 會讓兩個 variables 指同一個 object</h2>
+          <div class="deck-code">
+            <pre><code>Counter a = new Counter(10);
+Counter b = a;
+b.add(3);
+System.out.println(a.getCount()); // 13</code></pre>
+          </div>
+          <p class="slide-note"><code>a</code> 和 <code>b</code> 是 aliases。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">One new vs Two new</p>
+          <h2>數 <code>new</code>，通常能看出有幾個 objects</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Alias</h3>
+              <pre><code>Counter a = new Counter(10);
+Counter b = a;</code></pre>
+            </div>
+            <div>
+              <h3>Separate Objects</h3>
+              <pre><code>Counter a = new Counter(10);
+Counter b = new Counter(10);</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>這段最後印出什麼？</h2>
+          <div class="deck-code">
+            <pre><code>Counter a = new Counter(10);
+Counter b = a;
+b = new Counter(0);
+b.add(4);
+System.out.println(a.getCount());</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l15-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l15-r4">
+            <p><code>10</code>。<code>b = new Counter(0)</code> 後，<code>b</code> 不再指向 <code>a</code> 的 object。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Object Return</p>
+          <h2>Returning an existing object returns a reference value</h2>
+          <div class="deck-code">
+            <pre><code>public Student getLeader()
+{
+    return leader;
+}</code></pre>
+          </div>
+          <p class="slide-note">Caller 可能拿到與 field 同一個 object 的 reference，形成 alias。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Return New Object</p>
+          <h2><code>new</code> in return 通常代表回傳新的 object</h2>
+          <div class="deck-code">
+            <pre><code>public Student copy()
+{
+    return new Student(name, score);
+}</code></pre>
+          </div>
+          <p class="slide-note">這種 copy method 通常用來避免 caller 直接 alias 原本 object。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Receiver and Object Parameter</p>
+          <h2>Instance method 可以同時有 receiver 與另一個 object parameter</h2>
+          <div class="deck-code">
+            <pre><code>public void transferTo(BankAccount other, double amount)
+{
+    balance -= amount;
+    other.balance += amount;
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>balance</code> 是 receiver 的 balance；<code>other.balance</code> 是 parameter object 的 balance。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2><code>a.transferTo(b, 20)</code> 後，誰減少？誰增加？</h2>
+          <button class="reveal-button" type="button" data-reveal="l15-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l15-r5">
+            <p><code>a</code> 是 receiver，所以 <code>a.balance</code> 減少；<code>b</code> 是 parameter object，所以 <code>b.balance</code> 增加。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Private Access</p>
+          <h2>Same class code can access another object&apos;s private fields</h2>
+          <div class="deck-code">
+            <pre><code>public boolean hasSameScore(Student other)
+{
+    return score == other.score;
+}</code></pre>
+          </div>
+          <p class="slide-note">Private 是 class-level access，不是 object-level access。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Method Contract</p>
+          <h2>Precondition / Postcondition 幫你看懂 FRQ 要求</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Precondition</h3>
+              <p>Caller 呼叫前必須保證的條件。</p>
+              <p><code>other != null</code></p>
+            </div>
+            <div>
+              <h3>Postcondition</h3>
+              <p>Method 執行後必須成立的結果。</p>
+              <p>Balances have been updated.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Bugs</p>
+          <h2>Lesson 15 最常見的錯誤</h2>
+          <div class="exit-grid">
+            <div>以為 object parameter 複製了整個 object。</div>
+            <div>以為 parameter reassignment 會改 caller variable。</div>
+            <div>忘記 <code>a = b</code> 可能讓兩個 variables alias。</div>
+            <div>只看 return type，沒有看 side effect。</div>
+            <div>分不清 receiver field 與 parameter object field。</div>
+            <div>忽略 <code>null</code> precondition。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP SOP</p>
+          <h2>Reference 題解題流程</h2>
+          <div class="big-flow">
+            <span>Find receiver</span>
+            <span>Draw variables</span>
+            <span>Count new</span>
+            <span>Trace assignments</span>
+            <span>Mark mutations</span>
+            <span>Record final state</span>
+          </div>
+          <p class="slide-note">遇到 object parameter 題，逐行追蹤 reference value 指向哪個 object。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Final Trace</p>
+          <h2>最後挑戰：這段印出什麼？</h2>
+          <div class="deck-code">
+            <pre><code>public static void mystery(Counter x, Counter y)
+{
+    x.add(1);
+    y = x;
+    y.add(2);
+    x = new Counter(50);
+    x.add(3);
+}
+
+Counter a = new Counter(10);
+Counter b = a;
+mystery(a, b);
+System.out.println(a.getCount());
+System.out.println(b.getCount());</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l15-r6">揭曉答案</button>
+          <div class="reveal-panel" id="l15-r6">
+            <p><code>13</code> 和 <code>13</code>。<code>a</code> 與 <code>b</code> alias；前兩次 mutation 都改同一個 object，最後 local <code>x</code> 改指向新 object。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的六個 method 練習</h2>
+          <div class="exit-grid">
+            <div><code>hasMorePointsThan(Player other)</code></div>
+            <div><code>copyScoreTo(Student other)</code></div>
+            <div><code>transferTo(BankAccount other, double amount)</code></div>
+            <div><code>higher(Player other)</code></div>
+            <div>trace aliasing with one <code>new</code></div>
+            <div>debug parameter reassignment</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-15-practice.html">開始 Lesson 15 課後練習</a>
+            <a class="button" href="lesson-15.html">回到文章版</a>
+            <a class="button" href="lesson-16.html">前往 Lesson 16</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十二句</h2>
+          <div class="exit-grid">
+            <div>Dot 左邊是 receiver object。</div>
+            <div>Instance method 讀取 receiver 的 instance variables。</div>
+            <div>Return value 不等於 side effect。</div>
+            <div><code>void</code> method 仍可 mutate object。</div>
+            <div>Java always passes by value。</div>
+            <div>Object parameter receives a copy of a reference value。</div>
+            <div>Mutation through parameter can affect caller-visible object。</div>
+            <div>Parameter reassignment is local。</div>
+            <div><code>a = b</code> copies a reference value。</div>
+            <div>Aliases point to the same object。</div>
+            <div>Returning an existing object may create aliasing。</div>
+            <div>Preconditions and postconditions define the method contract。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

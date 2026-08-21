@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 13｜Class Structure</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 13：Java class structure、class vs object、instance variables、private/public、encapsulation、accessors、mutators、method headers、object responsibility 與 AP-style class tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 13</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第十三堂課導覽">
+        <a href="lesson-13-presentation.html">投影模式</a>
+        <a href="lesson-13-practice.html">課後練習</a>
+        <a href="lesson-12.html">上一課</a>
+        <a href="lesson-14.html">下一課</a>
+        <a href="#anatomy">Class Anatomy</a>
+        <a href="#state">Object State</a>
+        <a href="#encapsulation">Encapsulation</a>
+        <a href="#methods">Methods</a>
+        <a href="#errors">常見錯誤</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 13</p>
+          <h1>Class Structure：Java Class 的結構、資料封裝與 Methods</h1>
+          <p class="lead">
+            前面的課程讓你會寫條件、迴圈與演算法。從這堂課開始，我們正式進入 AP CSA 的核心：
+            object-oriented programming。你會學會用 class 把資料與行為放在一起，讓 object 自己管理自己的 state。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-13-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-13-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-12.html">回 Lesson 12</a>
+            <a class="button" href="lesson-14.html">前往 Lesson 14</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#why-class">為什麼需要 Class</a>
+          <a href="#class-object">Class vs Object</a>
+          <a href="#anatomy">Class Anatomy</a>
+          <a href="#state">Instance Variables</a>
+          <a href="#scope">Field / Local / Parameter</a>
+          <a href="#encapsulation">Encapsulation</a>
+          <a href="#accessors">Accessors</a>
+          <a href="#mutators">Mutators</a>
+          <a href="#methods">Method Anatomy</a>
+          <a href="#responsibility">Responsibility</a>
+          <a href="#trace">Class Tracing</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>說明 class 是建立 object 的 blueprint，也是自訂 reference type。</div>
+              <div>分辨 class 與 object：class 是設計圖，object 是實際存在的東西。</div>
+              <div>看懂 class declaration、class name、class body 的基本結構。</div>
+              <div>辨認 instance variables，並知道它們描述 object state。</div>
+              <div>分辨 instance variable、local variable、parameter。</div>
+              <div>知道 instance variables 有 default values，但 local variables 沒有。</div>
+              <div>理解為什麼 fields 通常使用 <code>private</code>。</div>
+              <div>使用 public methods 作為 class 的 public interface。</div>
+              <div>寫 accessor methods 與 boolean accessor methods。</div>
+              <div>寫 mutator methods，並用 validation 保護 object state。</div>
+              <div>看懂 method header：access modifier、return type、method name、parameters。</div>
+              <div>trace method calls 如何改變不同 objects 的 state。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson13-flow-0" /> <span><strong>從 main 到 class</strong>：為什麼大程式不能把所有資料都丟在 main 裡。</span></label>
+              <label><input type="checkbox" data-progress="lesson13-flow-1" /> <span><strong>Class anatomy</strong>：class declaration、fields、methods、class body。</span></label>
+              <label><input type="checkbox" data-progress="lesson13-flow-2" /> <span><strong>Object state</strong>：每個 object 都有自己的 instance variables。</span></label>
+              <label><input type="checkbox" data-progress="lesson13-flow-3" /> <span><strong>Encapsulation</strong>：private data + controlled public methods。</span></label>
+              <label><input type="checkbox" data-progress="lesson13-flow-4" /> <span><strong>Methods</strong>：accessor、mutator、return type、void、parameters。</span></label>
+              <label><input type="checkbox" data-progress="lesson13-flow-5" /> <span><strong>AP tracing</strong>：看 method call 如何改變 receiver object's state。</span></label>
+            </div>
+          </section>
+
+          <section id="why-class" class="article-section">
+            <p class="eyebrow">Why Classes</p>
+            <h2>Class 把「資料」和「操作資料的行為」放在一起</h2>
+            <p>
+              前面我們常把資料直接寫在 <code>main</code> 裡。小程式可以運作，但資料一多就很難管理：
+              哪些變數描述同一個東西？哪些 method 應該負責操作這些資料？
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Data scattered in main</h3>
+                <button class="copy-button" type="button" data-copy="l13-code-main">Copy</button>
+              </div>
+              <pre><code id="l13-code-main">public class Main
+{
+    public static void main(String[] args)
+    {
+        String name = "Amy";
+        int score = 90;
+
+        if (score &gt;= 60)
+        {
+            System.out.println(name + " passed.");
+        }
+    }
+}</code></pre>
+            </div>
+            <p>
+              如果要描述一位學生，我們其實想把 <code>name</code>、<code>score</code>，
+              以及 <code>getName()</code>、<code>setScore(...)</code>、<code>hasPassed()</code>
+              這些行為放進同一個概念裡。這個概念就是 <code>Student</code> class。
+            </p>
+          </section>
+
+          <section id="class-object" class="article-section">
+            <p class="eyebrow">Class vs Object</p>
+            <h2>Class 是 blueprint；object 是依 blueprint 建出的實體</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>概念</th>
+                    <th>意思</th>
+                    <th>例子</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Class</td>
+                    <td>藍圖、型別、設計規格。</td>
+                    <td><code>Student</code>、<code>Book</code>、<code>BankAccount</code></td>
+                  </tr>
+                  <tr>
+                    <td>Object</td>
+                    <td>實際存在的一個東西，有自己的 state。</td>
+                    <td>Amy 這位學生、某一本書、某個帳戶。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="concept-card">
+              <pre><code>Student class
+  blueprint: each Student has name and score
+
+student1 object
+  name = "Amy"
+  score = 95
+
+student2 object
+  name = "Ben"
+  score = 72</code></pre>
+            </div>
+            <p>兩個 objects 使用同一份 class code，但它們的 instance variables 各自獨立。</p>
+          </section>
+
+          <section id="anatomy" class="article-section">
+            <p class="eyebrow">Class Anatomy</p>
+            <h2>一個 class 的基本骨架</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Student Class</h3>
+                <button class="copy-button" type="button" data-copy="l13-code-student">Copy</button>
+              </div>
+              <pre><code id="l13-code-student">public class Student
+{
+    private String name;
+    private int score;
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public int getScore()
+    {
+        return score;
+    }
+
+    public void setScore(int newScore)
+    {
+        if (newScore &gt;= 0 &amp;&amp; newScore &lt;= 100)
+        {
+            score = newScore;
+        }
+    }
+
+    public boolean hasPassed()
+    {
+        return score &gt;= 60;
+    }
+}</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>Class Declaration
+│
+├── Instance Variables
+│   ├── name
+│   └── score
+│
+└── Methods
+    ├── getName()
+    ├── getScore()
+    ├── setScore(...)
+    └── hasPassed()</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>部分</th>
+                    <th>用途</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>public class Student</code></td>
+                    <td>宣告 class 名稱與外部可見性。</td>
+                  </tr>
+                  <tr>
+                    <td><code>private String name;</code></td>
+                    <td>宣告每個 object 都會保存的資料。</td>
+                  </tr>
+                  <tr>
+                    <td><code>public int getScore()</code></td>
+                    <td>宣告外部可以呼叫的 method。</td>
+                  </tr>
+                  <tr>
+                    <td><code>{ ... }</code></td>
+                    <td>class body 或 method body。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="state" class="article-section">
+            <p class="eyebrow">Instance Variables</p>
+            <h2>Instance variables 描述 object state</h2>
+            <p>
+              Instance variables 宣告在 class 裡面、method 外面。每個 object 都有自己的一份 fields，
+              因此不同 objects 可以有不同 state。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Object State</h3>
+                <button class="copy-button" type="button" data-copy="l13-code-state">Copy</button>
+              </div>
+              <pre><code id="l13-code-state">public class BankAccount
+{
+    private String owner;
+    private double balance;
+
+    public String getOwner()
+    {
+        return owner;
+    }
+
+    public double getBalance()
+    {
+        return balance;
+    }
+}</code></pre>
+            </div>
+            <p>
+              <code>owner</code> 與 <code>balance</code> 合起來就是這個 <code>BankAccount</code>
+              object 目前的 state。
+            </p>
+            <div class="callout">
+              Instance variables 有 default values：<code>int</code> 是 <code>0</code>，
+              <code>double</code> 是 <code>0.0</code>，<code>boolean</code> 是 <code>false</code>，
+              reference type 如 <code>String</code> 是 <code>null</code>。Local variables 則必須先明確給值。
+            </div>
+          </section>
+
+          <section id="scope" class="article-section">
+            <p class="eyebrow">Field / Local / Parameter</p>
+            <h2>三種變數位置，代表三種不同角色</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Variable Roles</h3>
+                <button class="copy-button" type="button" data-copy="l13-code-variable-roles">Copy</button>
+              </div>
+              <pre><code id="l13-code-variable-roles">public class Example
+{
+    private int value;              // instance variable
+
+    public int calculate(int bonus) // bonus = parameter
+    {
+        int doubled = value * 2;    // local variable
+        return doubled + bonus;
+    }
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>種類</th>
+                    <th>宣告位置</th>
+                    <th>角色</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Instance variable</td>
+                    <td>class 內、method 外</td>
+                    <td>保存 object state。</td>
+                  </tr>
+                  <tr>
+                    <td>Parameter</td>
+                    <td>method header 的括號中</td>
+                    <td>caller 傳進 method 的 input。</td>
+                  </tr>
+                  <tr>
+                    <td>Local variable</td>
+                    <td>method 或 block 裡</td>
+                    <td>method 執行時暫時使用。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="encapsulation" class="article-section">
+            <p class="eyebrow">Encapsulation</p>
+            <h2>Encapsulation：把資料藏起來，讓外部透過方法互動</h2>
+            <p>
+              AP CSA class design 的核心 pattern 是：data private, behavior public when appropriate。
+              外部不應直接改 field，而是透過 class 提供的 public methods。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Private Data + Public Methods</h3>
+                <button class="copy-button" type="button" data-copy="l13-code-encapsulation">Copy</button>
+              </div>
+              <pre><code id="l13-code-encapsulation">public class Student
+{
+    private int score;
+
+    public int getScore()
+    {
+        return score;
+    }
+
+    public void setScore(int newScore)
+    {
+        if (newScore &gt;= 0 &amp;&amp; newScore &lt;= 100)
+        {
+            score = newScore;
+        }
+    }
+}</code></pre>
+            </div>
+            <div class="takeaway-grid">
+              <div><strong>Protect State</strong><span>外部不能任意把 <code>score</code> 改成不合理值。</span></div>
+              <div><strong>Validation</strong><span>mutator 可以先檢查 input 是否合法。</span></div>
+              <div><strong>Implementation Hiding</strong><span>外部不用知道 class 內部怎麼保存資料。</span></div>
+              <div><strong>Maintainability</strong><span>規則集中在 class 裡，日後修改更穩。</span></div>
+            </div>
+          </section>
+
+          <section id="accessors" class="article-section">
+            <p class="eyebrow">Accessors</p>
+            <h2>Accessor method 回報 object state 或衍生資訊</h2>
+            <p>
+              Accessor 不修改 object state，通常有 return value。常見命名是 <code>get...</code>；
+              boolean accessor 也常用 <code>is...</code> 或 <code>has...</code>。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Accessor Examples</h3>
+                <button class="copy-button" type="button" data-copy="l13-code-accessors">Copy</button>
+              </div>
+              <pre><code id="l13-code-accessors">public String getName()
+{
+    return name;
+}
+
+public int getScore()
+{
+    return score;
+}
+
+public boolean hasPassed()
+{
+    return score &gt;= 60;
+}
+
+public String getDescription()
+{
+    return name + ": " + score;
+}</code></pre>
+            </div>
+            <p>
+              <code>hasPassed()</code> 與 <code>getDescription()</code> 都不只是直接 return field，
+              但仍然是 accessor-like behavior，因為它們回報資訊、沒有改變 state。
+            </p>
+          </section>
+
+          <section id="mutators" class="article-section">
+            <p class="eyebrow">Mutators</p>
+            <h2>Mutator method 修改 object state</h2>
+            <p>
+              Mutator 常見命名是 <code>set...</code>，但不一定。<code>deposit()</code>、
+              <code>withdraw()</code>、<code>increment()</code>、<code>reset()</code> 都可能是 mutators。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Mutator with Validation</h3>
+                <button class="copy-button" type="button" data-copy="l13-code-mutators">Copy</button>
+              </div>
+              <pre><code id="l13-code-mutators">public class BankAccount
+{
+    private double balance;
+
+    public double getBalance()
+    {
+        return balance;
+    }
+
+    public void deposit(double amount)
+    {
+        if (amount &gt; 0)
+        {
+            balance += amount;
+        }
+    }
+
+    public void withdraw(double amount)
+    {
+        if (amount &gt; 0 &amp;&amp; amount &lt;= balance)
+        {
+            balance -= amount;
+        }
+    }
+}</code></pre>
+            </div>
+            <div class="callout">
+              Encapsulation 不等於「每個 private field 都自動給 getter 和 setter」。
+              Class 應該只開放合理操作，並維護自己的合法狀態。
+            </div>
+          </section>
+
+          <section id="methods" class="article-section">
+            <p class="eyebrow">Method Anatomy</p>
+            <h2>Method header 告訴我們 method 怎麼被呼叫</h2>
+            <div class="concept-card">
+              <pre><code>accessModifier returnType methodName(parameters)</code></pre>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Method Header and Body</h3>
+                <button class="copy-button" type="button" data-copy="l13-code-method-anatomy">Copy</button>
+              </div>
+              <pre><code id="l13-code-method-anatomy">public boolean isEligible(int minimumScore)
+{
+    return score &gt;= minimumScore;
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>部分</th>
+                    <th>例子</th>
+                    <th>意思</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Access modifier</td>
+                    <td><code>public</code></td>
+                    <td>其他 class 可以呼叫。</td>
+                  </tr>
+                  <tr>
+                    <td>Return type</td>
+                    <td><code>boolean</code></td>
+                    <td>method 最後會提供 boolean result。</td>
+                  </tr>
+                  <tr>
+                    <td>Method name</td>
+                    <td><code>isEligible</code></td>
+                    <td>caller 使用的 method 名稱。</td>
+                  </tr>
+                  <tr>
+                    <td>Parameter</td>
+                    <td><code>int minimumScore</code></td>
+                    <td>呼叫時需要傳入一個 int。</td>
+                  </tr>
+                  <tr>
+                    <td>Method body</td>
+                    <td><code>{ return ...; }</code></td>
+                    <td>method 實際執行的程式碼。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              <code>void</code> 表示 method 不回傳值給 caller。Return method 可以放進 expression；
+              <code>void</code> method 不能當成 value 使用。
+            </p>
+          </section>
+
+          <section id="responsibility" class="article-section">
+            <p class="eyebrow">Object Responsibility</p>
+            <h2>好的 class 把規則放在擁有資料的地方</h2>
+            <p>
+              Class design 不只是語法。你要問：這個 object 是什麼？它要記住什麼？
+              外部需要知道什麼？外部允許改變什麼？哪些規則應該由 object 自己維護？
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Rectangle Responsibility</h3>
+                <button class="copy-button" type="button" data-copy="l13-code-rectangle">Copy</button>
+              </div>
+              <pre><code id="l13-code-rectangle">public class Rectangle
+{
+    private double width;
+    private double height;
+
+    public double getWidth()
+    {
+        return width;
+    }
+
+    public double getHeight()
+    {
+        return height;
+    }
+
+    public double getArea()
+    {
+        return width * height;
+    }
+}</code></pre>
+            </div>
+            <p>
+              <code>getArea()</code> 放在 <code>Rectangle</code> 裡很自然，因為面積規則依賴
+              <code>width</code> 與 <code>height</code>，而這些資料正是 <code>Rectangle</code> 擁有的 state。
+            </p>
+          </section>
+
+          <section id="trace" class="article-section">
+            <p class="eyebrow">Class Tracing</p>
+            <h2>Trace method calls：看 state 如何改變</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Counter Trace</h3>
+                <button class="copy-button" type="button" data-copy="l13-code-counter">Copy</button>
+              </div>
+              <pre><code id="l13-code-counter">public class Counter
+{
+    private int value;
+
+    public int getValue()
+    {
+        return value;
+    }
+
+    public void increment()
+    {
+        value++;
+    }
+
+    public void reset()
+    {
+        value = 0;
+    }
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Call</th>
+                    <th>Effect</th>
+                    <th><code>value</code></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>new object</td>
+                    <td><code>int</code> field default value</td>
+                    <td>0</td>
+                  </tr>
+                  <tr>
+                    <td><code>increment()</code></td>
+                    <td><code>value++</code></td>
+                    <td>1</td>
+                  </tr>
+                  <tr>
+                    <td><code>increment()</code></td>
+                    <td><code>value++</code></td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td><code>reset()</code></td>
+                    <td><code>value = 0</code></td>
+                    <td>0</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              不同 objects 呼叫同一個 method 時，method code 是同一份，但 receiver object 不同，
+              所以被修改的是不同 object 的 state。
+            </p>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Errors</p>
+            <h2>Class structure 常見錯誤</h2>
+            <div class="error-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>錯誤</th>
+                    <th>常見樣子</th>
+                    <th>修正想法</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>把 field 宣告在 method 裡</td>
+                    <td><code>private int score;</code> 寫在 method body 中</td>
+                    <td>Instance variable 要直接放在 class body 裡、methods 外。</td>
+                  </tr>
+                  <tr>
+                    <td>local variable 加 access modifier</td>
+                    <td><code>private int x = 5;</code> 寫在 method 裡</td>
+                    <td><code>private/public</code> 主要用在 fields、methods、constructors、classes。</td>
+                  </tr>
+                  <tr>
+                    <td>method 寫在 method 裡</td>
+                    <td>nested methods</td>
+                    <td>Java methods 直接屬於 class，不放進另一個 method。</td>
+                  </tr>
+                  <tr>
+                    <td>return type 不符</td>
+                    <td><code>public int getName()</code> 卻 return <code>String</code></td>
+                    <td>return value type 必須符合 method header。</td>
+                  </tr>
+                  <tr>
+                    <td><code>void</code> method 還想回傳值</td>
+                    <td><code>public void getScore() { return score; }</code></td>
+                    <td>要回傳值就把 return type 改成正確型別。</td>
+                  </tr>
+                  <tr>
+                    <td>assignment 方向反了</td>
+                    <td><code>newScore = score;</code></td>
+                    <td>要修改 field 應該是 <code>score = newScore;</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>把所有 fields 設成 public</td>
+                    <td><code>public int score;</code></td>
+                    <td>AP CSA class design 通常使用 private fields + public methods。</td>
+                  </tr>
+                  <tr>
+                    <td>只看 method 名字判斷 accessor/mutator</td>
+                    <td><code>getCount()</code> 裡面偷偷 <code>count++</code></td>
+                    <td>Accessor/mutator 要看 method body 是否改變 state。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Class</strong><span>建立 object 的 blueprint，也是 Java 自訂 type。</span></div>
+              <div><strong>Object</strong><span>依 class 建出的實體，有自己的 state。</span></div>
+              <div><strong>Instance Variable</strong><span>class 裡、method 外，描述 object state。</span></div>
+              <div><strong>Local Variable</strong><span>method 或 block 裡，只在該 scope 使用。</span></div>
+              <div><strong>Parameter</strong><span>method input，是 method call 的 local variable。</span></div>
+              <div><strong>Private</strong><span>外部不能直接存取；class 內 methods 可以使用。</span></div>
+              <div><strong>Public</strong><span>外部可以呼叫或使用。</span></div>
+              <div><strong>Encapsulation</strong><span>private state + controlled public behavior。</span></div>
+              <div><strong>Accessor</strong><span>回報資訊，通常不修改 state。</span></div>
+              <div><strong>Mutator</strong><span>修改 object state，可包含 validation。</span></div>
+              <div><strong>Method Header</strong><span>access、return type、name、parameters。</span></div>
+              <div><strong>Responsibility</strong><span>把規則放在擁有資料的 class 裡。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十二句</summary>
+              <p>A class is a blueprint for objects.</p>
+              <p>An object has its own instance variables.</p>
+              <p>Instance variables are declared inside a class but outside methods.</p>
+              <p>Instance variables describe object state.</p>
+              <p>Fields are usually private.</p>
+              <p>Public methods form the class's public interface.</p>
+              <p>Encapsulation protects state and hides implementation details.</p>
+              <p>An accessor reports information without changing state.</p>
+              <p>A mutator changes object state.</p>
+              <p>A method header describes how the method can be called.</p>
+              <p>Parameters are local variables for a method call.</p>
+              <p>Good classes manage their own data and rules.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 13｜Class Structure。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

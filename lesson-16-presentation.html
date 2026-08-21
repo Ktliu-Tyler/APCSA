@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 16 投影模式｜Scope / static / this</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 16 投影模式：scope、parameters、local variables、block scope、this、shadowing、static fields、static methods、main 與 AP-style compile errors。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 16</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-16.html">文章版</a>
+        <a href="lesson-16-practice.html">課後練習</a>
+        <a href="lesson-15.html">上一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 16</p>
+          <h1>Scope / <code>static</code> / <code>this</code></h1>
+          <p class="slide-lead">
+            今天把 class/object 的名字解析補完整：變數在哪裡能用、<code>this</code> 是誰、
+            shadowing 為什麼會出 bug、static field/method 為什麼屬於 class。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-16-practice.html">Lesson 16 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">From Lessons 13-15</p>
+          <h2>我們已經會寫 class，但還要知道每個名字屬於誰</h2>
+          <div class="deck-code">
+            <pre><code>public class Student
+{
+    private String name;
+    private int score;
+
+    public Student(String name, int score)
+    {
+        this.name = name;
+        this.score = score;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">今天的核心問題：<code>score</code> 到底是哪一個 <code>score</code>？</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Scope</p>
+          <h2>Scope 是名字可以被直接使用的程式碼範圍</h2>
+          <div class="deck-code">
+            <pre><code>public void method()
+{
+    int x = 5;
+    System.out.println(x); // OK
+}
+
+public void other()
+{
+    System.out.println(x); // compile error
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Scope vs Lifetime</p>
+          <h2>Scope 和 lifetime 不是同一件事</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Scope</h3>
+              <p>程式碼在哪裡可以使用這個名字。</p>
+            </div>
+            <div>
+              <h3>Lifetime</h3>
+              <p>Variable 或 object 存在多久。</p>
+            </div>
+          </div>
+          <p class="slide-note">AP CSA 最常考的是 scope、shadowing、static context。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Four Variable Kinds</p>
+          <h2>先辨認 variable 的種類</h2>
+          <div class="deck-code">
+            <pre><code>public class Example
+{
+    private int value;          // instance variable
+    private static int count;   // static variable
+
+    public void method(int x)   // parameter
+    {
+        int result = x + value; // local variable
+    }
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Instance Variable</p>
+          <h2>Instance variable 屬於 object</h2>
+          <div class="big-flow">
+            <span>Student a</span>
+            <span>own name</span>
+            <span>own score</span>
+            <span>receiver state</span>
+          </div>
+          <p class="slide-note">同一個 class 建出的不同 objects，各自有自己的 instance fields。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Receiver State</p>
+          <h2>Instance method 中的 field 通常是 receiver 的 field</h2>
+          <div class="deck-code">
+            <pre><code>public int getScore()
+{
+    return score;
+}
+
+a.getScore(); // score means a's score
+b.getScore(); // score means b's score</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">this</p>
+          <h2><code>this</code> means the current receiver object</h2>
+          <div class="deck-code">
+            <pre><code>public void setScore(int score)
+{
+    this.score = score;
+}</code></pre>
+          </div>
+          <p class="slide-note">若執行 <code>a.setScore(90)</code>，<code>this</code> 就是 <code>a</code> 指到的 object。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>若執行 <code>b.setScore(70)</code>，<code>this.score</code> 是誰的 score？</h2>
+          <button class="reveal-button" type="button" data-reveal="l16-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l16-r1">
+            <p><code>this.score</code> 是 <code>b</code> 指到的 object 的 score。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Shadowing</p>
+          <h2>Parameter 和 field 同名時，單獨寫名稱會先找到 parameter</h2>
+          <div class="deck-code">
+            <pre><code>private int score;
+
+public void brokenSetScore(int score)
+{
+    score = score; // parameter = parameter
+}</code></pre>
+          </div>
+          <p class="slide-note">這段通常沒有 compile error，但有 logic bug。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Fix Shadowing</p>
+          <h2><code>this.field</code> 明確指定 instance field</h2>
+          <div class="deck-code">
+            <pre><code>public void setScore(int score)
+{
+    this.score = score;
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>this.score</code> 是 field；<code>score</code> 是 parameter。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2><code>obj.sum(5)</code> 回傳什麼？</h2>
+          <div class="deck-code">
+            <pre><code>private int x = 10;
+
+public int sum(int x)
+{
+    return this.x + x;
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l16-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l16-r2">
+            <p><code>15</code>。<code>this.x</code> 是 field 10；<code>x</code> 是 parameter 5。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Parameters</p>
+          <h2>Parameter scope 是 method / constructor body</h2>
+          <div class="deck-code">
+            <pre><code>public void addPoints(int amount)
+{
+    score += amount; // OK
+}
+
+public void other()
+{
+    System.out.println(amount); // compile error
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Local Variables</p>
+          <h2>Local variable 從宣告後到所在 block 結束前可用</h2>
+          <div class="deck-code">
+            <pre><code>public int doubledScore()
+{
+    int result = score * 2;
+    return result;
+}</code></pre>
+          </div>
+          <p class="slide-note">宣告前不能用，block 外不能用。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Block Scope</p>
+          <h2>Curly braces 建立 block scope</h2>
+          <div class="deck-code">
+            <pre><code>int x = 1;
+
+if (x &gt; 0)
+{
+    int y = 2;
+}
+
+System.out.println(x); // OK
+System.out.println(y); // compile error</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">For Loop Scope</p>
+          <h2><code>for (int i ...)</code> 的 <code>i</code> 通常只能在 loop 裡用</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; 4; i++)
+{
+}
+
+System.out.println(i); // compile error</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Defaults</p>
+          <h2>Fields 有 default values；local variables 沒有可直接用的 default value</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Fields</h3>
+              <p><code>int</code> → <code>0</code></p>
+              <p><code>boolean</code> → <code>false</code></p>
+              <p>object reference → <code>null</code></p>
+            </div>
+            <div>
+              <h3>Locals</h3>
+              <p>使用前必須被賦值。</p>
+              <p><code>int x; println(x);</code> compile error。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>這段合法嗎？</h2>
+          <div class="deck-code">
+            <pre><code>int x;
+if (score &gt; 0)
+{
+    x = 5;
+}
+System.out.println(x);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l16-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l16-r3">
+            <p>通常不合法。若 condition 不成立，<code>x</code> 可能還沒被賦值就使用。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">static</p>
+          <h2><code>static</code> means class-level</h2>
+          <div class="deck-code">
+            <pre><code>public class Student
+{
+    private String name;        // per object
+    private int score;          // per object
+    private static int count;   // shared by class
+}</code></pre>
+          </div>
+          <p class="slide-note">Static variable 也叫 class variable。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Static Shared State</p>
+          <h2>Static field 所有 objects 共用一份</h2>
+          <div class="deck-code">
+            <pre><code>private static int count = 0;
+
+public Student(String name)
+{
+    this.name = name;
+    count++;
+}</code></pre>
+          </div>
+          <div class="big-flow">
+            <span>new Student</span>
+            <span>count 1</span>
+            <span>new Student</span>
+            <span>count 2</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Design Rule</p>
+          <h2>每個 object 自己不同的 state，不要隨便 static</h2>
+          <div class="deck-code">
+            <pre><code>public class Student
+{
+    private static int score; // usually bad design
+}</code></pre>
+          </div>
+          <p class="slide-note">如果每個 Student 應該有不同 score，<code>score</code> 應該是 instance variable。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Static Method</p>
+          <h2>Static method belongs to class and has no receiver object</h2>
+          <div class="deck-code">
+            <pre><code>public class Utility
+{
+    public static int square(int x)
+    {
+        return x * x;
+    }
+}
+
+int n = Utility.square(5);</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Static Context Rule</p>
+          <h2>Static method 不能直接使用 instance members</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Can directly use</h3>
+              <p>parameters</p>
+              <p>local variables</p>
+              <p>static fields/methods</p>
+            </div>
+            <div>
+              <h3>Cannot directly use</h3>
+              <p>instance fields</p>
+              <p>instance methods</p>
+              <p><code>this</code></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>這段合法嗎？</h2>
+          <div class="deck-code">
+            <pre><code>private int score;
+
+public static int getScore()
+{
+    return score;
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l16-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l16-r4">
+            <p>不合法。<code>score</code> 是 instance field；static method 沒有 receiver object。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Static Can Use Object References</p>
+          <h2>Static method 若有 object reference，就能指定要用哪個 object</h2>
+          <div class="deck-code">
+            <pre><code>public static int readScore(Student s)
+{
+    return s.getScore();
+}</code></pre>
+          </div>
+          <p class="slide-note">關鍵是 <code>s</code> 明確指出 receiver object。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">main</p>
+          <h2><code>main</code> 是 static method</h2>
+          <div class="deck-code">
+            <pre><code>public static void main(String[] args)
+{
+    Example e = new Example();
+    System.out.println(e.getX());
+}</code></pre>
+          </div>
+          <p class="slide-note">在 main 裡要使用 instance state，通常先建立 object。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>Static method 可以使用 <code>this</code> 嗎？</h2>
+          <button class="reveal-button" type="button" data-reveal="l16-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l16-r5">
+            <p>不可以。<code>this</code> 只存在 constructor 和 instance method 的 instance context。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Name Lookup SOP</p>
+          <h2>Scope 題解題流程</h2>
+          <div class="big-flow">
+            <span>Find declaration</span>
+            <span>Check block</span>
+            <span>Check shadowing</span>
+            <span>Check this</span>
+            <span>Check static</span>
+            <span>Decide output/error</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Errors</p>
+          <h2>Lesson 16 最常見錯誤</h2>
+          <div class="exit-grid">
+            <div>Loop 外使用 <code>for</code> header 宣告的 <code>i</code>。</div>
+            <div><code>score = score</code> shadowing bug。</div>
+            <div>Local variable 使用前沒初始化。</div>
+            <div>Static method 直接使用 instance field。</div>
+            <div>Static method 使用 <code>this</code>。</div>
+            <div>把 object state 錯誤改成 <code>static</code>。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Final Trace</p>
+          <h2>這段最後印出什麼？</h2>
+          <div class="deck-code">
+            <pre><code>Thing a = new Thing();
+Thing b = new Thing();
+a.add();
+System.out.println(a.getValue());
+System.out.println(b.getValue());
+System.out.println(Thing.getCount());</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l16-r6">揭曉答案</button>
+          <div class="reveal-panel" id="l16-r6">
+            <p>若 constructor 做 static <code>count++</code>，且 <code>add</code> 只修改 instance <code>value</code>，通常印出 <code>1</code>、<code>0</code>、<code>2</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的六個練習</h2>
+          <div class="exit-grid">
+            <div>修正 <code>value = value</code>。</div>
+            <div>用 <code>this.field</code> 寫 constructor。</div>
+            <div>trace local/block scope。</div>
+            <div>寫 static counter。</div>
+            <div>修正 static context error。</div>
+            <div>判斷 data 應屬於 object 還是 class。</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-16-practice.html">開始 Lesson 16 課後練習</a>
+            <a class="button" href="lesson-16.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十二句</h2>
+          <div class="exit-grid">
+            <div>Scope determines where a name can be used。</div>
+            <div>Local variables are scoped to their block。</div>
+            <div>Parameters are scoped to method body。</div>
+            <div>Instance variables belong to objects。</div>
+            <div><code>this</code> means current object。</div>
+            <div><code>this.field</code> fixes shadowing。</div>
+            <div>Local variables must be initialized before use。</div>
+            <div>Fields have default values。</div>
+            <div><code>static</code> means class-level。</div>
+            <div>Static fields are shared by all objects。</div>
+            <div>Static methods have no receiver object。</div>
+            <div>Static methods cannot directly use instance fields or <code>this</code>。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

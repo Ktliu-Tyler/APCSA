@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 14｜Constructors</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 14：constructors、object creation、new expression、initial state、parameter shadowing、this.field、default constructor、overloaded constructors 與 constructor tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 14</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第十四堂課導覽">
+        <a href="lesson-14-presentation.html">投影模式</a>
+        <a href="lesson-14-practice.html">課後練習</a>
+        <a href="lesson-13.html">上一課</a>
+        <a href="lesson-15.html">下一課</a>
+        <a href="#syntax">Syntax</a>
+        <a href="#new">new</a>
+        <a href="#this">this</a>
+        <a href="#default">Default Constructor</a>
+        <a href="#overloading">Overloading</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 14</p>
+          <h1>Constructors：Object 建立、初始狀態與 Overloaded Constructors</h1>
+          <p class="lead">
+            Lesson 13 學會 class 的結構與 object state。這堂課補上 object 建立時最關鍵的一步：
+            constructor。你會學會 constructor 如何初始化 fields、如何和 <code>new</code> 搭配、
+            為什麼 constructor 沒有 return type、以及 <code>this.field = field</code> 如何解決 shadowing。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-14-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-14-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-13.html">回 Lesson 13</a>
+            <a class="button" href="lesson-15.html">前往 Lesson 15</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#purpose">Constructor Purpose</a>
+          <a href="#syntax">Constructor Syntax</a>
+          <a href="#new">new Expression</a>
+          <a href="#parameters">Parameters</a>
+          <a href="#validation">Validation</a>
+          <a href="#defaults">Field Defaults</a>
+          <a href="#this">Shadowing / this</a>
+          <a href="#default">Default Constructor</a>
+          <a href="#overloading">Overloaded Constructors</a>
+          <a href="#trace">Constructor Trace</a>
+          <a href="#design">Design</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>說明 constructor 的目的：initialize a newly created object。</div>
+              <div>辨認 constructor syntax：名稱等於 class name，且沒有 return type。</div>
+              <div>分辨 constructor 與名字剛好相同的 ordinary method。</div>
+              <div>理解 <code>new ClassName(...)</code> 建立 object 並呼叫 matching constructor。</div>
+              <div>依照 parameter type、順序與數量判斷 constructor call 是否 match。</div>
+              <div>使用 constructor parameters 初始化 instance variables。</div>
+              <div>在 constructor 中加入 validation，建立合法 initial state。</div>
+              <div>理解 instance variable default values 與 constructor initialization 的關係。</div>
+              <div>辨認 parameter shadowing，並使用 <code>this.field = field</code> 修正。</div>
+              <div>理解 compiler-provided default constructor 何時存在。</div>
+              <div>寫 overloaded constructors，知道 parameter names 不屬於 signature。</div>
+              <div>trace constructor body 如何設定 object state。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson14-flow-0" /> <span><strong>Constructor purpose</strong>：object 剛建立時，fields 要如何得到初始值。</span></label>
+              <label><input type="checkbox" data-progress="lesson14-flow-1" /> <span><strong>Syntax rules</strong>：名字等於 class，沒有 return type。</span></label>
+              <label><input type="checkbox" data-progress="lesson14-flow-2" /> <span><strong>new and matching</strong>：argument 數量、順序、型別必須 match constructor。</span></label>
+              <label><input type="checkbox" data-progress="lesson14-flow-3" /> <span><strong>Shadowing</strong>：<code>name = name</code> 的陷阱與 <code>this.name = name</code>。</span></label>
+              <label><input type="checkbox" data-progress="lesson14-flow-4" /> <span><strong>Default constructor</strong>：什麼時候 Java 自動提供 no-arg constructor。</span></label>
+              <label><input type="checkbox" data-progress="lesson14-flow-5" /> <span><strong>Overloading and trace</strong>：多個 constructors、初始 state、AP-style tracing。</span></label>
+            </div>
+          </section>
+
+          <section id="purpose" class="article-section">
+            <p class="eyebrow">Constructor Purpose</p>
+            <h2>Constructor 在 object 建立時執行，用來設定 initial state</h2>
+            <p>
+              Lesson 13 中我們已經有 fields，例如 <code>name</code> 與 <code>score</code>。
+              但 object 剛建立時，這些 fields 要怎麼得到合理值？答案是 constructor。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Student Constructor</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-purpose">Copy</button>
+              </div>
+              <pre><code id="l14-code-purpose">public class Student
+{
+    private String name;
+    private int score;
+
+    public Student(String studentName, int studentScore)
+    {
+        name = studentName;
+        score = studentScore;
+    }
+}</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>Student s = new Student("Amy", 95);
+
+new Student object
+  name = "Amy"
+  score = 95</code></pre>
+            </div>
+            <p>
+              Constructor 的主要工作是：建立 object 後，設定 instance variables，讓 object 進入合法、可使用的 initial state。
+            </p>
+          </section>
+
+          <section id="syntax" class="article-section">
+            <p class="eyebrow">Constructor Syntax</p>
+            <h2>Constructor 名字必須和 class 相同，而且沒有 return type</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Constructor Header</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-syntax">Copy</button>
+              </div>
+              <pre><code id="l14-code-syntax">public Student(String name, int score)
+{
+    this.name = name;
+    this.score = score;
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>規則</th>
+                    <th>正確</th>
+                    <th>錯誤或陷阱</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>名稱等於 class name</td>
+                    <td><code>public Student(...)</code></td>
+                    <td><code>public Person(...)</code></td>
+                  </tr>
+                  <tr>
+                    <td>沒有 return type</td>
+                    <td><code>public Student(...)</code></td>
+                    <td><code>public void Student(...)</code></td>
+                  </tr>
+                  <tr>
+                    <td>通常 public</td>
+                    <td><code>public Student(...)</code></td>
+                    <td>AP FRQ 通常照 specification 寫。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout">
+              <code>public void Student(...)</code> 不是 constructor。它是一個 ordinary method，
+              只是 method name 剛好叫 <code>Student</code>。
+            </div>
+          </section>
+
+          <section id="new" class="article-section">
+            <p class="eyebrow">new Expression</p>
+            <h2><code>new</code> 建立 object，然後呼叫 matching constructor</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>new + Constructor Call</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-new">Copy</button>
+              </div>
+              <pre><code id="l14-code-new">Student s = new Student("Amy", 95);</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>1. allocate a new Student object
+2. create fields with default values
+3. pass "Amy" and 95 into the constructor
+4. execute constructor body
+5. return the object reference to s</code></pre>
+            </div>
+            <p>
+              Constructor 只在 object 被 <code>new</code> 建立時執行。之後呼叫 methods 不會讓 constructor 自動重跑。
+              兩個 <code>new</code> expressions 通常代表兩個不同 objects。
+            </p>
+          </section>
+
+          <section id="parameters" class="article-section">
+            <p class="eyebrow">Constructor Parameters</p>
+            <h2>Arguments 必須 match constructor 的 parameter list</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Parameter Order and Types</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-parameters">Copy</button>
+              </div>
+              <pre><code id="l14-code-parameters">public Student(String name, int score)
+{
+    this.name = name;
+    this.score = score;
+}
+
+Student a = new Student("Amy", 95);   // OK
+Student b = new Student(95, "Amy");   // compile error</code></pre>
+            </div>
+            <p>
+              Parameter order 是 API 的一部分。<code>new Student("Amy", 95)</code>
+              會把 <code>"Amy"</code> 對到 <code>name</code>，把 <code>95</code> 對到 <code>score</code>。
+            </p>
+          </section>
+
+          <section id="validation" class="article-section">
+            <p class="eyebrow">Validation</p>
+            <h2>Constructor 可以保護 object 的初始狀態</h2>
+            <p>
+              Constructor body 就像一般 method body，可以有 assignment、if statement、計算與 method calls。
+              常見用途是拒絕不合法的 initial state。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Constructor Validation</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-validation">Copy</button>
+              </div>
+              <pre><code id="l14-code-validation">public Student(String name, int score)
+{
+    this.name = name;
+
+    if (score &gt;= 0 &amp;&amp; score &lt;= 100)
+    {
+        this.score = score;
+    }
+    else
+    {
+        this.score = 0;
+    }
+}</code></pre>
+            </div>
+            <p>
+              Object 一旦 constructor 完成，應該盡可能處於合法、可使用的 state。
+            </p>
+          </section>
+
+          <section id="defaults" class="article-section">
+            <p class="eyebrow">Field Defaults</p>
+            <h2>Constructor 執行前，fields 已經有 Java default values</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Field Type</th>
+                    <th>Default Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>int</code></td>
+                    <td><code>0</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>double</code></td>
+                    <td><code>0.0</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>boolean</code></td>
+                    <td><code>false</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>String</code> 或其他 reference type</td>
+                    <td><code>null</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Uninitialized Field</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-defaults">Copy</button>
+              </div>
+              <pre><code id="l14-code-defaults">public class Student
+{
+    private String name;
+    private int score;
+
+    public Student(String name)
+    {
+        this.name = name;
+    }
+}</code></pre>
+            </div>
+            <p>
+              如果建立 <code>new Student("Amy")</code>，<code>score</code> 會是 <code>0</code>。
+              但「Java 有 default value」不代表你應該偷懶。若 specification 要求特定 initial state，就要在 constructor 明確設定。
+            </p>
+          </section>
+
+          <section id="this" class="article-section">
+            <p class="eyebrow">Shadowing And this</p>
+            <h2>Parameter 和 field 同名時，用 <code>this.field</code> 指明 instance variable</h2>
+            <p>
+              當 parameter 與 instance variable 同名時，parameter 會 shadow field。
+              因此單獨寫 <code>name</code> 會先指到 parameter，不是 field。
+            </p>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Shadowing Bug</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-shadowing">Copy</button>
+              </div>
+              <pre><code id="l14-code-shadowing">public class Student
+{
+    private String name;
+
+    public Student(String name)
+    {
+        name = name; // bug: parameter assigned to itself
+    }
+}</code></pre>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Correct this.field Pattern</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-this">Copy</button>
+              </div>
+              <pre><code id="l14-code-this">public class Student
+{
+    private String name;
+    private int score;
+
+    public Student(String name, int score)
+    {
+        this.name = name;
+        this.score = score;
+    }
+}</code></pre>
+            </div>
+            <div class="concept-card">
+              <pre><code>this.name  -> current object's field
+name       -> constructor parameter
+
+this.score -> current object's field
+score      -> constructor parameter</code></pre>
+            </div>
+          </section>
+
+          <section id="default" class="article-section">
+            <p class="eyebrow">Default Constructor</p>
+            <h2>Java 只在你沒有寫任何 constructor 時，才提供 default no-arg constructor</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Compiler-Provided Default Constructor</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-default-constructor">Copy</button>
+              </div>
+              <pre><code id="l14-code-default-constructor">public class Thing
+{
+    private int x;
+}
+
+Thing t = new Thing(); // OK: no constructor was declared</code></pre>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>No Automatic No-Arg After You Write One</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-no-default">Copy</button>
+              </div>
+              <pre><code id="l14-code-no-default">public class Thing
+{
+    private int x;
+
+    public Thing(int value)
+    {
+        x = value;
+    }
+}
+
+Thing a = new Thing(5); // OK
+Thing b = new Thing();  // compile error</code></pre>
+            </div>
+            <p>
+              如果你想同時支援 <code>new Thing()</code> 和 <code>new Thing(5)</code>，
+              就要自己寫 no-argument constructor。
+            </p>
+          </section>
+
+          <section id="overloading" class="article-section">
+            <p class="eyebrow">Overloaded Constructors</p>
+            <h2>同一個 class 可以有多個 constructors，只要 parameter lists 不同</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Rectangle Constructors</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-overload">Copy</button>
+              </div>
+              <pre><code id="l14-code-overload">public class Rectangle
+{
+    private double width;
+    private double height;
+
+    public Rectangle()
+    {
+        width = 1.0;
+        height = 1.0;
+    }
+
+    public Rectangle(double side)
+    {
+        width = side;
+        height = side;
+    }
+
+    public Rectangle(double width, double height)
+    {
+        this.width = width;
+        this.height = height;
+    }
+}</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Call</th>
+                    <th>Matching Constructor</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>new Rectangle()</code></td>
+                    <td><code>Rectangle()</code></td>
+                    <td>1 by 1</td>
+                  </tr>
+                  <tr>
+                    <td><code>new Rectangle(5)</code></td>
+                    <td><code>Rectangle(double side)</code></td>
+                    <td>5 by 5</td>
+                  </tr>
+                  <tr>
+                    <td><code>new Rectangle(5, 3)</code></td>
+                    <td><code>Rectangle(double width, double height)</code></td>
+                    <td>5 by 3</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout">
+              Parameter names 不屬於 signature。<code>Student(String name)</code> 和
+              <code>Student(String nickname)</code> 不是兩個合法 overload，因為 parameter type list 相同。
+            </div>
+          </section>
+
+          <section id="trace" class="article-section">
+            <p class="eyebrow">Constructor Trace</p>
+            <h2>Trace constructor：arguments → parameters → field state</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>NumberBox Trace</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-trace">Copy</button>
+              </div>
+              <pre><code id="l14-code-trace">public class NumberBox
+{
+    private int value;
+
+    public NumberBox(int x)
+    {
+        value = x + 5;
+    }
+
+    public int getValue()
+    {
+        return value;
+    }
+}
+
+NumberBox b = new NumberBox(6);</code></pre>
+            </div>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Step</th>
+                    <th>Parameter <code>x</code></th>
+                    <th>Field <code>value</code></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>before constructor body</td>
+                    <td>6</td>
+                    <td>0</td>
+                  </tr>
+                  <tr>
+                    <td><code>value = x + 5;</code></td>
+                    <td>6</td>
+                    <td>11</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="design" class="article-section">
+            <p class="eyebrow">Constructor Design</p>
+            <h2>Constructor design 的核心問題</h2>
+            <div class="takeaway-grid">
+              <div><strong>Caller Provides</strong><span>哪些 state 必須由 caller 提供？</span></div>
+              <div><strong>Class Decides</strong><span>哪些 state 應該由 class 自己決定？</span></div>
+              <div><strong>Validation</strong><span>哪些 values 需要檢查是否合法？</span></div>
+              <div><strong>Specification</strong><span>AP FRQ 的 constructor header 必須完全照題目。</span></div>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>ScoreTracker Initial State</h3>
+                <button class="copy-button" type="button" data-copy="l14-code-design">Copy</button>
+              </div>
+              <pre><code id="l14-code-design">public class ScoreTracker
+{
+    private String playerName;
+    private int score;
+    private int gamesPlayed;
+
+    public ScoreTracker(String playerName)
+    {
+        this.playerName = playerName;
+        score = 0;
+        gamesPlayed = 0;
+    }
+}</code></pre>
+            </div>
+            <p>
+              Caller 只需要提供 player name；score 和 games played 應該由 class 初始化為 0。
+              不要讓 caller 提供不應該控制的初值。
+            </p>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Errors</p>
+            <h2>Constructor 常見錯誤</h2>
+            <div class="error-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>錯誤</th>
+                    <th>常見樣子</th>
+                    <th>修正想法</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>加了 return type</td>
+                    <td><code>public void Book(...)</code></td>
+                    <td>Constructor 沒有 return type。</td>
+                  </tr>
+                  <tr>
+                    <td>名字和 class 不同</td>
+                    <td><code>public Books(...)</code> inside <code>Book</code></td>
+                    <td>Constructor name 必須完全 match class name。</td>
+                  </tr>
+                  <tr>
+                    <td>shadowing</td>
+                    <td><code>name = name;</code></td>
+                    <td>使用 <code>this.name = name;</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>assignment 方向反了</td>
+                    <td><code>studentName = name;</code></td>
+                    <td>field 在左邊：<code>name = studentName;</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>以為 no-arg constructor 永遠存在</td>
+                    <td>已寫 <code>Student(String name)</code>，又呼叫 <code>new Student()</code></td>
+                    <td>自己寫任何 constructor 後，Java 不再自動提供 no-arg constructor。</td>
+                  </tr>
+                  <tr>
+                    <td>只改 parameter name 來 overload</td>
+                    <td><code>Box(int width)</code> 和 <code>Box(int height)</code></td>
+                    <td>Signature 看 parameter type list，不看 parameter name。</td>
+                  </tr>
+                  <tr>
+                    <td>以為 constructor 會重跑</td>
+                    <td>呼叫 setter 後以為 constructor 自動重新初始化</td>
+                    <td>Constructor 只在 <code>new</code> 建 object 時執行。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Purpose</strong><span>Constructor initializes a newly created object。</span></div>
+              <div><strong>Name</strong><span>Constructor name 必須等於 class name。</span></div>
+              <div><strong>No Return Type</strong><span>不能寫 <code>void</code>、<code>int</code>、<code>String</code>。</span></div>
+              <div><strong>new</strong><span><code>new ClassName(...)</code> 建立 object 並呼叫 matching constructor。</span></div>
+              <div><strong>Parameters</strong><span>arguments 依順序對到 parameters。</span></div>
+              <div><strong>Initialization</strong><span>常見 pattern 是 <code>this.field = field;</code>。</span></div>
+              <div><strong>Shadowing</strong><span>parameter 和 field 同名時，parameter shadows field。</span></div>
+              <div><strong>this</strong><span><code>this.field</code> 指目前 object 的 instance variable。</span></div>
+              <div><strong>Default Values</strong><span>Fields 有 Java default values，但仍應依 specification 初始化。</span></div>
+              <div><strong>Default Constructor</strong><span>只有完全沒寫 constructor 時，compiler 才提供 no-arg default constructor。</span></div>
+              <div><strong>Overloading</strong><span>Constructor overload 依 parameter type list 區分。</span></div>
+              <div><strong>Trace</strong><span>追蹤 arguments、parameters、field default、constructor body。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十二句</summary>
+              <p>A constructor initializes a newly created object.</p>
+              <p>A constructor name must match the class name.</p>
+              <p>A constructor has no return type.</p>
+              <p><code>public void Student(...)</code> is a method, not a constructor.</p>
+              <p><code>new</code> creates an object and calls a matching constructor.</p>
+              <p>Constructor arguments must match the parameter list.</p>
+              <p>Fields have default values before the constructor body runs.</p>
+              <p>Constructor validation helps build valid objects.</p>
+              <p><code>name = name</code> usually indicates shadowing.</p>
+              <p><code>this.name = name</code> assigns the parameter into the current object's field.</p>
+              <p>If you write any constructor, Java does not automatically add a no-arg constructor.</p>
+              <p>Overloaded constructors must have different parameter type lists.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 14｜Constructors。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

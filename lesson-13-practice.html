@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 13 課後練習｜Class Structure</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 13 課後練習：class vs object、instance variables、private/public、encapsulation、accessors、mutators、method headers、object responsibility 與 class tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 13 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-13-presentation.html">投影模式</a>
+        <a href="lesson-13.html">文章版</a>
+        <a href="lesson-12-practice.html">上一課練習</a>
+        <a href="lesson-14-practice.html">下一課練習</a>
+        <a href="#concepts">概念</a>
+        <a href="#variables">變數角色</a>
+        <a href="#encapsulation">封裝</a>
+        <a href="#methods">Methods</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 13</p>
+          <h1>課後練習：Class Structure</h1>
+          <p class="lead">
+            這份題本練習 class anatomy、class vs object、instance variables、encapsulation、
+            accessor/mutator、method headers 與 object state trace。先自己判斷，再打開詳解。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>OOP</strong><span>Class 設計</span></div>
+            <div><strong>AP-style</strong><span>結構與追蹤</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#variables">B. 變數角色</a>
+          <a href="#encapsulation">C. Encapsulation</a>
+          <a href="#methods">D. Method Headers</a>
+          <a href="#access-mutator">E. Accessor / Mutator</a>
+          <a href="#trace">F. Class Tracing</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先確認你能分辨 class、object、state 與 public interface。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Class</span></div>
+              <h3>Class 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p1">詳解</button>
+              <div class="reveal-panel" id="l13p1">
+                <p>Class 是建立 object 的 blueprint，也是一種自訂 reference type。它定義 objects 會有什麼資料與行為。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Object</span></div>
+              <h3>Class 和 object 差在哪？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p2">詳解</button>
+              <div class="reveal-panel" id="l13p2">
+                <p>Class 是設計圖；object 是依照設計圖建立出的實體。不同 objects 可以使用同一份 class code，但保存不同 state。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>State</span></div>
+              <h3>Object state 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p3">詳解</button>
+              <div class="reveal-panel" id="l13p3">
+                <p>Object state 是 object 目前保存的資料，通常由 instance variables 描述。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Class Name</span></div>
+              <h3>Java class name 通常使用哪種命名習慣？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p4">詳解</button>
+              <div class="reveal-panel" id="l13p4">
+                <p>通常使用 PascalCase，例如 <code>Student</code>、<code>BankAccount</code>、<code>ScoreTracker</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Anatomy</span></div>
+              <h3>一個基本 class 通常包含哪些部分？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p5">詳解</button>
+              <div class="reveal-panel" id="l13p5">
+                <p>Class declaration、instance variables、constructors、methods。本課先專注 instance variables 與 methods；constructors 下一課深入。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Interface</span></div>
+              <h3>Public interface 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p6">詳解</button>
+              <div class="reveal-panel" id="l13p6">
+                <p>Public interface 是 class 對外開放的 public methods。其他 class 應該依賴這些 methods，而不是直接碰 private implementation。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="variables" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Variables</p>
+              <h2>Instance Variable / Local Variable / Parameter</h2>
+              <p>AP 題常考「宣告在哪裡」與「這個變數保存多久」。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Instance Variable</span></div>
+              <h3>以下哪個是 instance variable？</h3>
+              <pre><code>public class Test
+{
+    private int x;
+
+    public void method(int y)
+    {
+        int z = x + y;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l13p7">詳解</button>
+              <div class="reveal-panel" id="l13p7">
+                <p><code>x</code> 是 instance variable，因為它宣告在 class 裡、method 外。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Parameter</span></div>
+              <h3>上題中哪個是 parameter？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p8">詳解</button>
+              <div class="reveal-panel" id="l13p8">
+                <p><code>y</code> 是 parameter，因為它出現在 method header 的括號中。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Local Variable</span></div>
+              <h3>上題中哪個是 local variable？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p9">詳解</button>
+              <div class="reveal-panel" id="l13p9">
+                <p><code>z</code> 是 local variable，因為它宣告在 method body 裡。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Default Value</span></div>
+              <h3>Instance variable <code>private int count;</code> 的 default value 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p10">詳解</button>
+              <div class="reveal-panel" id="l13p10">
+                <p><code>0</code>。Instance variables 有 default values。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Default Value</span></div>
+              <h3>Instance variable <code>private boolean active;</code> 的 default value 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p11">詳解</button>
+              <div class="reveal-panel" id="l13p11">
+                <p><code>false</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Default Value</span></div>
+              <h3>Instance variable <code>private String name;</code> 的 default value 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p12">詳解</button>
+              <div class="reveal-panel" id="l13p12">
+                <p><code>null</code>，因為 <code>String</code> 是 reference type。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Local Variable</span></div>
+              <h3>Local variable 是否也有 automatic default value？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p13">詳解</button>
+              <div class="reveal-panel" id="l13p13">
+                <p>沒有。Local variable 使用前必須明確初始化，否則會 compile error。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="encapsulation" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Encapsulation</p>
+              <h2>Private / Public / Encapsulation</h2>
+              <p>封裝的核心是 private state + controlled public methods。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>private</span></div>
+              <h3><code>private</code> field 的意思是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p14">詳解</button>
+              <div class="reveal-panel" id="l13p14">
+                <p>只有同一個 class 裡的程式碼可以直接存取這個 field。其他 class 通常要透過 public methods。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>public</span></div>
+              <h3><code>public</code> method 的意思是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p15">詳解</button>
+              <div class="reveal-panel" id="l13p15">
+                <p>其他 class 可以呼叫這個 method。它通常是 class public interface 的一部分。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Encapsulation</span></div>
+              <h3>為什麼 AP CSA class design 通常不鼓勵 public instance variables？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p16">詳解</button>
+              <div class="reveal-panel" id="l13p16">
+                <p>外部可以任意改資料，class 失去控制與 validation 的機會，容易破壞 object state。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Validation</span></div>
+              <h3>以下 setter 為什麼比直接 public field 好？</h3>
+              <pre><code>public void setScore(int newScore)
+{
+    if (newScore &gt;= 0 &amp;&amp; newScore &lt;= 100)
+    {
+        score = newScore;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l13p17">詳解</button>
+              <div class="reveal-panel" id="l13p17">
+                <p>它可以保證 <code>score</code> 只在 0 到 100 之間，讓 class 維護自己的合法狀態。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Design</span></div>
+              <h3>Encapsulation 是否等於「每個 field 都一定要 getter 和 setter」？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p18">詳解</button>
+              <div class="reveal-panel" id="l13p18">
+                <p>不是。Class 應該只開放合理操作。某些 field 不應被外部直接修改，甚至不需要 getter。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Private Access</span></div>
+              <h3>另一個 class 能不能直接執行 <code>s.score = 100;</code>，如果 <code>score</code> 是 <code>private</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p19">詳解</button>
+              <div class="reveal-panel" id="l13p19">
+                <p>不能，會 compile error。外部應使用 <code>s.setScore(100)</code> 這類 public method。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="methods" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Method Headers</p>
+              <h2>Method Header 與 Return Type</h2>
+              <p>看懂 method header 是閱讀 class 題的第一步。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Header</span></div>
+              <h3>在 <code>public boolean isEligible(int minimumScore)</code> 中，return type 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p20">詳解</button>
+              <div class="reveal-panel" id="l13p20">
+                <p><code>boolean</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Header</span></div>
+              <h3>上題的 method name 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p21">詳解</button>
+              <div class="reveal-panel" id="l13p21">
+                <p><code>isEligible</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Parameter</span></div>
+              <h3>上題的 parameter 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p22">詳解</button>
+              <div class="reveal-panel" id="l13p22">
+                <p><code>int minimumScore</code>，其中 <code>minimumScore</code> 是 parameter name。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>void</span></div>
+              <h3><code>void</code> return type 表示什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p23">詳解</button>
+              <div class="reveal-panel" id="l13p23">
+                <p>表示 method 不回傳值給 caller。它可能修改 state 或印東西，但不能當成 expression value 使用。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Return</span></div>
+              <h3>以下 method 有什麼問題？</h3>
+              <pre><code>public int getName()
+{
+    return name;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l13p24">詳解</button>
+              <div class="reveal-panel" id="l13p24">
+                <p>如果 <code>name</code> 是 <code>String</code>，return type 應該是 <code>String</code>，不是 <code>int</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Return</span></div>
+              <h3>以下 method 有什麼問題？</h3>
+              <pre><code>public int getScore()
+{
+    System.out.println(score);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l13p25">詳解</button>
+              <div class="reveal-panel" id="l13p25">
+                <p>Return type 是 <code>int</code>，method 必須 return 一個 <code>int</code>。印出不等於回傳。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>void</span></div>
+              <h3>以下 method 有什麼問題？</h3>
+              <pre><code>public void getScore()
+{
+    return score;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l13p26">詳解</button>
+              <div class="reveal-panel" id="l13p26">
+                <p><code>void</code> method 不應 return value。若要回傳 <code>score</code>，header 應改成 <code>public int getScore()</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="access-mutator" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Accessor / Mutator</p>
+              <h2>判斷 method 是否修改 state</h2>
+              <p>不能只看名字，要看 method body。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Accessor</span></div>
+              <h3>哪個最像 accessor？</h3>
+              <pre><code>A. public void setScore(int s)
+B. public int getScore()
+C. public void increaseScore()
+D. public void reset()</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l13p27">詳解</button>
+              <div class="reveal-panel" id="l13p27">
+                <p>B。<code>getScore()</code> 通常回報 score，不修改 state。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Mutator</span></div>
+              <h3><code>public void deposit(double amount)</code> 通常是 accessor 還是 mutator？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p28">詳解</button>
+              <div class="reveal-panel" id="l13p28">
+                <p>Mutator，因為它通常會修改 <code>balance</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Boolean Accessor</span></div>
+              <h3><code>public boolean isAlive()</code> 通常是什麼類型的 method？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p29">詳解</button>
+              <div class="reveal-panel" id="l13p29">
+                <p>Boolean accessor。它回傳 boolean 資訊，通常不修改 state。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Derived Info</span></div>
+              <h3><code>getArea()</code> 直接計算 <code>width * height</code>，它還算 accessor 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p30">詳解</button>
+              <div class="reveal-panel" id="l13p30">
+                <p>算。Accessor 不一定只能 return field，也可以回報 derived information，只要不修改 state。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Body</span></div>
+              <h3>以下 method 是 accessor 還是 mutator？</h3>
+              <pre><code>public int getCount()
+{
+    count++;
+    return count;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l13p31">詳解</button>
+              <div class="reveal-panel" id="l13p31">
+                <p>它修改了 <code>count</code>，所以不是純 accessor。判斷要看 body，不只看 method name。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Mutator Return</span></div>
+              <h3>Mutator 是否一定是 <code>void</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p32">詳解</button>
+              <div class="reveal-panel" id="l13p32">
+                <p>不一定。Mutator 是看是否修改 state，不是只看 return type。有些 mutator 可能修改 state 後回傳新值。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="trace" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Class Tracing</p>
+              <h2>Object State Trace</h2>
+              <p>Trace class 題時，列出每個 object 的 instance variables，再逐一套用 method body。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Trace</span></div>
+              <h3>假設 <code>Counter</code> 的 <code>value</code> 初始為 0，呼叫 <code>increment()</code> 一次後是多少？</h3>
+              <pre><code>public void increment()
+{
+    value++;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l13p33">詳解</button>
+              <div class="reveal-panel" id="l13p33">
+                <p><code>value</code> 變成 <code>1</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Trace</span></div>
+              <h3>若 <code>value</code> 已是 2，呼叫 <code>reset()</code> 後是多少？</h3>
+              <pre><code>public void reset()
+{
+    value = 0;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l13p34">詳解</button>
+              <div class="reveal-panel" id="l13p34">
+                <p><code>0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Trace</span></div>
+              <h3>兩個不同 <code>Counter</code> objects 呼叫同一個 <code>increment()</code>，會共享同一個 <code>value</code> 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p35">詳解</button>
+              <div class="reveal-panel" id="l13p35">
+                <p>不會。每個 object 都有自己的 instance variables。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Trace</span></div>
+              <h3>以下 method 呼叫後 <code>score</code> 會變成多少？假設原本 <code>score = 80</code>。</h3>
+              <pre><code>public void addBonus(int bonus)
+{
+    score += bonus;
+}</code></pre>
+              <p>呼叫：<code>addBonus(5)</code></p>
+              <button class="reveal-button" type="button" data-reveal="l13p36">詳解</button>
+              <div class="reveal-panel" id="l13p36">
+                <p><code>85</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>Trace</span></div>
+              <h3>以下 method 呼叫後 <code>score</code> 會變成多少？假設原本 <code>score = 80</code>。</h3>
+              <pre><code>public void setScore(int newScore)
+{
+    newScore = score;
+}</code></pre>
+              <p>呼叫：<code>setScore(90)</code></p>
+              <button class="reveal-button" type="button" data-reveal="l13p37">詳解</button>
+              <div class="reveal-panel" id="l13p37">
+                <p><code>score</code> 仍是 <code>80</code>。Assignment 方向反了；這行只是把 parameter 改成 80。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Trace</span></div>
+              <h3>上題正確 setter 應該怎麼寫？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p38">詳解</button>
+              <div class="reveal-panel" id="l13p38">
+                <pre><code>public void setScore(int newScore)
+{
+    score = newScore;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Receiver</span></div>
+              <h3><code>student1.getScore()</code> 中 receiver object 是哪一個？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p39">詳解</button>
+              <div class="reveal-panel" id="l13p39">
+                <p><code>student1</code> 是 receiver object，也就是這次 method call 正在操作或讀取的 object。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding Practice</p>
+              <h2>程式練習</h2>
+              <p>這一段練習寫 class skeleton 與常見 methods。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Coding</span></div>
+              <h3>寫出 <code>Book</code> class 的兩個 private fields：<code>title</code> 與 <code>pages</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p40">參考解法</button>
+              <div class="reveal-panel" id="l13p40">
+                <pre><code>public class Book
+{
+    private String title;
+    private int pages;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Coding</span></div>
+              <h3>為 <code>Book</code> 寫出 <code>getTitle()</code> accessor。</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p41">參考解法</button>
+              <div class="reveal-panel" id="l13p41">
+                <pre><code>public String getTitle()
+{
+    return title;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Coding</span></div>
+              <h3>為 <code>Book</code> 寫出 <code>getPages()</code> accessor。</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p42">參考解法</button>
+              <div class="reveal-panel" id="l13p42">
+                <pre><code>public int getPages()
+{
+    return pages;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>Coding</span></div>
+              <h3>寫出 boolean accessor：若 <code>pages &gt; 300</code>，<code>isLongBook()</code> 回傳 true。</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p43">參考解法</button>
+              <div class="reveal-panel" id="l13p43">
+                <pre><code>public boolean isLongBook()
+{
+    return pages &gt; 300;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Coding</span></div>
+              <h3>為 <code>Counter</code> 寫出 <code>increment()</code> mutator。</h3>
+              <pre><code>private int count;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l13p44">參考解法</button>
+              <div class="reveal-panel" id="l13p44">
+                <pre><code>public void increment()
+{
+    count++;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Coding</span></div>
+              <h3>為 <code>Counter</code> 寫出 <code>reset()</code> mutator。</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p45">參考解法</button>
+              <div class="reveal-panel" id="l13p45">
+                <pre><code>public void reset()
+{
+    count = 0;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Coding</span></div>
+              <h3>為 <code>Temperature</code> 寫出 <code>getFahrenheit()</code>，已知 field 是 <code>private double celsius;</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p46">參考解法</button>
+              <div class="reveal-panel" id="l13p46">
+                <pre><code>public double getFahrenheit()
+{
+    return celsius * 9 / 5 + 32;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Coding</span></div>
+              <h3>為 <code>BankAccount</code> 寫出只接受正數的 <code>deposit</code> method。</h3>
+              <pre><code>private double balance;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l13p47">參考解法</button>
+              <div class="reveal-panel" id="l13p47">
+                <pre><code>public void deposit(double amount)
+{
+    if (amount &gt; 0)
+    {
+        balance += amount;
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Coding</span></div>
+              <h3>為 <code>BankAccount</code> 寫出餘額足夠才提款的 <code>withdraw</code> method。</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p48">參考解法</button>
+              <div class="reveal-panel" id="l13p48">
+                <pre><code>public void withdraw(double amount)
+{
+    if (amount &gt; 0 &amp;&amp; amount &lt;= balance)
+    {
+        balance -= amount;
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Design</span></div>
+              <h3>在 <code>Circle</code> class 中，<code>getArea()</code> 應該放在 class 裡還是外面計算比較好？</h3>
+              <button class="reveal-button" type="button" data-reveal="l13p49">詳解</button>
+              <div class="reveal-panel" id="l13p49">
+                <p>通常放在 <code>Circle</code> class 裡，因為 <code>Circle</code> 擁有 <code>radius</code>，也最知道面積規則。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>找出以下 class 的兩個設計問題，並修正。</h3>
+              <pre><code>public class Score
+{
+    public int value;
+
+    public void setValue(int newValue)
+    {
+        newValue = value;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l13p50">詳解</button>
+              <div class="reveal-panel" id="l13p50">
+                <p>問題 1：<code>value</code> 應該是 <code>private</code>。問題 2：assignment 方向反了。</p>
+                <pre><code>public class Score
+{
+    private int value;
+
+    public void setValue(int newValue)
+    {
+        value = newValue;
+    }
+}</code></pre>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 13 課後練習。先判斷資料屬於哪個 object，再判斷 method 是否讀取或修改 state。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

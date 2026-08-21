@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 14 課後練習｜Constructors</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 14 課後練習：constructor syntax、new expression、initial state、shadowing、this.field、default constructor、overloaded constructors 與 constructor tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 14 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-14-presentation.html">投影模式</a>
+        <a href="lesson-14.html">文章版</a>
+        <a href="lesson-13-practice.html">上一課練習</a>
+        <a href="lesson-15-practice.html">下一課練習</a>
+        <a href="#concepts">概念</a>
+        <a href="#syntax">Syntax</a>
+        <a href="#matching">Matching</a>
+        <a href="#this-shadowing">this</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 14</p>
+          <h1>課後練習：Constructors</h1>
+          <p class="lead">
+            這份題本練習 constructor purpose、syntax、<code>new</code>、parameter matching、
+            shadowing、<code>this.field</code>、default constructor、overloaded constructors 與 state trace。
+            每題先自己判斷，再打開詳解。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>new</strong><span>Object 建立</span></div>
+            <div><strong>AP-style</strong><span>Constructor 陷阱</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#syntax">B. Constructor Syntax</a>
+          <a href="#matching">C. new / Matching</a>
+          <a href="#defaults">D. Defaults</a>
+          <a href="#this-shadowing">E. Shadowing / this</a>
+          <a href="#overloading">F. Overloading / Trace</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先確認 constructor 的用途與它和 ordinary method 的差異。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Purpose</span></div>
+              <h3>Constructor 的主要目的為何？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p1">詳解</button>
+              <div class="reveal-panel" id="l14p1">
+                <p>Constructor 在 object 被建立時執行，用來初始化 newly created object 的 initial state。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Timing</span></div>
+              <h3>Constructor 什麼時候執行？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p2">詳解</button>
+              <div class="reveal-panel" id="l14p2">
+                <p>當 <code>new ClassName(...)</code> 建立新 object 時執行。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Runs Once</span></div>
+              <h3>Object 建立後呼叫 accessor 或 mutator，constructor 會自動重跑嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p3">詳解</button>
+              <div class="reveal-panel" id="l14p3">
+                <p>不會。Constructor 只在 <code>new</code> 建立 object 時執行。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>State</span></div>
+              <h3>Constructor 通常會設定哪些東西？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p4">詳解</button>
+              <div class="reveal-panel" id="l14p4">
+                <p>通常會設定 instance variables 的初始值，讓 object 進入合理、合法的 initial state。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>new</span></div>
+              <h3><code>Student s = new Student("Amy", 95);</code> 中，哪一段是 constructor call？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p5">詳解</button>
+              <div class="reveal-panel" id="l14p5">
+                <p><code>Student("Amy", 95)</code> 是 constructor call；整個 <code>new Student("Amy", 95)</code> 是 new expression。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Identity</span></div>
+              <h3>以下兩行會建立幾個 objects？</h3>
+              <pre><code>Student a = new Student("Amy", 90);
+Student b = new Student("Amy", 90);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p6">詳解</button>
+              <div class="reveal-panel" id="l14p6">
+                <p>兩個。每個 <code>new</code> expression 都建立一個新的 object。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="syntax" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Syntax</p>
+              <h2>Constructor Syntax</h2>
+              <p>AP 最常考：constructor 名字、沒有 return type、和 ordinary method 的差別。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Name</span></div>
+              <h3>Class <code>Book</code> 的 constructor 必須叫什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p7">詳解</button>
+              <div class="reveal-panel" id="l14p7">
+                <p>必須叫 <code>Book</code>，名稱要和 class 完全相同，包含大小寫。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>No Return Type</span></div>
+              <h3>哪一個是 class <code>Book</code> 的 constructor？</h3>
+              <pre><code>A. public void Book()
+B. public Book()
+C. public int Book()
+D. public book()</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p8">詳解</button>
+              <div class="reveal-panel" id="l14p8">
+                <p>B。Constructor 名字等於 class name，且沒有 return type。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Method Trap</span></div>
+              <h3><code>public void Student(String name)</code> 是 constructor 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p9">詳解</button>
+              <div class="reveal-panel" id="l14p9">
+                <p>不是。因為它有 return type <code>void</code>，所以是 ordinary method。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Case</span></div>
+              <h3>在 <code>public class Student</code> 裡，<code>public student()</code> 是 constructor 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p10">詳解</button>
+              <div class="reveal-panel" id="l14p10">
+                <p>不是。Java 大小寫敏感，constructor name 必須是 <code>Student</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Syntax</span></div>
+              <h3>以下哪個 header 最可能是 <code>Car</code> constructor？</h3>
+              <pre><code>A. public Vehicle(String model)
+B. public Car(String model)
+C. public void Car(String model)
+D. private String Car(String model)</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p11">詳解</button>
+              <div class="reveal-panel" id="l14p11">
+                <p>B。名稱 match class <code>Car</code>，沒有 return type。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Return</span></div>
+              <h3>Constructor 是否需要 <code>return this;</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p12">詳解</button>
+              <div class="reveal-panel" id="l14p12">
+                <p>不需要，而且不應這樣寫。<code>new</code> expression 會得到 object reference，不是靠 constructor return。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="matching" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. new / Matching</p>
+              <h2>Constructor Call Matching</h2>
+              <p>Arguments 必須在數量、順序與型別上 match constructor parameter list。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Matching</span></div>
+              <h3>以下 constructor call 是否合法？</h3>
+              <pre><code>public Student(String name, int score)
+{
+    this.name = name;
+    this.score = score;
+}
+
+Student s = new Student("Amy", 95);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p13">詳解</button>
+              <div class="reveal-panel" id="l14p13">
+                <p>合法。Arguments 是 <code>String, int</code>，剛好 match。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Order</span></div>
+              <h3>以下 constructor call 是否合法？</h3>
+              <pre><code>public Student(String name, int score)
+{
+    this.name = name;
+    this.score = score;
+}
+
+Student s = new Student(95, "Amy");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p14">詳解</button>
+              <div class="reveal-panel" id="l14p14">
+                <p>不合法。順序錯了，constructor 需要 <code>String, int</code>，但給的是 <code>int, String</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Count</span></div>
+              <h3>以下 constructor call 是否合法？</h3>
+              <pre><code>public Rectangle(double width, double height)
+{
+    this.width = width;
+    this.height = height;
+}
+
+Rectangle r = new Rectangle(5.0);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p15">詳解</button>
+              <div class="reveal-panel" id="l14p15">
+                <p>不合法，除非 class 另外有 <code>Rectangle(double)</code> constructor。這裡只看到 two-parameter constructor。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Types</span></div>
+              <h3><code>new Rectangle("5", "3")</code> 能 match <code>Rectangle(double width, double height)</code> 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p16">詳解</button>
+              <div class="reveal-panel" id="l14p16">
+                <p>不能。<code>"5"</code> 和 <code>"3"</code> 是 <code>String</code>，不是 <code>double</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Arguments</span></div>
+              <h3>以下 constructor 中，<code>studentScore</code> 的值是多少？</h3>
+              <pre><code>public Student(String studentName, int studentScore)
+{
+    name = studentName;
+    score = studentScore;
+}
+
+Student s = new Student("Amy", 95);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p17">詳解</button>
+              <div class="reveal-panel" id="l14p17">
+                <p><code>studentScore</code> 是 <code>95</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Arguments</span></div>
+              <h3>上題 constructor 執行後，<code>name</code> 和 <code>score</code> 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p18">詳解</button>
+              <div class="reveal-panel" id="l14p18">
+                <p><code>name = "Amy"</code>，<code>score = 95</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="defaults" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Defaults</p>
+              <h2>Field Default Values 與 Default Constructor</h2>
+              <p>Default value 和 default constructor 是兩個不同概念。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Field Default</span></div>
+              <h3>Constructor 執行前，<code>int</code> instance variable 的 default value 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p19">詳解</button>
+              <div class="reveal-panel" id="l14p19">
+                <p><code>0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Field Default</span></div>
+              <h3>Constructor 執行前，<code>String</code> instance variable 的 default value 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p20">詳解</button>
+              <div class="reveal-panel" id="l14p20">
+                <p><code>null</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Default Constructor</span></div>
+              <h3>以下 class 可以呼叫 <code>new Thing()</code> 嗎？</h3>
+              <pre><code>public class Thing
+{
+    private int x;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p21">詳解</button>
+              <div class="reveal-panel" id="l14p21">
+                <p>可以。因為 class 沒有宣告任何 constructor，compiler 會提供 no-argument default constructor。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>No Default</span></div>
+              <h3>以下 class 可以呼叫 <code>new Thing()</code> 嗎？</h3>
+              <pre><code>public class Thing
+{
+    private int x;
+
+    public Thing(int value)
+    {
+        x = value;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p22">詳解</button>
+              <div class="reveal-panel" id="l14p22">
+                <p>不可以。自己寫了 constructor 後，compiler 不再自動提供 no-arg constructor。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>No-Arg</span></div>
+              <h3>Programmer-defined no-argument constructor 和 compiler-provided default constructor 是完全同義嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p23">詳解</button>
+              <div class="reveal-panel" id="l14p23">
+                <p>不完全同義。No-argument constructor 是沒有 parameters 的 constructor；default constructor 通常指 compiler 在沒有任何 constructor 時自動提供的 no-arg constructor。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Defaults</span></div>
+              <h3>如果 constructor 沒初始化 <code>private boolean active;</code>，它會是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p24">詳解</button>
+              <div class="reveal-panel" id="l14p24">
+                <p><code>false</code>。但如果 specification 要求 true，就應在 constructor 明確設定。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="this-shadowing" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Shadowing / this</p>
+              <h2>Parameter Shadowing 與 <code>this.field</code></h2>
+              <p>這一段是本課最容易錯、也最常考的地方。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Shadowing</span></div>
+              <h3>以下 constructor 有什麼問題？</h3>
+              <pre><code>private String name;
+
+public Student(String name)
+{
+    name = name;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p25">詳解</button>
+              <div class="reveal-panel" id="l14p25">
+                <p>Parameter <code>name</code> shadows field <code>name</code>。<code>name = name</code> 只是把 parameter assign 給自己，field 沒有被設定。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>this</span></div>
+              <h3>上題正確寫法是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p26">詳解</button>
+              <div class="reveal-panel" id="l14p26">
+                <pre><code>public Student(String name)
+{
+    this.name = name;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>this.field</span></div>
+              <h3><code>this.score</code> 表示什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p27">詳解</button>
+              <div class="reveal-panel" id="l14p27">
+                <p>目前這個 object 的 instance variable <code>score</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Trace</span></div>
+              <h3>以下 constructor 執行後，field <code>value</code> 是多少？</h3>
+              <pre><code>private int value;
+
+public Test(int value)
+{
+    value = value + 5;
+}
+
+Test t = new Test(8);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p28">詳解</button>
+              <div class="reveal-panel" id="l14p28">
+                <p>Field <code>value</code> 仍是 <code>0</code>。改的是 parameter 自己，不是 field。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Trace</span></div>
+              <h3>以下 constructor 執行後，field <code>value</code> 是多少？</h3>
+              <pre><code>private int value;
+
+public Test(int value)
+{
+    this.value = value + 5;
+}
+
+Test t = new Test(8);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p29">詳解</button>
+              <div class="reveal-panel" id="l14p29">
+                <p><code>13</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>No Shadowing</span></div>
+              <h3>如果 parameter 叫 <code>studentScore</code>，一定需要 <code>this.score</code> 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p30">詳解</button>
+              <div class="reveal-panel" id="l14p30">
+                <p>不一定。若沒有同名 shadowing，<code>score = studentScore;</code> 已經很清楚。不過有些人仍習慣寫 <code>this.score</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="overloading" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Overloading / Trace</p>
+              <h2>Overloaded Constructors 與 Constructor Trace</h2>
+              <p>Overloading 看 parameter type list，不看 parameter name，也不靠 return type。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Overload</span></div>
+              <h3>以下 overloaded constructors 合法嗎？</h3>
+              <pre><code>public Example()
+{
+}
+
+public Example(int x)
+{
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p31">詳解</button>
+              <div class="reveal-panel" id="l14p31">
+                <p>合法。Parameter lists 不同：一個沒有 parameters，一個是 <code>int</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Invalid Overload</span></div>
+              <h3>以下 overloaded constructors 合法嗎？</h3>
+              <pre><code>public Box(int width)
+{
+}
+
+public Box(int height)
+{
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p32">詳解</button>
+              <div class="reveal-panel" id="l14p32">
+                <p>不合法。Parameter names 不影響 signature，兩個都是 <code>Box(int)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Order</span></div>
+              <h3>以下 two constructors 合法嗎？</h3>
+              <pre><code>public Example(String text, int number)
+{
+}
+
+public Example(int number, String text)
+{
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p33">詳解</button>
+              <div class="reveal-panel" id="l14p33">
+                <p>合法。Parameter type order 不同：<code>String, int</code> vs <code>int, String</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Matching</span></div>
+              <h3>以下 call 會使用哪個 constructor？</h3>
+              <pre><code>public Rectangle()
+{
+    width = 1;
+    height = 1;
+}
+
+public Rectangle(double side)
+{
+    width = side;
+    height = side;
+}
+
+Rectangle r = new Rectangle(5);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p34">詳解</button>
+              <div class="reveal-panel" id="l14p34">
+                <p>會使用 one-parameter constructor <code>Rectangle(double side)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Trace</span></div>
+              <h3>以下 constructor 執行後，<code>value</code> 是多少？</h3>
+              <pre><code>private int value;
+
+public NumberBox(int x)
+{
+    value = x + 5;
+}
+
+NumberBox b = new NumberBox(6);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p35">詳解</button>
+              <div class="reveal-panel" id="l14p35">
+                <p><code>11</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Trace</span></div>
+              <h3>以下 constructor 執行後，<code>x</code> 和 <code>y</code> 是多少？</h3>
+              <pre><code>private int x;
+private int y;
+
+public Point(int a, int b)
+{
+    x = a;
+    y = b;
+}
+
+Point p = new Point(3, 7);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p36">詳解</button>
+              <div class="reveal-panel" id="l14p36">
+                <p><code>x = 3</code>，<code>y = 7</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>Trace</span></div>
+              <h3>以下 constructor 執行後，<code>quantity</code> 和 <code>price</code> 是多少？</h3>
+              <pre><code>private int quantity;
+private double price;
+
+public Item(int quantity, double price)
+{
+    this.quantity = quantity + 1;
+    this.price = price * 2;
+}
+
+Item item = new Item(4, 3.5);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p37">詳解</button>
+              <div class="reveal-panel" id="l14p37">
+                <p><code>quantity = 5</code>，<code>price = 7.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Two Objects</span></div>
+              <h3>以下建立幾個 <code>Counter</code> objects？</h3>
+              <pre><code>Counter a = new Counter(5);
+Counter b = new Counter(2);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p38">詳解</button>
+              <div class="reveal-panel" id="l14p38">
+                <p>兩個 objects。每個 object 的 <code>count</code> field 各自初始化。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding Practice</p>
+              <h2>程式練習</h2>
+              <p>這一段適合直接寫 constructor skeleton。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Coding</span></div>
+              <h3>為 <code>Book</code> 寫 constructor，使用 parameters 初始化 <code>title</code> 與 <code>pages</code>。</h3>
+              <pre><code>private String title;
+private int pages;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p39">參考解法</button>
+              <div class="reveal-panel" id="l14p39">
+                <pre><code>public Book(String title, int pages)
+{
+    this.title = title;
+    this.pages = pages;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Coding</span></div>
+              <h3>為 <code>Player</code> 寫 constructor：caller 提供 <code>name</code>，<code>health</code> 設 100，<code>score</code> 設 0。</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p40">參考解法</button>
+              <div class="reveal-panel" id="l14p40">
+                <pre><code>public Player(String name)
+{
+    this.name = name;
+    health = 100;
+    score = 0;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Coding</span></div>
+              <h3>為 <code>Player</code> 寫 constructor：若 <code>level</code> 小於 1，設為 1。</h3>
+              <pre><code>private int level;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p41">參考解法</button>
+              <div class="reveal-panel" id="l14p41">
+                <pre><code>public Player(int level)
+{
+    if (level &gt;= 1)
+    {
+        this.level = level;
+    }
+    else
+    {
+        this.level = 1;
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Coding</span></div>
+              <h3>為 <code>Tracker</code> 寫 no-argument constructor：<code>count = 0</code>，<code>active = true</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p42">參考解法</button>
+              <div class="reveal-panel" id="l14p42">
+                <pre><code>public Tracker()
+{
+    count = 0;
+    active = true;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>Coding</span></div>
+              <h3>為 <code>Point</code> 寫兩個 constructors：<code>Point()</code> 設為 origin，<code>Point(int x, int y)</code> 設定 fields。</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p43">參考解法</button>
+              <div class="reveal-panel" id="l14p43">
+                <pre><code>public Point()
+{
+    x = 0;
+    y = 0;
+}
+
+public Point(int x, int y)
+{
+    this.x = x;
+    this.y = y;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Debug</span></div>
+              <h3>修正 shadowing bug。</h3>
+              <pre><code>public Car(String model)
+{
+    model = model;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p44">參考解法</button>
+              <div class="reveal-panel" id="l14p44">
+                <pre><code>public Car(String model)
+{
+    this.model = model;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Debug</span></div>
+              <h3>以下 <code>Account</code> 的 constructor 寫錯在哪？</h3>
+              <pre><code>public void Account(double balance)
+{
+    this.balance = balance;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p45">詳解</button>
+              <div class="reveal-panel" id="l14p45">
+                <p>它有 <code>void</code>，所以不是 constructor。應改成：</p>
+                <pre><code>public Account(double balance)
+{
+    this.balance = balance;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Design</span></div>
+              <h3>若 specification 說 <code>Player(String name)</code> initializes <code>points</code> to 0，constructor 是否應該加 <code>int points</code> parameter？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p46">詳解</button>
+              <div class="reveal-panel" id="l14p46">
+                <p>不應該。Constructor header 必須照 specification，只接收 <code>String name</code>，並在 body 中設定 <code>points = 0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Chaining</span></div>
+              <h3><code>this(name, 0);</code> 在 constructor 中代表什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l14p47">詳解</button>
+              <div class="reveal-panel" id="l14p47">
+                <p>它呼叫同一個 class 的另一個 constructor，稱為 constructor chaining。若使用，必須是 constructor body 的第一個 statement。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Trace</span></div>
+              <h3>以下結果是什麼？</h3>
+              <pre><code>private int x;
+
+public Example(int x)
+{
+    this.x = x;
+    x = x + 1;
+}
+
+Example e = new Example(5);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p48">詳解</button>
+              <div class="reveal-panel" id="l14p48">
+                <p>Field <code>this.x</code> 是 <code>5</code>。後面的 <code>x = x + 1</code> 只改 parameter。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Trace</span></div>
+              <h3>以下結果是什麼？</h3>
+              <pre><code>private int x;
+
+public Example(int x)
+{
+    x = x + 1;
+    this.x = x;
+}
+
+Example e = new Example(5);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p49">詳解</button>
+              <div class="reveal-panel" id="l14p49">
+                <p>Field <code>this.x</code> 是 <code>6</code>。先把 parameter 改成 6，再 assign 給 field。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>找出以下 class 的三個 constructor 問題。</h3>
+              <pre><code>public class Score
+{
+    private String name;
+    private int points;
+
+    public void Score(String name)
+    {
+        name = name;
+    }
+
+    public Score(int points)
+    {
+        points = this.points;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l14p50">詳解</button>
+              <div class="reveal-panel" id="l14p50">
+                <p>問題 1：<code>public void Score(String name)</code> 有 <code>void</code>，不是 constructor。問題 2：<code>name = name</code> 是 shadowing bug。問題 3：<code>points = this.points</code> assignment 方向反了。</p>
+                <pre><code>public Score(String name)
+{
+    this.name = name;
+}
+
+public Score(int points)
+{
+    this.points = points;
+}</code></pre>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 14 課後練習。先找 matching constructor，再 trace arguments、parameters 與 fields。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

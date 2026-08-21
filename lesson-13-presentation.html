@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 13 投影模式｜Class Structure</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 13 投影模式：class structure、class vs object、instance variables、encapsulation、accessors、mutators、method headers 與 AP-style class tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 13</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-13.html">文章版</a>
+        <a href="lesson-13-practice.html">課後練習</a>
+        <a href="lesson-12.html">上一課</a>
+        <a href="lesson-14.html">下一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 13</p>
+          <h1>Class Structure</h1>
+          <p class="slide-lead">
+            今天正式進入 object-oriented programming：class 是 blueprint，object 有 state，
+            fields 通常 private，外部透過 public methods 與 object 互動。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-13-practice.html">Lesson 13 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Why Classes</p>
+          <h2>程式變大後，資料和行為需要被組織起來</h2>
+          <div class="exit-grid">
+            <div>哪些資料屬於同一個東西？</div>
+            <div>哪些 method 負責操作這些資料？</div>
+            <div>誰負責檢查資料是否合法？</div>
+            <div>外部應該知道哪些資訊？</div>
+            <div>外部不該碰哪些細節？</div>
+            <div>規則應該集中在哪裡？</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Class</p>
+          <h2>Class 是建立 object 的 blueprint</h2>
+          <div class="deck-code">
+            <pre><code>public class Student
+{
+    private String name;
+    private int score;
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>Student</code> 不是某一位學生，它描述所有 Student objects 應該有什麼資料。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Class vs Object</p>
+          <h2>Blueprint vs 實體</h2>
+          <div class="type-grid two-col">
+            <div><strong>Class</strong><span>藍圖、型別、設計規格</span></div>
+            <div><strong>Object</strong><span>依 class 建出的實體，有自己的 state</span></div>
+          </div>
+          <div class="deck-code">
+            <pre><code>student1: name = "Amy", score = 95
+student2: name = "Ben", score = 72</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2><code>Student</code> 是 class 還是 object？</h2>
+          <button class="reveal-button" type="button" data-reveal="l13-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l13-r1">
+            <p><code>Student</code> 是 class/type。某一個實際學生才是 object。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Class Anatomy</p>
+          <h2>Class 的基本結構</h2>
+          <div class="deck-code">
+            <pre><code>public class Student
+{
+    private String name;
+    private int score;
+
+    public String getName()
+    {
+        return name;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">Class declaration、instance variables、methods，都直接放在 class body 裡。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Naming</p>
+          <h2>Java naming conventions</h2>
+          <div class="type-grid">
+            <div><strong>Class</strong><span><code>Student</code>, <code>BankAccount</code></span></div>
+            <div><strong>Variables</strong><span><code>score</code>, <code>studentName</code></span></div>
+            <div><strong>Methods</strong><span><code>getScore()</code>, <code>hasPassed()</code></span></div>
+          </div>
+          <p class="slide-note">Class 用 PascalCase；variables 和 methods 通常用 camelCase。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Instance Variables</p>
+          <h2>Instance variables 描述 object state</h2>
+          <div class="deck-code">
+            <pre><code>public class BankAccount
+{
+    private String owner;
+    private double balance;
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>owner</code> 和 <code>balance</code> 合起來描述一個帳戶目前的 state。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Each Object Has Its Own State</p>
+          <h2>同一個 class，可以有很多個不同 objects</h2>
+          <div class="deck-code">
+            <pre><code>account1: owner = "Amy", balance = 500.0
+account2: owner = "Ben", balance = 30.0</code></pre>
+          </div>
+          <p class="slide-note">Method code 是同一份，但每個 object 的 fields 各自獨立。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Variable Roles</p>
+          <h2>Field / Parameter / Local Variable</h2>
+          <div class="deck-code">
+            <pre><code>public class Example
+{
+    private int value;              // instance variable
+
+    public int calculate(int bonus) // parameter
+    {
+        int doubled = value * 2;    // local variable
+        return doubled + bonus;
+    }
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>哪一個是 parameter？</h2>
+          <div class="deck-code">
+            <pre><code>public int calculate(int bonus)
+{
+    int doubled = value * 2;
+    return doubled + bonus;
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l13-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l13-r2">
+            <p><code>bonus</code> 是 parameter，因為它在 method header 的括號中。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Default Values</p>
+          <h2>Instance variables 有 default values</h2>
+          <div class="type-grid">
+            <div><strong><code>int</code></strong><span><code>0</code></span></div>
+            <div><strong><code>double</code></strong><span><code>0.0</code></span></div>
+            <div><strong><code>boolean</code></strong><span><code>false</code></span></div>
+            <div><strong><code>String</code></strong><span><code>null</code></span></div>
+            <div><strong>Local variable</strong><span>使用前必須明確初始化</span></div>
+            <div><strong>AP trap</strong><span>field 和 local 不一樣</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">private</p>
+          <h2>Fields 通常 private</h2>
+          <div class="deck-code">
+            <pre><code>public class Student
+{
+    private int score;
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>private</code> 表示 class 外部不能直接存取，class 自己的 methods 可以使用。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Encapsulation</p>
+          <h2>Private data + controlled public methods</h2>
+          <div class="big-flow">
+            <span>private state</span>
+            <span>public interface</span>
+            <span>validation</span>
+            <span>responsibility</span>
+          </div>
+          <p class="slide-note">Encapsulation 讓 object 自己保護自己的資料與規則。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Validation</p>
+          <h2>Setter 可以拒絕不合法的值</h2>
+          <div class="deck-code">
+            <pre><code>public void setScore(int newScore)
+{
+    if (newScore &gt;= 0 &amp;&amp; newScore &lt;= 100)
+    {
+        score = newScore;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">如果 <code>score</code> 是 public field，外部可以直接把它改成 -999。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Accessors</p>
+          <h2>Accessor 回報資訊，通常不修改 state</h2>
+          <div class="deck-code">
+            <pre><code>public int getScore()
+{
+    return score;
+}
+
+public boolean hasPassed()
+{
+    return score &gt;= 60;
+}</code></pre>
+          </div>
+          <p class="slide-note">Boolean accessor 常用 <code>is...</code> 或 <code>has...</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Derived Information</p>
+          <h2>Accessor 不一定只是直接 return field</h2>
+          <div class="deck-code">
+            <pre><code>public double getArea()
+{
+    return width * height;
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l13-r3">這算 accessor 嗎？</button>
+          <div class="reveal-panel" id="l13-r3">
+            <p>算。它回報 derived information，沒有修改 object state。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mutators</p>
+          <h2>Mutator 修改 object state</h2>
+          <div class="deck-code">
+            <pre><code>public void deposit(double amount)
+{
+    if (amount &gt; 0)
+    {
+        balance += amount;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>set...</code>、<code>deposit</code>、<code>withdraw</code>、<code>increment</code>、<code>reset</code> 都可能是 mutators。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Method Anatomy</p>
+          <h2>Method header 描述 method 怎麼被呼叫</h2>
+          <div class="deck-code">
+            <pre><code>public boolean isEligible(int minimumScore)
+{
+    return score &gt;= minimumScore;
+}</code></pre>
+          </div>
+          <div class="big-flow">
+            <span>public</span>
+            <span>boolean</span>
+            <span>isEligible</span>
+            <span>int minimumScore</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">void</p>
+          <h2><code>void</code> method 不回傳值</h2>
+          <div class="type-grid two-col">
+            <div><strong>Return method</strong><span><code>int x = getScore();</code></span></div>
+            <div><strong>Void method</strong><span><code>setScore(90);</code></span></div>
+          </div>
+          <p class="slide-note"><code>void</code> method 可以修改 state，但不能當成 expression value 使用。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>這個 method header 的 return type 是什麼？</h2>
+          <div class="deck-code">
+            <pre><code>public double calculatePrice(int quantity)</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l13-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l13-r4">
+            <p><code>double</code>。Method name 是 <code>calculatePrice</code>，parameter 是 <code>int quantity</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Responsibility</p>
+          <h2>好的 class 把規則放在擁有資料的地方</h2>
+          <div class="deck-code">
+            <pre><code>public class Rectangle
+{
+    private double width;
+    private double height;
+
+    public double getArea()
+    {
+        return width * height;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>Rectangle</code> 擁有 <code>width</code> 與 <code>height</code>，所以它適合負責面積規則。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">State Trace</p>
+          <h2>Trace method calls：看 state 如何改變</h2>
+          <div class="deck-code">
+            <pre><code>public class Counter
+{
+    private int value;
+
+    public void increment()
+    {
+        value++;
+    }
+
+    public void reset()
+    {
+        value = 0;
+    }
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Trace Question</p>
+          <h2>value 原本是 0，呼叫兩次 increment 後再 reset，最後是多少？</h2>
+          <button class="reveal-button" type="button" data-reveal="l13-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l13-r5">
+            <p><code>0</code>。流程是 0 → 1 → 2 → 0。</p>
+          </div>
+          <p class="slide-note">AP tracing 請建立 state table，不要只看 method name。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Bugs</p>
+          <h2>Class structure 常見錯誤</h2>
+          <div class="exit-grid">
+            <div>field 宣告在 method 裡</div>
+            <div>local variable 寫 <code>private</code></div>
+            <div>method 寫在 method 裡</div>
+            <div>return type 不符合 return value</div>
+            <div><code>void</code> method return value</div>
+            <div>assignment 方向反了</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Debug This</p>
+          <h2>這段 setter 的 bug 是什麼？</h2>
+          <div class="deck-code">
+            <pre><code>public void setScore(int newScore)
+{
+    newScore = score;
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l13-r6">揭曉答案</button>
+          <div class="reveal-panel" id="l13-r6">
+            <p>Assignment 方向反了。應該是 <code>score = newScore;</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP SOP</p>
+          <h2>看到 class 題，照這個順序讀</h2>
+          <div class="big-flow">
+            <span>Class purpose</span>
+            <span>Instance variables</span>
+            <span>Public methods</span>
+            <span>Accessor or mutator</span>
+            <span>State changes</span>
+            <span>Return value</span>
+          </div>
+          <p class="slide-note">Class tracing 的核心是：哪個 object 的哪個 field 被改變？</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的六個小 class/method</h2>
+          <div class="exit-grid">
+            <div><code>Book</code> fields</div>
+            <div><code>getTitle()</code></div>
+            <div><code>isLongBook()</code></div>
+            <div><code>Counter.increment()</code></div>
+            <div><code>BankAccount.deposit()</code></div>
+            <div><code>Rectangle.getArea()</code></div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-13-practice.html">開始 Lesson 13 課後練習</a>
+            <a class="button" href="lesson-13.html">回到文章版</a>
+            <a class="button" href="lesson-14.html">前往 Lesson 14</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十二句</h2>
+          <div class="exit-grid">
+            <div>Class 是 blueprint。</div>
+            <div>Object 有自己的 state。</div>
+            <div>Instance variable 在 class 裡、method 外。</div>
+            <div>Field 通常 private。</div>
+            <div>Public methods 是 public interface。</div>
+            <div>Encapsulation 保護 state。</div>
+            <div>Accessor 回報資訊。</div>
+            <div>Mutator 修改 state。</div>
+            <div>Boolean accessor 常用 <code>is</code> 或 <code>has</code>。</div>
+            <div>Method header 有 access、return type、name、parameters。</div>
+            <div>Parameter 是 method call 的 local variable。</div>
+            <div>Trace class 題要追蹤 object state。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

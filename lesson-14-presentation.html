@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 14 投影模式｜Constructors</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 14 投影模式：constructors、new expression、initial state、shadowing、this.field、default constructor、overloaded constructors 與 AP-style constructor tracing。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 14</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-14.html">文章版</a>
+        <a href="lesson-14-practice.html">課後練習</a>
+        <a href="lesson-13.html">上一課</a>
+        <a href="lesson-15.html">下一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 14</p>
+          <h1>Constructors</h1>
+          <p class="slide-lead">
+            今天學 object 建立時最重要的一步：constructor 如何初始化 state、如何和
+            <code>new</code> 搭配、如何處理 shadowing、default constructor 與 overloaded constructors。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-14-practice.html">Lesson 14 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">From Lesson 13</p>
+          <h2>Class 有 fields，但 object 剛建立時 fields 要怎麼初始化？</h2>
+          <div class="deck-code">
+            <pre><code>public class Student
+{
+    private String name;
+    private int score;
+}</code></pre>
+          </div>
+          <p class="slide-note">Constructor 負責 object 建立時的 initial state。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Constructor Purpose</p>
+          <h2>Initialize a newly created object</h2>
+          <div class="big-flow">
+            <span>new object</span>
+            <span>fields exist</span>
+            <span>constructor runs</span>
+            <span>initial state ready</span>
+          </div>
+          <p class="slide-note">Constructor 不是一般 method，它在 <code>new</code> 建 object 時被執行。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Basic Constructor</p>
+          <h2>把 parameters 存進 instance variables</h2>
+          <div class="deck-code">
+            <pre><code>public class Student
+{
+    private String name;
+    private int score;
+
+    public Student(String studentName, int studentScore)
+    {
+        name = studentName;
+        score = studentScore;
+    }
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Constructor Syntax</p>
+          <h2>兩條超重要規則</h2>
+          <div class="type-grid two-col">
+            <div><strong>Name matches class</strong><span><code>Student</code> class 的 constructor 叫 <code>Student</code></span></div>
+            <div><strong>No return type</strong><span>不能寫 <code>void</code>、<code>int</code>、<code>String</code></span></div>
+          </div>
+          <p class="slide-note"><code>public void Student(...)</code> 是 method，不是 constructor。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>哪一個是 <code>Book</code> constructor？</h2>
+          <div class="deck-code">
+            <pre><code>A. public void Book()
+B. public Book()
+C. public int Book()
+D. public book()</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l14-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l14-r1">
+            <p>B。Constructor name match class name，而且沒有 return type。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">new Expression</p>
+          <h2><code>new</code> 建立 object 並呼叫 matching constructor</h2>
+          <div class="deck-code">
+            <pre><code>Student s = new Student("Amy", 95);</code></pre>
+          </div>
+          <div class="big-flow">
+            <span>allocate object</span>
+            <span>field defaults</span>
+            <span>pass arguments</span>
+            <span>run constructor</span>
+            <span>return reference</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Matching</p>
+          <h2>Arguments 必須 match parameter list</h2>
+          <div class="deck-code">
+            <pre><code>public Student(String name, int score)
+{
+    this.name = name;
+    this.score = score;
+}
+
+new Student("Amy", 95); // OK
+new Student(95, "Amy"); // compile error</code></pre>
+          </div>
+          <p class="slide-note">數量、順序、型別都要對。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Parameter Order</p>
+          <h2>Parameter order 是 API 的一部分</h2>
+          <div class="type-grid two-col">
+            <div><strong><code>String name</code></strong><span>第一個 argument 必須是名字</span></div>
+            <div><strong><code>int score</code></strong><span>第二個 argument 必須是分數</span></div>
+          </div>
+          <p class="slide-note">AP FRQ 的 constructor header 必須照題目規格，不要自行調換。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Validation</p>
+          <h2>Constructor 可以建立合法 initial state</h2>
+          <div class="deck-code">
+            <pre><code>public Student(String name, int score)
+{
+    this.name = name;
+
+    if (score &gt;= 0 &amp;&amp; score &lt;= 100)
+    {
+        this.score = score;
+    }
+    else
+    {
+        this.score = 0;
+    }
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Field Defaults</p>
+          <h2>Constructor body 執行前，fields 已有 Java default values</h2>
+          <div class="type-grid">
+            <div><strong><code>int</code></strong><span><code>0</code></span></div>
+            <div><strong><code>double</code></strong><span><code>0.0</code></span></div>
+            <div><strong><code>boolean</code></strong><span><code>false</code></span></div>
+            <div><strong><code>String</code></strong><span><code>null</code></span></div>
+            <div><strong>Local variables</strong><span>沒有同樣 default behavior</span></div>
+            <div><strong>Design</strong><span>仍應照 specification 初始化</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Shadowing</p>
+          <h2><code>name = name</code> 通常是 bug</h2>
+          <div class="deck-code">
+            <pre><code>private String name;
+
+public Student(String name)
+{
+    name = name;
+}</code></pre>
+          </div>
+          <p class="slide-note">Parameter <code>name</code> shadows field <code>name</code>，所以這行把 parameter assign 給自己。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">this.field</p>
+          <h2>用 <code>this.field</code> 指明目前 object 的 field</h2>
+          <div class="deck-code">
+            <pre><code>public Student(String name, int score)
+{
+    this.name = name;
+    this.score = score;
+}</code></pre>
+          </div>
+          <div class="type-grid two-col">
+            <div><strong><code>this.name</code></strong><span>current object's field</span></div>
+            <div><strong><code>name</code></strong><span>constructor parameter</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Trace</p>
+          <h2>這段 constructor 後，field <code>value</code> 是多少？</h2>
+          <div class="deck-code">
+            <pre><code>private int value;
+
+public Test(int value)
+{
+    value = value + 5;
+}
+
+Test t = new Test(8);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l14-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l14-r2">
+            <p>Field <code>value</code> 是 <code>0</code>。改的是 parameter，不是 field。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Fixed Trace</p>
+          <h2>加上 <code>this</code> 後就不同</h2>
+          <div class="deck-code">
+            <pre><code>private int value;
+
+public Test(int value)
+{
+    this.value = value + 5;
+}
+
+Test t = new Test(8);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l14-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l14-r3">
+            <p>Field <code>value</code> 是 <code>13</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Default Constructor Rule</p>
+          <h2>只有完全沒寫 constructor，compiler 才提供 no-arg default constructor</h2>
+          <div class="deck-code">
+            <pre><code>public class Thing
+{
+    private int x;
+}
+
+Thing t = new Thing(); // OK</code></pre>
+          </div>
+          <p class="slide-note">有 methods 不影響；重點是有沒有 programmer-declared constructor。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">No Automatic No-Arg</p>
+          <h2>自己寫任何 constructor 後，no-arg 不再自動存在</h2>
+          <div class="deck-code">
+            <pre><code>public class Thing
+{
+    public Thing(int value)
+    {
+        x = value;
+    }
+}
+
+new Thing(5); // OK
+new Thing();  // compile error</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>這個 class 可以 <code>new Thing()</code> 嗎？</h2>
+          <div class="deck-code">
+            <pre><code>public class Thing
+{
+    private int x;
+
+    public void setX(int value)
+    {
+        x = value;
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l14-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l14-r4">
+            <p>可以。它沒有宣告任何 constructor；<code>setX</code> 是 method，不是 constructor。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Overloaded Constructors</p>
+          <h2>同一個 class 可以提供多種初始化方式</h2>
+          <div class="deck-code">
+            <pre><code>public Rectangle()
+{
+    width = 1;
+    height = 1;
+}
+
+public Rectangle(double side)
+{
+    width = side;
+    height = side;
+}
+
+public Rectangle(double width, double height)
+{
+    this.width = width;
+    this.height = height;
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Overload Signature</p>
+          <h2>Parameter type list 不同才是 overload</h2>
+          <div class="type-grid two-col">
+            <div><strong>Valid</strong><span><code>Example()</code> and <code>Example(int x)</code></span></div>
+            <div><strong>Invalid</strong><span><code>Box(int width)</code> and <code>Box(int height)</code></span></div>
+          </div>
+          <p class="slide-note">Parameter names 不屬於 signature。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Constructor Trace</p>
+          <h2>Trace 時看 arguments → parameters → fields</h2>
+          <div class="deck-code">
+            <pre><code>public NumberBox(int x)
+{
+    value = x + 5;
+}
+
+NumberBox b = new NumberBox(6);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l14-r5">field value 是多少？</button>
+          <div class="reveal-panel" id="l14-r5">
+            <p><code>11</code>。Argument 6 進到 parameter <code>x</code>，再執行 <code>value = x + 5</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Two Objects</p>
+          <h2>每次 <code>new</code> 都初始化一個新的 object</h2>
+          <div class="deck-code">
+            <pre><code>Counter a = new Counter(5);
+Counter b = new Counter(2);</code></pre>
+          </div>
+          <p class="slide-note"><code>a</code> 和 <code>b</code> reference 不同 objects，各自有自己的 fields。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Design Question</p>
+          <h2>哪些 initial state 應由 caller 提供？哪些由 class 決定？</h2>
+          <div class="deck-code">
+            <pre><code>public class ScoreTracker
+{
+    private String playerName;
+    private int score;
+    private int gamesPlayed;
+
+    public ScoreTracker(String playerName)
+    {
+        this.playerName = playerName;
+        score = 0;
+        gamesPlayed = 0;
+    }
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Bugs</p>
+          <h2>Constructor 常見錯誤</h2>
+          <div class="exit-grid">
+            <div>Constructor 加 <code>void</code></div>
+            <div>Constructor name 和 class name 不同</div>
+            <div><code>name = name</code> shadowing</div>
+            <div>Assignment 方向反了</div>
+            <div>以為 no-arg constructor 永遠存在</div>
+            <div>只改 parameter name 來 overload</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Debug This</p>
+          <h2>這段 constructor 有哪些問題？</h2>
+          <div class="deck-code">
+            <pre><code>public void Score(String name)
+{
+    name = name;
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l14-r6">揭曉答案</button>
+          <div class="reveal-panel" id="l14-r6">
+            <p>有 <code>void</code>，所以不是 constructor；<code>name = name</code> 也有 shadowing bug。應寫 <code>public Score(String name) { this.name = name; }</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP SOP</p>
+          <h2>Constructor 題解題流程</h2>
+          <div class="big-flow">
+            <span>Find class name</span>
+            <span>Find constructor</span>
+            <span>Match arguments</span>
+            <span>Set field defaults</span>
+            <span>Run body top-to-bottom</span>
+            <span>Record state</span>
+          </div>
+          <p class="slide-note">特別檢查：return type、shadowing、default constructor、overload signature。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的六個 constructor 練習</h2>
+          <div class="exit-grid">
+            <div><code>Book(String title, int pages)</code></div>
+            <div><code>Player(String name)</code></div>
+            <div>validation constructor</div>
+            <div>no-arg constructor</div>
+            <div>overloaded <code>Point</code></div>
+            <div>修正 shadowing bug</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-14-practice.html">開始 Lesson 14 課後練習</a>
+            <a class="button" href="lesson-14.html">回到文章版</a>
+            <a class="button" href="lesson-15.html">前往 Lesson 15</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十二句</h2>
+          <div class="exit-grid">
+            <div>Constructor initializes a newly created object。</div>
+            <div>Constructor name must match class name。</div>
+            <div>Constructor has no return type。</div>
+            <div><code>public void Student()</code> is not a constructor。</div>
+            <div><code>new</code> creates object and calls constructor。</div>
+            <div>Arguments must match parameters。</div>
+            <div>Fields have default values before constructor body。</div>
+            <div>Constructor can validate initial state。</div>
+            <div><code>name = name</code> is a shadowing trap。</div>
+            <div><code>this.field</code> means current object's field。</div>
+            <div>No-arg default constructor exists only if no constructors are declared。</div>
+            <div>Overloads need different parameter type lists。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

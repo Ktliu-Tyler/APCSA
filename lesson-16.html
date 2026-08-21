@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 16｜Scope / static / this</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 16：scope、lifetime、instance variables、parameters、local variables、block scope、this、shadowing、static variables、static methods、main 與 common compile errors。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 16</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第十六堂課導覽">
+        <a href="lesson-16-presentation.html">投影模式</a>
+        <a href="lesson-16-practice.html">課後練習</a>
+        <a href="lesson-15.html">上一課</a>
+        <a href="#scope">Scope</a>
+        <a href="#this">this</a>
+        <a href="#static-fields">Static Fields</a>
+        <a href="#static-methods">Static Methods</a>
+        <a href="#errors">Compile Errors</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 16</p>
+          <h1>Scope / <code>static</code> / <code>this</code>：變數到底屬於誰？在哪裡能用？</h1>
+          <p class="lead">
+            Lesson 13 到 15 建立了 class、constructor、instance method 與 references。這堂課把
+            Java 名稱解析補完整：<code>score</code> 到底是哪個 <code>score</code>？<code>this</code>
+            代表誰？local variable 何時離開 scope？<code>static</code> 為什麼沒有 receiver object？
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-16-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-16-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-15.html">回 Lesson 15</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#scope">Scope / Lifetime</a>
+          <a href="#variable-kinds">四種變數</a>
+          <a href="#instance-fields">Instance Variables</a>
+          <a href="#this">this</a>
+          <a href="#shadowing">Shadowing</a>
+          <a href="#parameters-locals">Parameters / Locals</a>
+          <a href="#block-scope">Block Scope</a>
+          <a href="#defaults">Default Values</a>
+          <a href="#static-fields">Static Variables</a>
+          <a href="#static-methods">Static Methods</a>
+          <a href="#main">main</a>
+          <a href="#resolution">Name Lookup</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>解釋 scope：變數名稱在哪些程式碼範圍內可以被直接使用。</div>
+              <div>區分 scope 與 lifetime：名字可用範圍不等於 object 存活時間。</div>
+              <div>辨認 instance variable、static variable、parameter、local variable。</div>
+              <div>追蹤 parameter 與 local variable 的 block scope。</div>
+              <div>判斷 local variable 是否已經 declaration before use 與 definite assignment。</div>
+              <div>理解 <code>this</code> 是 current receiver object。</div>
+              <div>使用 <code>this.field</code> 解決 parameter shadowing。</div>
+              <div>說明 static variable 屬於 class，所有 objects 共用一份。</div>
+              <div>說明 static method 沒有 receiver object、沒有 <code>this</code>。</div>
+              <div>修正 static context 直接使用 instance field/method 的 compile error。</div>
+            </div>
+            <div class="progress-card">
+              <h3>Lesson 16 tracing checklist</h3>
+              <label><input type="checkbox" data-progress="lesson16-flow-1" /> <span><strong>Find declaration</strong>：名稱在哪裡宣告？field、parameter、local、static？</span></label>
+              <label><input type="checkbox" data-progress="lesson16-flow-2" /> <span><strong>Check scope</strong>：目前這行程式碼能不能看到那個名稱？</span></label>
+              <label><input type="checkbox" data-progress="lesson16-flow-3" /> <span><strong>Check shadowing</strong>：是否有較內層同名 parameter/local 擋住 field？</span></label>
+              <label><input type="checkbox" data-progress="lesson16-flow-4" /> <span><strong>Check context</strong>：現在是 instance context 還是 static context？</span></label>
+              <label><input type="checkbox" data-progress="lesson16-flow-5" /> <span><strong>Use object if needed</strong>：static method 若要用 instance state，必須先有 object reference。</span></label>
+            </div>
+          </section>
+
+          <section id="scope" class="article-section">
+            <p class="eyebrow">Scope / Lifetime</p>
+            <h2>Scope 是「名字在哪裡可以用」</h2>
+            <p>
+              Scope 指的是一個變數名稱可以被直接使用的程式碼範圍。它回答的是：
+              這一行程式碼看得到 <code>x</code> 這個名字嗎？
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>local variable scope</span>
+                <button class="copy-button" type="button" data-copy="l16-code-scope">Copy</button>
+              </div>
+              <pre><code id="l16-code-scope">public void method()
+{
+    int x = 5;
+    System.out.println(x); // OK
+}
+
+public void other()
+{
+    System.out.println(x); // compile error
+}</code></pre>
+            </div>
+            <div class="callout warn">
+              <strong>Scope 和 lifetime 不完全一樣。</strong>
+              <span>Scope 是名字可用範圍；lifetime 是 variable 或 object 存在多久。AP CSA 最常考的是 scope 與 static context。</span>
+            </div>
+          </section>
+
+          <section id="variable-kinds" class="article-section">
+            <p class="eyebrow">Variable Kinds</p>
+            <h2>Java 常見四種變數</h2>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>four kinds of variables</span>
+                <button class="copy-button" type="button" data-copy="l16-code-kinds">Copy</button>
+              </div>
+              <pre><code id="l16-code-kinds">public class Example
+{
+    private int value;          // instance variable
+    private static int count;   // static variable
+
+    public void method(int x)   // parameter
+    {
+        int result = x + value; // local variable
+    }
+}</code></pre>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Variable</th>
+                    <th>宣告位置</th>
+                    <th>屬於誰？</th>
+                    <th>Default value?</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Instance variable</td><td>class 中、method 外</td><td>每個 object 各一份</td><td>Yes</td></tr>
+                  <tr><td>Static variable</td><td>class 中、method 外，且有 <code>static</code></td><td>class 共用一份</td><td>Yes</td></tr>
+                  <tr><td>Parameter</td><td>method / constructor header</td><td>每次 call 一份</td><td>由 argument 提供</td></tr>
+                  <tr><td>Local variable</td><td>method 或 block 裡</td><td>每次 execution 一份</td><td>No</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="instance-fields" class="article-section">
+            <p class="eyebrow">Instance Variables</p>
+            <h2>Instance variable 屬於 object</h2>
+            <p>
+              Instance variable 宣告在 class 中、method 外。每個 object instance 都有自己的那一份。
+              所以同一個 field name，在不同 receiver object 上可以有不同值。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>receiver state</span>
+                <button class="copy-button" type="button" data-copy="l16-code-instance">Copy</button>
+              </div>
+              <pre><code id="l16-code-instance">public class Student
+{
+    private String name;
+    private int score;
+
+    public int getScore()
+    {
+        return score;
+    }
+}</code></pre>
+            </div>
+            <p>
+              若呼叫 <code>a.getScore()</code>，method body 裡的 <code>score</code> 是 <code>a</code>
+              指到的 object 的 score。若呼叫 <code>b.getScore()</code>，就是 <code>b</code> 的 score。
+            </p>
+          </section>
+
+          <section id="this" class="article-section">
+            <p class="eyebrow">this</p>
+            <h2><code>this</code> 代表 current receiver object</h2>
+            <p>
+              在 constructor 或 instance method 中，<code>this</code> 代表目前正在執行這段 code 的 object。
+              也就是 current receiver object。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>this in instance context</span>
+                <button class="copy-button" type="button" data-copy="l16-code-this">Copy</button>
+              </div>
+              <pre><code id="l16-code-this">public void setScore(int score)
+{
+    this.score = score;
+}</code></pre>
+            </div>
+            <div class="callout">
+              <strong>如果執行 <code>a.setScore(100)</code></strong>
+              <span><code>this</code> 就是 <code>a</code> 指到的 <code>Student</code> object；<code>this.score</code> 就是那個 object 的 instance variable。</span>
+            </div>
+          </section>
+
+          <section id="shadowing" class="article-section">
+            <p class="eyebrow">Shadowing</p>
+            <h2>同名時，較內層的 parameter/local 會遮住 field</h2>
+            <p>
+              如果 parameter 和 instance variable 同名，在 method body 裡單獨寫 <code>score</code>，
+              Java 會先找到 parameter。這就是 shadowing。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>shadowing bug and fix</span>
+                <button class="copy-button" type="button" data-copy="l16-code-shadowing">Copy</button>
+              </div>
+              <pre><code id="l16-code-shadowing">private int score;
+
+public void brokenSetScore(int score)
+{
+    score = score;       // parameter = parameter
+}
+
+public void setScore(int score)
+{
+    this.score = score;  // field = parameter
+}</code></pre>
+            </div>
+            <p>
+              <code>this.field</code> 明確指定 current object's instance variable。若沒有同名 parameter/local，
+              <code>return score;</code> 概念上等同於 <code>return this.score;</code>。
+            </p>
+          </section>
+
+          <section id="parameters-locals" class="article-section">
+            <p class="eyebrow">Parameters / Locals</p>
+            <h2>Parameter 和 local variable 的 scope 比 field 窄</h2>
+            <p>
+              Parameter 的 scope 通常是整個 method 或 constructor body。Local variable 的 scope 從宣告之後開始，
+              到所在 block 結束。每次 method call 都會有新的 parameter values。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>parameter and local</span>
+                <button class="copy-button" type="button" data-copy="l16-code-parameter-local">Copy</button>
+              </div>
+              <pre><code id="l16-code-parameter-local">public int bonusScore(int amount)
+{
+    int result = score + amount;
+    return result;
+}
+
+public void other()
+{
+    System.out.println(amount); // compile error
+    System.out.println(result); // compile error
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="block-scope" class="article-section">
+            <p class="eyebrow">Block Scope</p>
+            <h2>Curly braces 建立 block scope</h2>
+            <p>
+              <code>if</code> block、loop block、普通 nested block 都會限制 local variable 的 scope。
+              尤其 <code>for (int i = ...)</code> 宣告的 <code>i</code>，通常只能在 loop 裡使用。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>block and loop scope</span>
+                <button class="copy-button" type="button" data-copy="l16-code-block">Copy</button>
+              </div>
+              <pre><code id="l16-code-block">int total = 0;
+
+for (int i = 0; i &lt; 4; i++)
+{
+    total += i;
+}
+
+System.out.println(total); // OK
+System.out.println(i);     // compile error</code></pre>
+            </div>
+            <p>
+              若 loop 後還需要 <code>i</code>，就要在 loop 前宣告：<code>int i;</code>，再在 loop header 裡使用已存在的 variable。
+            </p>
+          </section>
+
+          <section id="defaults" class="article-section">
+            <p class="eyebrow">Default Values</p>
+            <h2>Fields 有 default values；local variables 沒有可直接使用的 default value</h2>
+            <div class="contrast-grid">
+              <div>
+                <h3>Field</h3>
+                <pre><code>private int score;
+private boolean active;
+private String name;</code></pre>
+                <p>若沒有 explicit initialization，分別預設為 <code>0</code>、<code>false</code>、<code>null</code>。</p>
+              </div>
+              <div>
+                <h3>Local Variable</h3>
+                <pre><code>public void method()
+{
+    int x;
+    System.out.println(x); // compile error
+}</code></pre>
+                <p>Local variable 使用前必須保證已經被賦值。</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="static-fields" class="article-section">
+            <p class="eyebrow">Static Variables</p>
+            <h2><code>static</code> variable 屬於 class，不屬於單一 object</h2>
+            <p>
+              Static variable 也叫 class variable。它只有一份，所有 objects 共享。適合表示 class-wide state，
+              例如已建立多少個 objects；不適合表示每個 object 自己不同的狀態。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>static shared state</span>
+                <button class="copy-button" type="button" data-copy="l16-code-static-field">Copy</button>
+              </div>
+              <pre><code id="l16-code-static-field">public class Student
+{
+    private String name;
+    private static int count = 0;
+
+    public Student(String name)
+    {
+        this.name = name;
+        count++;
+    }
+
+    public static int getCount()
+    {
+        return count;
+    }
+}</code></pre>
+            </div>
+            <p>
+              建立三個 <code>Student</code> objects 後，<code>Student.getCount()</code> 回傳 <code>3</code>。
+              不是每個 object 各有一份 <code>count</code>。
+            </p>
+          </section>
+
+          <section id="static-methods" class="article-section">
+            <p class="eyebrow">Static Methods</p>
+            <h2>Static method 屬於 class，沒有 receiver object</h2>
+            <p>
+              Static method 通常用 <code>ClassName.methodName(...)</code> 呼叫，例如
+              <code>Math.sqrt(25)</code>、<code>Math.abs(-5)</code>。它沒有 receiver object，所以沒有 <code>this</code>。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>static utility method</span>
+                <button class="copy-button" type="button" data-copy="l16-code-static-method">Copy</button>
+              </div>
+              <pre><code id="l16-code-static-method">public class Utility
+{
+    public static int doubleValue(int x)
+    {
+        return x * 2;
+    }
+}
+
+int result = Utility.doubleValue(5); // 10</code></pre>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>能力</th>
+                    <th>Instance Method</th>
+                    <th>Static Method</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>有 <code>this</code></td><td>Yes</td><td>No</td></tr>
+                  <tr><td>直接使用 instance field</td><td>Yes</td><td>No</td></tr>
+                  <tr><td>直接呼叫 instance method</td><td>Yes</td><td>No</td></tr>
+                  <tr><td>使用 static field/method</td><td>Yes</td><td>Yes</td></tr>
+                  <tr><td>使用 parameters / locals</td><td>Yes</td><td>Yes</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="main" class="article-section">
+            <p class="eyebrow">main</p>
+            <h2><code>main</code> 是 static method，所以不能直接使用 instance fields</h2>
+            <p>
+              Java 必須在還沒有建立你的 class object 時就能開始執行程式，所以
+              <code>public static void main(String[] args)</code> 是 static context。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>main and instance state</span>
+                <button class="copy-button" type="button" data-copy="l16-code-main">Copy</button>
+              </div>
+              <pre><code id="l16-code-main">public class Example
+{
+    private int x = 5;
+
+    public int getX()
+    {
+        return x;
+    }
+
+    public static void main(String[] args)
+    {
+        Example e = new Example();
+        System.out.println(e.getX()); // OK
+    }
+}</code></pre>
+            </div>
+            <p>
+              在 static method 中若要使用 instance state，必須先有 object reference，例如 <code>e.getX()</code>。
+            </p>
+          </section>
+
+          <section id="resolution" class="article-section">
+            <p class="eyebrow">Name Lookup</p>
+            <h2>Java 找 variable name 的實用順序</h2>
+            <p>AP CSA 解題時可以用這個順序想，不必背 compiler 的完整規格：</p>
+            <ol class="check-list">
+              <li>先看目前 block 中是否有 local variable。</li>
+              <li>再看 method / constructor parameters。</li>
+              <li>如果是 instance context，再看 instance fields。</li>
+              <li>再看 static fields。</li>
+              <li>若同名造成混淆，用 <code>this.field</code> 明確指定 instance field。</li>
+            </ol>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>same name different scope</span>
+                <button class="copy-button" type="button" data-copy="l16-code-resolution">Copy</button>
+              </div>
+              <pre><code id="l16-code-resolution">private int x = 10;
+
+public int sum(int x)
+{
+    int y = 2;
+    return this.x + x + y;
+}</code></pre>
+            </div>
+            <p>
+              <code>this.x</code> 是 field <code>10</code>；<code>x</code> 是 parameter；<code>y</code> 是 local variable。
+            </p>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Compile Errors</p>
+            <h2>Scope / static / this 常見錯誤總表</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>錯誤</th>
+                    <th>原因</th>
+                    <th>修法</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Loop 後使用 <code>i</code></td>
+                    <td><code>for (int i ...)</code> 的 <code>i</code> scope 只在 loop</td>
+                    <td>在 loop 前宣告 <code>i</code>，或不要在 loop 外使用</td>
+                  </tr>
+                  <tr>
+                    <td><code>score = score;</code></td>
+                    <td>parameter shadowing，左右都是 parameter</td>
+                    <td><code>this.score = score;</code></td>
+                  </tr>
+                  <tr>
+                    <td>local variable 使用前沒賦值</td>
+                    <td>local 沒有可直接使用的 default value</td>
+                    <td>宣告時初始化，或保證所有 branch 都 assignment</td>
+                  </tr>
+                  <tr>
+                    <td>static method 直接讀 instance field</td>
+                    <td>static context 沒有 receiver object</td>
+                    <td>建立 object / 傳入 object reference / 改成 instance method</td>
+                  </tr>
+                  <tr>
+                    <td>static method 中使用 <code>this</code></td>
+                    <td><code>this</code> 只存在 instance context</td>
+                    <td>移除 <code>this</code>，或改成 instance method</td>
+                  </tr>
+                  <tr>
+                    <td>把每個 bug 都用 <code>static</code> 修</td>
+                    <td>可能把 object state 錯變 class-wide shared state</td>
+                    <td>先判斷資料應屬於 object 還是 class</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Scope</strong><span>決定一個變數名稱在哪裡可以被直接使用。</span></div>
+              <div><strong>Local</strong><span>從 declaration 之後到所在 block 結束；使用前必須初始化。</span></div>
+              <div><strong>Parameter</strong><span>只在 method / constructor body 內；每次 call 一份。</span></div>
+              <div><strong>Instance Field</strong><span>屬於 object；instance context 可直接使用。</span></div>
+              <div><strong>this</strong><span>current receiver object；只存在 instance context。</span></div>
+              <div><strong>Shadowing</strong><span>parameter/local 同名時會遮住 field。</span></div>
+              <div><strong>Static Field</strong><span>屬於 class；所有 objects 共用一份。</span></div>
+              <div><strong>Static Method</strong><span>屬於 class；沒有 receiver、沒有 <code>this</code>。</span></div>
+              <div><strong>main</strong><span><code>main</code> 是 static method，不能直接使用 instance field。</span></div>
+              <div><strong>Design</strong><span>每個 object 各自不同的 state 不應隨便宣告成 static。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十二句</summary>
+              <p>Scope determines where a variable name can be used.</p>
+              <p>Local variables are scoped to their enclosing block.</p>
+              <p>Parameters are scoped to the method or constructor body.</p>
+              <p>Instance variables belong to objects.</p>
+              <p>Static variables belong to the class.</p>
+              <p>Static variables are shared by all instances of the class.</p>
+              <p><code>this</code> means the current object.</p>
+              <p><code>this</code> cannot be used in a static context.</p>
+              <p>A static method has no receiver object.</p>
+              <p>A static method cannot directly access instance variables or instance methods.</p>
+              <p>A static method can use an object reference to access instance members.</p>
+              <p>Do not use <code>static</code> as a magic fix for object-state problems.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 16｜Scope / static / this。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

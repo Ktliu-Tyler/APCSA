@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 16 課後練習｜Scope / static / this</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 16 課後練習：scope、parameters、local variables、block scope、this、shadowing、static variables、static methods、main 與 compile errors。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 16 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-16-presentation.html">投影模式</a>
+        <a href="lesson-16.html">文章版</a>
+        <a href="lesson-15-practice.html">上一課練習</a>
+        <a href="#concepts">概念</a>
+        <a href="#this-shadowing">this</a>
+        <a href="#locals">Locals</a>
+        <a href="#static-methods">Static</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 16</p>
+          <h1>課後練習：Scope / <code>static</code> / <code>this</code></h1>
+          <p class="lead">
+            這份題本練習 variable scope、parameter/local/block、<code>this</code>、shadowing、
+            static variable、static method、<code>main</code> 與常見 compile error。
+            每題先判斷名稱屬於誰、目前 context 是 static 還是 instance，再打開詳解。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>static</strong><span>Class-level state</span></div>
+            <div><strong>AP-style</strong><span>Compile error 判斷</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#this-shadowing">B. this / Shadowing</a>
+          <a href="#locals">C. Parameters / Locals / Blocks</a>
+          <a href="#static-fields">D. Static Variables</a>
+          <a href="#static-methods">E. Static Methods / main</a>
+          <a href="#errors">F. Compile Errors</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先把 scope、variable kind、instance/static context 的核心語言釐清。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Scope</span></div>
+              <h3>Scope 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p1">詳解</button>
+              <div class="reveal-panel" id="l16p1">
+                <p>Scope 是一個變數名稱可以被直接使用的程式碼範圍。它回答「這一行看得到這個名字嗎？」</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Scope vs Lifetime</span></div>
+              <h3>Scope 和 lifetime 完全一樣嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p2">詳解</button>
+              <div class="reveal-panel" id="l16p2">
+                <p>不一樣。Scope 是名字可用範圍；lifetime 是 variable 或 object 存在多久。AP CSA 最常考 scope。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Variable Kind</span></div>
+              <h3><code>private int score;</code> 宣告在 class 中、method 外，這是什麼 variable？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p3">詳解</button>
+              <div class="reveal-panel" id="l16p3">
+                <p>這是 instance variable，也叫 instance field。每個 object 各自有一份。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Static Variable</span></div>
+              <h3><code>private static int count;</code> 屬於 object 還是 class？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p4">詳解</button>
+              <div class="reveal-panel" id="l16p4">
+                <p>屬於 class。Static variable 也叫 class variable，所有 instances 共用同一份。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Parameter</span></div>
+              <h3>在 <code>public void add(int amount)</code> 中，<code>amount</code> 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p5">詳解</button>
+              <div class="reveal-panel" id="l16p5">
+                <p><code>amount</code> 是 parameter。它的 scope 通常是整個 method body。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Local Variable</span></div>
+              <h3>宣告在 method body 裡的 <code>int result = 0;</code> 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p6">詳解</button>
+              <div class="reveal-panel" id="l16p6">
+                <p>這是 local variable。它通常只在宣告後到所在 block 結束前可用。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="this-shadowing" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. this / Shadowing</p>
+              <h2><code>this</code> 與同名變數</h2>
+              <p>看到同名 field 與 parameter，先問：單獨寫名稱時 Java 會先找到誰？</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>this</span></div>
+              <h3><code>this</code> 在 instance method 中代表什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p7">詳解</button>
+              <div class="reveal-panel" id="l16p7">
+                <p><code>this</code> 代表 current receiver object，也就是目前正在執行這個 instance method 的 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Receiver</span></div>
+              <h3>若執行 <code>a.setScore(90)</code>，在 <code>setScore</code> 裡 <code>this</code> 是誰？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p8">詳解</button>
+              <div class="reveal-panel" id="l16p8">
+                <p><code>this</code> 是 <code>a</code> 指到的 object。<code>this.score</code> 是那個 object 的 instance variable。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Shadowing Bug</span></div>
+              <h3>以下 method 會成功修改 field 嗎？</h3>
+              <pre><code>private int score;
+
+public void setScore(int score)
+{
+    score = score;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p9">詳解</button>
+              <div class="reveal-panel" id="l16p9">
+                <p>不會。左右兩邊的 <code>score</code> 都是 parameter，field 被 shadow 了。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Fix Shadowing</span></div>
+              <h3>修正上一題，讓 parameter 的值存進 instance variable。</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p10">詳解</button>
+              <div class="reveal-panel" id="l16p10">
+                <pre><code>public void setScore(int score)
+{
+    this.score = score;
+}</code></pre>
+                <p><code>this.score</code> 指 field；<code>score</code> 指 parameter。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>No Shadowing</span></div>
+              <h3>以下 method 中的 <code>score</code> 是 field 還是 parameter？</h3>
+              <pre><code>private int score;
+
+public int getScore()
+{
+    return score;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p11">詳解</button>
+              <div class="reveal-panel" id="l16p11">
+                <p>是 field。沒有同名 local/parameter，所以 instance method 裡的 <code>score</code> 可直接代表 receiver 的 field。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Both Values</span></div>
+              <h3>以下呼叫 <code>obj.sum(5)</code> 回傳什麼？</h3>
+              <pre><code>private int x = 10;
+
+public int sum(int x)
+{
+    return this.x + x;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p12">詳解</button>
+              <div class="reveal-panel" id="l16p12">
+                <p>回傳 <code>15</code>。<code>this.x</code> 是 field 10；單獨的 <code>x</code> 是 parameter 5。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Constructor</span></div>
+              <h3>以下 constructor 中，為什麼需要 <code>this.name</code>？</h3>
+              <pre><code>private String name;
+
+public Student(String name)
+{
+    this.name = name;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p13">詳解</button>
+              <div class="reveal-panel" id="l16p13">
+                <p>因為 parameter <code>name</code> shadow field <code>name</code>。<code>this.name</code> 明確指定 current object's field。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Local Shadowing</span></div>
+              <h3>以下 method 印出什麼？</h3>
+              <pre><code>private int x = 7;
+
+public void method()
+{
+    int x = 3;
+    System.out.println(x);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p14">詳解</button>
+              <div class="reveal-panel" id="l16p14">
+                <p>印出 <code>3</code>。Local variable <code>x</code> shadow instance field <code>x</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="locals" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Parameters / Locals / Blocks</p>
+              <h2>Scope、block 與 definite assignment</h2>
+              <p>Local variable 題目常考三件事：宣告前不可用、block 外不可用、使用前必須賦值。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Declaration Before Use</span></div>
+              <h3>以下 code 合法嗎？</h3>
+              <pre><code>public void method()
+{
+    System.out.println(x);
+    int x = 5;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p15">詳解</button>
+              <div class="reveal-panel" id="l16p15">
+                <p>不合法。Local variable 必須先宣告，名稱才進入 scope。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Block Scope</span></div>
+              <h3>以下 code 中，哪一行 compile error？</h3>
+              <pre><code>int x = 1;
+
+if (x &gt; 0)
+{
+    int y = 2;
+}
+
+System.out.println(x);
+System.out.println(y);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p16">詳解</button>
+              <div class="reveal-panel" id="l16p16">
+                <p><code>System.out.println(y);</code> compile error。<code>y</code> 的 scope 只在 <code>if</code> block 內。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>For Loop Scope</span></div>
+              <h3>以下 code 合法嗎？</h3>
+              <pre><code>for (int i = 0; i &lt; 4; i++)
+{
+}
+
+System.out.println(i);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p17">詳解</button>
+              <div class="reveal-panel" id="l16p17">
+                <p>不合法。<code>i</code> 在 <code>for</code> header 宣告，通常只能在 loop scope 內使用。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Loop Fix</span></div>
+              <h3>若 loop 後仍需要使用 <code>i</code>，可以怎麼改？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p18">詳解</button>
+              <div class="reveal-panel" id="l16p18">
+                <pre><code>int i;
+for (i = 0; i &lt; 4; i++)
+{
+}
+System.out.println(i);</code></pre>
+                <p>把 <code>i</code> 宣告在 loop 前，讓它的 scope 包含 loop 後面的程式碼。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Parameter Scope</span></div>
+              <h3>以下 <code>other</code> method 可以直接使用 <code>x</code> 嗎？</h3>
+              <pre><code>public void method(int x)
+{
+    System.out.println(x);
+}
+
+public void other()
+{
+    System.out.println(x);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p19">詳解</button>
+              <div class="reveal-panel" id="l16p19">
+                <p>不可以，除非 class 另外有 field <code>x</code>。Parameter <code>x</code> 只在 <code>method</code> body 內。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Local Initialization</span></div>
+              <h3>以下 code 合法嗎？</h3>
+              <pre><code>public void method()
+{
+    int x;
+    System.out.println(x);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p20">詳解</button>
+              <div class="reveal-panel" id="l16p20">
+                <p>不合法。Local variable 沒有可直接使用的 default value，使用前必須被賦值。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Field Default</span></div>
+              <h3>以下 field 若沒有 constructor assignment，預設值是多少？</h3>
+              <pre><code>private int count;
+private boolean active;
+private String name;</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p21">詳解</button>
+              <div class="reveal-panel" id="l16p21">
+                <p><code>count</code> 是 <code>0</code>，<code>active</code> 是 <code>false</code>，<code>name</code> 是 <code>null</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>All Paths</span></div>
+              <h3>以下 code 是否一定合法？</h3>
+              <pre><code>int x;
+if (score &gt; 0)
+{
+    x = 5;
+}
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p22">詳解</button>
+              <div class="reveal-panel" id="l16p22">
+                <p>不一定。若 <code>score &lt;= 0</code>，<code>x</code> 沒有被賦值就使用，通常會是 definite assignment compile error。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="static-fields" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Static Variables</p>
+              <h2>Class-level shared state</h2>
+              <p>Static field 只有一份。看到 constructor 裡 <code>count++</code>，通常是在追蹤 class-wide counter。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Shared Counter</span></div>
+              <h3>以下程式建立三個 objects 後，<code>Thing.getCount()</code> 回傳什麼？</h3>
+              <pre><code>public class Thing
+{
+    private static int count = 0;
+
+    public Thing()
+    {
+        count++;
+    }
+
+    public static int getCount()
+    {
+        return count;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p23">詳解</button>
+              <div class="reveal-panel" id="l16p23">
+                <p>回傳 <code>3</code>。<code>count</code> 是 static variable，所有 <code>Thing</code> objects 共用一份。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Instance Counter</span></div>
+              <h3>若 <code>count</code> 不是 static，以下執行後 <code>a.getCount()</code> 和 <code>b.getCount()</code> 分別是多少？</h3>
+              <pre><code>Thing a = new Thing();
+Thing b = new Thing();
+a.increment();</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p24">詳解</button>
+              <div class="reveal-panel" id="l16p24">
+                <p>若 <code>count</code> 是 instance field，<code>a</code> 和 <code>b</code> 各自有一份。通常 <code>a</code> 是 <code>1</code>，<code>b</code> 是 <code>0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Bad Static Design</span></div>
+              <h3>為什麼 <code>private static int score;</code> 通常不適合放在 <code>Student</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p25">詳解</button>
+              <div class="reveal-panel" id="l16p25">
+                <p>學生分數通常每個 object 不同。若宣告成 static，所有 Student objects 會共用同一個 score。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Access Style</span></div>
+              <h3>Static field / method 通常建議用 object name 還是 class name 存取？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p26">詳解</button>
+              <div class="reveal-panel" id="l16p26">
+                <p>建議用 class name，例如 <code>Thing.getCount()</code>。這樣清楚表示它屬於 class，不屬於某個 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Static Mutation</span></div>
+              <h3>Instance method 可以修改 static variable 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p27">詳解</button>
+              <div class="reveal-panel" id="l16p27">
+                <p>可以。Instance context 可以使用 instance state，也可以使用 class static state。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Static Default</span></div>
+              <h3><code>private static boolean ready;</code> 若沒有 explicit assignment，預設值是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p28">詳解</button>
+              <div class="reveal-panel" id="l16p28">
+                <p>是 <code>false</code>。Static fields 和 instance fields 一樣有 default values。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="static-methods" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Static Methods / main</p>
+              <h2>Static context 沒有 receiver object</h2>
+              <p>Static method 不能直接使用 instance members，但可以透過 object reference 使用。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Static Call</span></div>
+              <h3><code>Math.sqrt(25)</code> 是 static method call 還是 instance method call？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p29">詳解</button>
+              <div class="reveal-panel" id="l16p29">
+                <p>是 static method call，形式是 <code>ClassName.methodName(...)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>No Receiver</span></div>
+              <h3>Static method 為什麼不能直接使用 <code>this</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p30">詳解</button>
+              <div class="reveal-panel" id="l16p30">
+                <p>因為 static method 沒有 receiver object。<code>this</code> 只在 constructor 或 instance method 中代表 current object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Static Context Error</span></div>
+              <h3>以下 code 合法嗎？</h3>
+              <pre><code>private int score;
+
+public static int getScore()
+{
+    return score;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p31">詳解</button>
+              <div class="reveal-panel" id="l16p31">
+                <p>不合法。<code>score</code> 是 instance field；static method 沒有 receiver object，不能直接使用。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Static Field Success</span></div>
+              <h3>以下 code 合法嗎？</h3>
+              <pre><code>private static int count;
+
+public static int getCount()
+{
+    return count;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p32">詳解</button>
+              <div class="reveal-panel" id="l16p32">
+                <p>合法。Static method 可以直接使用 static variable。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Object Reference</span></div>
+              <h3>以下 static method 在 <code>Student</code> class 內是否合法？</h3>
+              <pre><code>public static int readScore(Student s)
+{
+    return s.score;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p33">詳解</button>
+              <div class="reveal-panel" id="l16p33">
+                <p>合法，前提是這段 code 位於 <code>Student</code> class 內。Static method 雖不能直接寫 <code>score</code>，但可以透過 object reference <code>s</code> 指定哪個 object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>main</span></div>
+              <h3><code>public static void main(String[] args)</code> 是 static context 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p34">詳解</button>
+              <div class="reveal-panel" id="l16p34">
+                <p>是。<code>main</code> 是 static method，所以不能直接使用 instance fields 或 <code>this</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>main Fix</span></div>
+              <h3>在 <code>main</code> 中要讀取 instance field，通常要先做什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p35">詳解</button>
+              <div class="reveal-panel" id="l16p35">
+                <p>先建立 object 或取得 object reference，再透過它呼叫 instance method，例如 <code>Example e = new Example(); e.getX();</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Utility Design</span></div>
+              <h3>為什麼 <code>public static int square(int x)</code> 很適合設計成 static？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p36">詳解</button>
+              <div class="reveal-panel" id="l16p36">
+                <p>它只依賴 parameter <code>x</code>，不需要任何 particular object 的 instance state，因此適合 static utility method。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="errors" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Compile Errors</p>
+              <h2>判斷與修正常見錯誤</h2>
+              <p>這組題目訓練你看見錯誤原因，而不是靠「加 static」硬修。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>this in Static</span></div>
+              <h3>以下 code 的問題是什麼？</h3>
+              <pre><code>public static void reset()
+{
+    this.score = 0;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p37">詳解</button>
+              <div class="reveal-panel" id="l16p37">
+                <p><code>this</code> 不能在 static context 使用。Static method 沒有 receiver object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Instance Method Direct Call</span></div>
+              <h3>以下 static method 為什麼不合法？</h3>
+              <pre><code>public static void print()
+{
+    System.out.println(getScore());
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p38">詳解</button>
+              <div class="reveal-panel" id="l16p38">
+                <p><code>getScore()</code> 是 instance method 時需要 receiver object。Static method 不能直接呼叫它。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Fix with Object</span></div>
+              <h3>修正 Q38，讓 static method 可以印出某個 Student 的 score。</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p39">詳解</button>
+              <div class="reveal-panel" id="l16p39">
+                <pre><code>public static void print(Student s)
+{
+    System.out.println(s.getScore());
+}</code></pre>
+                <p>透過 parameter <code>s</code> 指定 receiver object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Do Not Magic Static</span></div>
+              <h3>把 <code>score</code> 改成 <code>static</code> 來修 static context error，什麼時候是錯誤設計？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p40">詳解</button>
+              <div class="reveal-panel" id="l16p40">
+                <p>若 <code>score</code> 本來應該是每個 object 自己不同的 state，改成 static 會讓所有 objects 共用同一份 score，是錯誤設計。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Duplicate Local</span></div>
+              <h3>以下 code 是否合法？</h3>
+              <pre><code>public void method()
+{
+    int x = 1;
+    int x = 2;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p41">詳解</button>
+              <div class="reveal-panel" id="l16p41">
+                <p>不合法。同一個 local scope 中不能重複宣告同名 local variable。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Separate Blocks</span></div>
+              <h3>以下兩個 <code>i</code> 宣告通常合法嗎？</h3>
+              <pre><code>for (int i = 0; i &lt; 3; i++)
+{
+}
+
+for (int i = 0; i &lt; 5; i++)
+{
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p42">詳解</button>
+              <div class="reveal-panel" id="l16p42">
+                <p>通常合法。兩個 <code>i</code> 分屬不同、互不重疊的 for-loop scopes。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>Field vs Local</span></div>
+              <h3>以下 method 印出什麼？</h3>
+              <pre><code>private int x = 4;
+
+public void method()
+{
+    int x = 9;
+    System.out.println(this.x);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p43">詳解</button>
+              <div class="reveal-panel" id="l16p43">
+                <p>印出 <code>4</code>。<code>this.x</code> 明確指定 instance field。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Static Call Style</span></div>
+              <h3>若 <code>getCount</code> 是 static method，<code>Thing.getCount()</code> 和 <code>a.getCount()</code> 哪個較推薦？</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p44">詳解</button>
+              <div class="reveal-panel" id="l16p44">
+                <p><code>Thing.getCount()</code> 較推薦，因為它清楚表明 <code>getCount</code> 屬於 class。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding / Trace</p>
+              <h2>程式練習與 final tracing</h2>
+              <p>最後六題把 scope、static、this 放進 class tracing。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Write Constructor</span></div>
+              <h3>為 <code>Player</code> 寫 constructor，fields 是 <code>private String name;</code> 與 <code>private int score;</code>，parameters 同名。</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p45">詳解</button>
+              <div class="reveal-panel" id="l16p45">
+                <pre><code>public Player(String name, int score)
+{
+    this.name = name;
+    this.score = score;
+}</code></pre>
+                <p>因為 parameters 和 fields 同名，使用 <code>this.field</code> 避免 shadowing bug。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Static Counter</span></div>
+              <h3>為 <code>Player</code> 加上 static counter，記錄建立過多少 players。</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p46">詳解</button>
+              <div class="reveal-panel" id="l16p46">
+                <pre><code>private static int playerCount = 0;
+
+public Player(String name, int score)
+{
+    this.name = name;
+    this.score = score;
+    playerCount++;
+}
+
+public static int getPlayerCount()
+{
+    return playerCount;
+}</code></pre>
+                <p><code>playerCount</code> 是 class-level shared state，適合 static。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Instance Method</span></div>
+              <h3>為 <code>Player</code> 寫 instance method <code>hasHigherScore(Player other)</code>。假設 <code>other</code> 不為 <code>null</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p47">詳解</button>
+              <div class="reveal-panel" id="l16p47">
+                <pre><code>public boolean hasHigherScore(Player other)
+{
+    return score &gt; other.score;
+}</code></pre>
+                <p><code>score</code> 是 receiver 的 field；<code>other.score</code> 是 parameter object 的 field。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Static Utility</span></div>
+              <h3>寫一個 static method <code>maxScore(Player a, Player b)</code>，回傳較高的 score。假設兩個 parameters 不為 <code>null</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l16p48">詳解</button>
+              <div class="reveal-panel" id="l16p48">
+                <pre><code>public static int maxScore(Player a, Player b)
+{
+    if (a.score &gt; b.score)
+    {
+        return a.score;
+    }
+    return b.score;
+}</code></pre>
+                <p>Static method 不能直接寫 <code>score</code>，但可以透過 parameters <code>a</code> 和 <code>b</code> 指定 objects。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Trace Static and Instance</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>Thing a = new Thing();
+Thing b = new Thing();
+a.add();
+System.out.println(a.getValue());
+System.out.println(b.getValue());
+System.out.println(Thing.getCount());</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p49">詳解</button>
+              <div class="reveal-panel" id="l16p49">
+                <p>若 constructor 讓 static <code>count++</code>，且 <code>add</code> 只修改 instance field <code>value</code>，結果通常是 <code>1</code>、<code>0</code>、<code>2</code>。Instance state 各自一份，static count 共用一份。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>找出以下 class 的三個問題並修正。</h3>
+              <pre><code>public class Score
+{
+    private int value;
+    private static int count;
+
+    public Score(int value)
+    {
+        value = value;
+        count++;
+    }
+
+    public static void reset()
+    {
+        this.value = 0;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l16p50">詳解</button>
+              <div class="reveal-panel" id="l16p50">
+                <p>問題 1：constructor 中 <code>value = value</code> 是 shadowing bug。問題 2：static method 不能使用 <code>this</code>。問題 3：若 reset 是要重設某個 object 的 value，應改成 instance method 或接受 object parameter。</p>
+                <pre><code>public Score(int value)
+{
+    this.value = value;
+    count++;
+}
+
+public void reset()
+{
+    value = 0;
+}</code></pre>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 16 課後練習。先找 declaration 與 scope，再判斷 instance context 或 static context。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

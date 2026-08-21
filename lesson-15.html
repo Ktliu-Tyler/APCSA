@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 15｜Instance Methods &amp; References</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 15：instance methods、receiver object、return vs side effect、Java pass-by-value、object references、aliasing、mutation vs reassignment、object parameters、object returns 與 method contracts。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 15</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第十五堂課導覽">
+        <a href="lesson-15-presentation.html">投影模式</a>
+        <a href="lesson-15-practice.html">課後練習</a>
+        <a href="lesson-14.html">上一課</a>
+        <a href="lesson-16.html">下一課</a>
+        <a href="#receiver">Receiver</a>
+        <a href="#side-effect">Side Effect</a>
+        <a href="#pass-by-value">Pass-by-Value</a>
+        <a href="#aliasing">Aliasing</a>
+        <a href="#contracts">Contracts</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 15</p>
+          <h1>Instance Methods &amp; References：Object Parameters、Aliasing 與 Mutation</h1>
+          <p class="lead">
+            Lesson 13 到 14 建立了 class、fields 與 constructors。這堂課真正追蹤 method call
+            作用在哪個 object：receiver object 是誰？reference 被複製時發生什麼？mutation 為什麼會被外面看見？
+            reassignment 又為什麼不會改 caller 的變數？
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-15-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-15-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-14.html">回 Lesson 14</a>
+            <a class="button" href="lesson-16.html">前往 Lesson 16</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#receiver">Receiver Object</a>
+          <a href="#state">Receiver State</a>
+          <a href="#side-effect">Return vs Side Effect</a>
+          <a href="#pass-by-value">Pass-by-Value</a>
+          <a href="#object-parameter">Object Parameters</a>
+          <a href="#mutation-reassignment">Mutation vs Reassignment</a>
+          <a href="#aliasing">Aliasing</a>
+          <a href="#object-return">Object Return</a>
+          <a href="#other-object">Other Object Parameters</a>
+          <a href="#contracts">Method Contracts</a>
+          <a href="#trace">Trace Strategy</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>說明 instance method 是對某個 receiver object 執行。</div>
+              <div>分辨 receiver object 與 method arguments。</div>
+              <div>理解 unqualified field name 指 receiver object's field。</div>
+              <div>分辨 return value 與 side effect。</div>
+              <div>判斷 method 是否修改 object state。</div>
+              <div>正確描述 Java always passes by value。</div>
+              <div>理解 primitive parameter 得到 primitive value copy。</div>
+              <div>理解 object parameter 得到 reference value copy。</div>
+              <div>分辨 object mutation 與 parameter reassignment。</div>
+              <div>理解 aliasing：多個 references 指向同一 object。</div>
+              <div>trace object returns 何時回傳 existing reference、何時回傳 new object。</div>
+              <div>依 method contract 判斷應該 return、mutate、或兩者都做。</div>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <p class="eyebrow">Lesson Flow</p>
+            <h2>本課路線</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="lesson15-flow-0" /> <span><strong>Receiver</strong>：method call 的點左邊是哪個 object。</span></label>
+              <label><input type="checkbox" data-progress="lesson15-flow-1" /> <span><strong>State changes</strong>：return value 和 side effect 不是同一件事。</span></label>
+              <label><input type="checkbox" data-progress="lesson15-flow-2" /> <span><strong>Pass-by-value</strong>：parameter 拿到的是 value copy；reference variable 的 value 是 reference。</span></label>
+              <label><input type="checkbox" data-progress="lesson15-flow-3" /> <span><strong>Mutation vs reassignment</strong>：改 object 外面看得到；改 parameter arrow 外面看不到。</span></label>
+              <label><input type="checkbox" data-progress="lesson15-flow-4" /> <span><strong>Aliasing</strong>：<code>b = a</code> copy reference，不是 copy object。</span></label>
+              <label><input type="checkbox" data-progress="lesson15-flow-5" /> <span><strong>Contracts</strong>：看題目要求 return、mutation、precondition、postcondition。</span></label>
+            </div>
+          </section>
+
+          <section id="receiver" class="article-section">
+            <p class="eyebrow">Receiver Object</p>
+            <h2>Instance method 永遠要先知道「哪個 object 接收這次 call」</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Receiver Method Call</h3>
+                <button class="copy-button" type="button" data-copy="l15-code-receiver">Copy</button>
+              </div>
+              <pre><code id="l15-code-receiver">Student s = new Student("Amy", 95);
+
+s.setScore(80);</code></pre>
+            </div>
+            <p>
+              在 <code>s.setScore(80)</code> 中，<code>s</code> reference 的 object 就是 receiver object。
+              <code>setScore</code> 對那個 object 執行，<code>80</code> 是 argument。
+            </p>
+            <div class="concept-card">
+              <pre><code>s
+│
+└── receiver object
+    name = "Amy"
+    score = 95
+
+s.setScore(80)
+    mutates receiver.score</code></pre>
+            </div>
+          </section>
+
+          <section id="state" class="article-section">
+            <p class="eyebrow">Receiver State</p>
+            <h2>同一份 method code，可以作用在不同 objects 的不同 state 上</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Same Method, Different Receivers</h3>
+                <button class="copy-button" type="button" data-copy="l15-code-different-receivers">Copy</button>
+              </div>
+              <pre><code id="l15-code-different-receivers">Student a = new Student("Amy", 95);
+Student b = new Student("Ben", 70);
+
+System.out.println(a.getScore());
+System.out.println(b.getScore());</code></pre>
+            </div>
+            <p>
+              <code>a.getScore()</code> 裡的 <code>score</code> 是 <code>a</code> object 的 score。
+              <code>b.getScore()</code> 裡的 <code>score</code> 是 <code>b</code> object 的 score。
+            </p>
+            <div class="callout">
+              在 instance method 中，沒加物件名稱的 field，例如 <code>score</code>，通常代表
+              <code>this.score</code>，也就是 receiver object 的 field。
+            </div>
+          </section>
+
+          <section id="side-effect" class="article-section">
+            <p class="eyebrow">Return vs Side Effect</p>
+            <h2>Return value 和 side effect 是兩種不同結果</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>有 return value？</th>
+                    <th>修改 state？</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>public int doubledScore() { return score * 2; }</code></td>
+                    <td>有</td>
+                    <td>否</td>
+                  </tr>
+                  <tr>
+                    <td><code>public void doubleScore() { score *= 2; }</code></td>
+                    <td>無</td>
+                    <td>有</td>
+                  </tr>
+                  <tr>
+                    <td><code>public int incrementAndGet() { count++; return count; }</code></td>
+                    <td>有</td>
+                    <td>有</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Return vs Mutation</h3>
+                <button class="copy-button" type="button" data-copy="l15-code-return-side-effect">Copy</button>
+              </div>
+              <pre><code id="l15-code-return-side-effect">public int add(int x)
+{
+    return value + x; // no state change
+}
+
+public void addToValue(int x)
+{
+    value += x;       // side effect
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="pass-by-value" class="article-section">
+            <p class="eyebrow">Pass-by-Value</p>
+            <h2>Java always passes by value</h2>
+            <p>
+              Primitive variable 的 value 是資料本身。Reference variable 的 value 是 reference。
+              所以 object parameter 得到的是「reference value 的 copy」，不是整個 object 的 copy。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Parameter kind</th>
+                    <th>copy 的是什麼？</th>
+                    <th>可能共享 object？</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Primitive</td>
+                    <td>數值本身，例如 <code>5</code></td>
+                    <td>否</td>
+                  </tr>
+                  <tr>
+                    <td>Object reference</td>
+                    <td>reference value</td>
+                    <td>是，parameter 和 caller reference 可指向同一 object</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="concept-card">
+              <pre><code>Student s -> Student object
+
+changeScore(s)
+
+parameter st gets a copy of s's reference
+
+s  -> same Student object
+st -> same Student object</code></pre>
+            </div>
+          </section>
+
+          <section id="object-parameter" class="article-section">
+            <p class="eyebrow">Object Parameters</p>
+            <h2>Object parameter 可以 mutate caller 也看得到的 shared object</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Object Parameter Mutation</h3>
+                <button class="copy-button" type="button" data-copy="l15-code-object-parameter">Copy</button>
+              </div>
+              <pre><code id="l15-code-object-parameter">public static void changeScore(Student st)
+{
+    st.setScore(100);
+}
+
+Student s = new Student("Amy", 95);
+changeScore(s);
+System.out.println(s.getScore());</code></pre>
+            </div>
+            <p>
+              Output 是 <code>100</code>，因為 <code>st</code> 和 <code>s</code> 暫時 reference 同一個 Student object。
+              <code>st.setScore(100)</code> 修改的是 shared object。
+            </p>
+          </section>
+
+          <section id="mutation-reassignment" class="article-section">
+            <p class="eyebrow">Mutation vs Reassignment</p>
+            <h2>改 object 外面看得到；改 parameter 本身外面看不到</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Reassignment Does Not Change Caller Reference</h3>
+                <button class="copy-button" type="button" data-copy="l15-code-reassignment">Copy</button>
+              </div>
+              <pre><code id="l15-code-reassignment">public static void replace(Student st)
+{
+    st = new Student("Ben", 50);
+}
+
+Student s = new Student("Amy", 95);
+replace(s);
+System.out.println(s.getScore());</code></pre>
+            </div>
+            <p>
+              Output 仍是 <code>95</code>。<code>st = new Student(...)</code> 只改 local parameter
+              <code>st</code> 的 reference，不會改 caller 變數 <code>s</code>。
+            </p>
+            <div class="takeaway-grid">
+              <div><strong>Mutation</strong><span><code>st.setScore(100)</code>：改 shared object。</span></div>
+              <div><strong>Reassignment</strong><span><code>st = new Student(...)</code>：只改 local parameter。</span></div>
+            </div>
+          </section>
+
+          <section id="aliasing" class="article-section">
+            <p class="eyebrow">Aliasing</p>
+            <h2><code>b = a</code> copy reference，不是 copy object</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Alias Trace</h3>
+                <button class="copy-button" type="button" data-copy="l15-code-aliasing">Copy</button>
+              </div>
+              <pre><code id="l15-code-aliasing">Student a = new Student("Amy", 95);
+Student b = a;
+
+b.setScore(70);
+
+System.out.println(a.getScore());</code></pre>
+            </div>
+            <p>
+              Output 是 <code>70</code>。<code>a</code> 和 <code>b</code> 是 aliases：兩個 reference variables
+              指向同一個 object。透過 <code>b</code> 修改 object 後，透過 <code>a</code> 也看得到。
+            </p>
+            <div class="concept-card">
+              <pre><code>a ─┐
+   ├──> same Student object
+b ─┘       name = "Amy"
+           score = 70</code></pre>
+            </div>
+          </section>
+
+          <section id="object-return" class="article-section">
+            <p class="eyebrow">Object Return</p>
+            <h2>Return object 時，回傳的是 reference value</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Returning Existing Object</h3>
+                <button class="copy-button" type="button" data-copy="l15-code-object-return">Copy</button>
+              </div>
+              <pre><code id="l15-code-object-return">public class Team
+{
+    private Player captain;
+
+    public Player getCaptain()
+    {
+        return captain;
+    }
+}</code></pre>
+            </div>
+            <p>
+              <code>getCaptain()</code> 回傳 <code>captain</code> field 裡的 reference value copy。
+              Caller 可能和 <code>captain</code> field alias 同一個 <code>Player</code> object。
+            </p>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Return</th>
+                    <th>意思</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>return captain;</code></td>
+                    <td>回傳 existing object 的 reference，可能 alias。</td>
+                  </tr>
+                  <tr>
+                    <td><code>return new Player(name);</code></td>
+                    <td>建立並回傳 new object reference，通常不 alias 原本 object。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="other-object" class="article-section">
+            <p class="eyebrow">Object Parameters In Instance Methods</p>
+            <h2>Instance method 可以同時涉及 receiver 和 object parameter</h2>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Transfer Between Objects</h3>
+                <button class="copy-button" type="button" data-copy="l15-code-transfer">Copy</button>
+              </div>
+              <pre><code id="l15-code-transfer">public class BankAccount
+{
+    private double balance;
+
+    public void deposit(double amount)
+    {
+        balance += amount;
+    }
+
+    public void transferTo(BankAccount other, double amount)
+    {
+        balance -= amount;
+        other.deposit(amount);
+    }
+}</code></pre>
+            </div>
+            <p>
+              在 <code>a.transferTo(b, 20)</code> 中，receiver 是 <code>a</code> object；
+              object parameter <code>other</code> reference <code>b</code> object。
+              這個 method 會同時修改兩個 objects。
+            </p>
+          </section>
+
+          <section id="contracts" class="article-section">
+            <p class="eyebrow">Method Contracts</p>
+            <h2>FRQ 中，method contract 決定你該 return 還是 mutate</h2>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Contract phrase</th>
+                    <th>代表你要注意</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>returns...</td>
+                    <td>Return type 與 return value 語意。</td>
+                  </tr>
+                  <tr>
+                    <td>updates / changes / adds / removes...</td>
+                    <td>Side effect：哪個 object state 會被改。</td>
+                  </tr>
+                  <tr>
+                    <td>Precondition</td>
+                    <td>題目保證的情況，不要多做不必要處理。</td>
+                  </tr>
+                  <tr>
+                    <td>Postcondition</td>
+                    <td>Method 執行後必須成立的狀態。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-panel">
+              <div class="code-head">
+                <h3>Contract Example</h3>
+                <button class="copy-button" type="button" data-copy="l15-code-contract">Copy</button>
+              </div>
+              <pre><code id="l15-code-contract">public int addBonus(int bonus)
+{
+    score += bonus;
+    return score;
+}</code></pre>
+            </div>
+            <p>
+              這個 method 同時有 side effect 和 return value。AP 題要看 specification 說 method 應該造成什麼效果。
+            </p>
+          </section>
+
+          <section id="trace" class="article-section">
+            <p class="eyebrow">Trace Strategy</p>
+            <h2>Reference tracing 標準流程</h2>
+            <div class="takeaway-grid">
+              <div><strong>1. Count new</strong><span>每個 <code>new</code> 通常是一個 object。</span></div>
+              <div><strong>2. Draw arrows</strong><span>每個 reference variable 指向哪個 object。</span></div>
+              <div><strong>3. Mark aliases</strong><span><code>b = a</code> copy reference。</span></div>
+              <div><strong>4. Find receiver</strong><span>點左邊是哪個 object。</span></div>
+              <div><strong>5. Copy parameters</strong><span>primitive value 或 reference value copy。</span></div>
+              <div><strong>6. Separate effects</strong><span>mutation 改 object；reassignment 改 local variable。</span></div>
+            </div>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Errors</p>
+            <h2>本課常見錯誤</h2>
+            <div class="error-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>錯誤</th>
+                    <th>修正想法</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>把 Java 說成 pass-by-reference</td>
+                    <td>Java always passes by value；object parameter 得到 reference value copy。</td>
+                  </tr>
+                  <tr>
+                    <td>以為 object parameter 是 object copy</td>
+                    <td>不是 copy object；parameter 和 caller 可能 reference same object。</td>
+                  </tr>
+                  <tr>
+                    <td>以為 reassign parameter 會改 caller variable</td>
+                    <td>Reassignment 只移動 local parameter arrow。</td>
+                  </tr>
+                  <tr>
+                    <td>看到 return method 就以為沒有 side effect</td>
+                    <td>要看 body；method 可以先 mutate 再 return。</td>
+                  </tr>
+                  <tr>
+                    <td>以為 getter 永遠安全</td>
+                    <td>若 getter return mutable object reference，caller 可能 alias 並 mutate。</td>
+                  </tr>
+                  <tr>
+                    <td>混淆 receiver 和 object parameter</td>
+                    <td>點左邊是 receiver；括號裡傳入的是 argument。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Instance Method</strong><span>對某個 receiver object 執行。</span></div>
+              <div><strong>Receiver</strong><span>Method call 點左邊 reference 的 object。</span></div>
+              <div><strong>Return</strong><span>把 value 交回 caller。</span></div>
+              <div><strong>Side Effect</strong><span>修改 object state 或其他外部可觀察狀態。</span></div>
+              <div><strong>Pass-by-Value</strong><span>Java parameter 拿到 value copy。</span></div>
+              <div><strong>Reference Copy</strong><span>Object parameter 拿到 reference value copy。</span></div>
+              <div><strong>Mutation</strong><span>修改 shared object，aliases 都看得到。</span></div>
+              <div><strong>Reassignment</strong><span>只改 local reference variable。</span></div>
+              <div><strong>Aliasing</strong><span>多個 references 指向同一 object。</span></div>
+              <div><strong>Object Return</strong><span>回傳 reference value，可能產生 alias。</span></div>
+              <div><strong>Contract</strong><span>題目規格決定 return、mutation、precondition。</span></div>
+              <div><strong>Trace</strong><span>畫 objects、arrows、state，逐行更新。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十二句</summary>
+              <p>Instance methods run on a receiver object.</p>
+              <p>Unqualified instance variables belong to the receiver object.</p>
+              <p>Return value and side effect are different ideas.</p>
+              <p>Java always passes by value.</p>
+              <p>An object variable stores a reference value.</p>
+              <p>An object parameter receives a copy of the reference value.</p>
+              <p>Mutating the object can be observed through aliases.</p>
+              <p>Reassigning a parameter does not reassign the caller's variable.</p>
+              <p><code>b = a</code> copies a reference, not an object.</p>
+              <p>Each <code>new</code> creates a new object.</p>
+              <p>Returning an existing object reference can create aliasing.</p>
+              <p>Method contracts tell you what to return and what state to modify.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 15｜Instance Methods &amp; References。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>
