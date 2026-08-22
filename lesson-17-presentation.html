@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 17 投影模式｜Arrays</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 17 投影模式：arrays、declaration、new、initializer list、index、length、default values、bounds、references、aliasing 與 enhanced for。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 17</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-17.html">文章版</a>
+        <a href="lesson-17-practice.html">課後練習</a>
+        <a href="lesson-16.html">上一課</a>
+        <a href="lesson-18.html">下一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 17</p>
+          <h1>Arrays</h1>
+          <p class="slide-lead">
+            今天正式進入 Java 的 array：固定長度、相同型別、0-based index、
+            <code>.length</code>、default values、bounds、reference copy 和 enhanced for。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-17-practice.html">Lesson 17 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Why Arrays</p>
+          <h2>如果有很多同類資料，不該寫一堆獨立變數</h2>
+          <div class="deck-code">
+            <pre><code>int score1 = 90;
+int score2 = 85;
+int score3 = 73;</code></pre>
+          </div>
+          <p class="slide-note">30 位學生、365 天氣溫、1000 筆測驗結果，都需要更好的表示法。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Array Definition</p>
+          <h2>Array stores a fixed number of values of the same type</h2>
+          <div class="deck-code">
+            <pre><code>int[] scores = {90, 85, 73, 100};</code></pre>
+          </div>
+          <div class="big-flow">
+            <span>index 0: 90</span>
+            <span>index 1: 85</span>
+            <span>index 2: 73</span>
+            <span>index 3: 100</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Three Rules</p>
+          <h2>Array 的三個基本規則</h2>
+          <div class="exit-grid">
+            <div>所有 elements 型別相同。</div>
+            <div>建立後 length 固定。</div>
+            <div>第一個 index 是 <code>0</code>。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Declaration</p>
+          <h2>宣告 array variable</h2>
+          <div class="deck-code">
+            <pre><code>int[] numbers;
+double[] prices;
+boolean[] answers;
+String[] names;</code></pre>
+          </div>
+          <p class="slide-note">這些只是 reference variables，還沒有建立 array object。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Create With new</p>
+          <h2><code>new int[5]</code> 建立 5 個元素</h2>
+          <div class="deck-code">
+            <pre><code>int[] nums = new int[5];</code></pre>
+          </div>
+          <div class="big-flow">
+            <span>length = 5</span>
+            <span>indexes 0, 1, 2, 3, 4</span>
+            <span>max index = 4</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>若 <code>int[] nums = new int[8];</code>，最後一個合法 index 是多少？</h2>
+          <button class="reveal-button" type="button" data-reveal="l17-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l17-r1">
+            <p><code>7</code>。最後一個合法 index 永遠是 <code>arr.length - 1</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Initializer List</p>
+          <h2>一開始知道所有元素，可以直接列出來</h2>
+          <div class="deck-code">
+            <pre><code>int[] nums = {10, 20, 30, 40};
+String[] names = {"Amy", "Bob", "Chris"};</code></pre>
+          </div>
+          <p class="slide-note">Java 會自動決定 array length。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Length</p>
+          <h2>Array 使用 <code>arr.length</code>，沒有括號</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Array</h3>
+              <pre><code>nums.length</code></pre>
+            </div>
+            <div>
+              <h3>String</h3>
+              <pre><code>word.length()</code></pre>
+            </div>
+          </div>
+          <p class="slide-note">這是 AP CSA 非常常考的語法陷阱。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Index</p>
+          <h2>用 <code>arr[index]</code> 讀取或修改元素</h2>
+          <div class="deck-code">
+            <pre><code>int[] nums = {10, 20, 30};
+
+nums[1] = 100;
+nums[0]++;
+nums[2] = nums[0] + nums[1];</code></pre>
+          </div>
+          <p class="slide-note">Array element 可以像普通變數一樣被 assign 和更新。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Index Expression</p>
+          <h2>Index 可以是 expression，先算完再取元素</h2>
+          <div class="deck-code">
+            <pre><code>int[] nums = {4, 8, 12, 16, 20};
+int x = 1;
+
+System.out.println(nums[x + 2]);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l17-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l17-r2">
+            <p><code>x + 2</code> 是 <code>3</code>，所以印出 <code>nums[3]</code>，也就是 <code>16</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Default Values</p>
+          <h2><code>new 型別[size]</code> 會自動填入預設值</h2>
+          <div class="exit-grid">
+            <div><code>int[]</code> → <code>0</code></div>
+            <div><code>double[]</code> → <code>0.0</code></div>
+            <div><code>boolean[]</code> → <code>false</code></div>
+            <div>object array → <code>null</code></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Object Array</p>
+          <h2><code>String[] names = new String[3]</code> 預設是三個 <code>null</code></h2>
+          <div class="deck-code">
+            <pre><code>String[] names = new String[3];
+
+System.out.println(names[0]); // null</code></pre>
+          </div>
+          <p class="slide-note">這不是三個空字串，也不是三個已建立的 String object。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Bounds</p>
+          <h2>合法 index：<code>0 &lt;= index &lt; arr.length</code></h2>
+          <div class="deck-code">
+            <pre><code>int[] nums = {10, 20, 30};
+
+System.out.println(nums[2]); // OK
+System.out.println(nums[3]); // runtime error</code></pre>
+          </div>
+          <p class="slide-note"><code>ArrayIndexOutOfBoundsException</code> 是常見 runtime error。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Off-by-One</p>
+          <h2>最經典錯誤：<code>i &lt;= arr.length</code></h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt;= nums.length; i++)
+{
+    System.out.println(nums[i]);
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l17-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l17-r3">
+            <p>最後一圈會讀 <code>nums[nums.length]</code>，但最後一格是 <code>nums[nums.length - 1]</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Traversal</p>
+          <h2>正向走訪所有元素的標準 pattern</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; arr.length; i++)
+{
+    System.out.println(arr[i]);
+}</code></pre>
+          </div>
+          <p class="slide-note">這個 loop 會走過 index <code>0</code> 到 <code>arr.length - 1</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Reference Type</p>
+          <h2>Array variable 存的是 reference</h2>
+          <div class="deck-code">
+            <pre><code>int[] a = {10, 20, 30};
+int[] b = a;</code></pre>
+          </div>
+          <div class="big-flow">
+            <span>a</span>
+            <span>same array object</span>
+            <span>b</span>
+          </div>
+          <p class="slide-note">這叫 aliasing：兩個 reference 指向同一個 object。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Aliasing Trace</p>
+          <h2>修改元素會被另一個 reference 看見</h2>
+          <div class="deck-code">
+            <pre><code>int[] a = {2, 4, 6};
+int[] b = a;
+b[1] = 9;
+
+System.out.println(a[1]);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l17-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l17-r4">
+            <p><code>9</code>。<code>a</code> 和 <code>b</code> 指向同一個 array。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Reassignment</p>
+          <h2>改 reference 和改 element 是兩件事</h2>
+          <div class="deck-code">
+            <pre><code>int[] a = {1, 2};
+int[] b = a;
+
+b = new int[2];
+b[0] = 10;
+
+System.out.println(a[0]);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l17-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l17-r5">
+            <p><code>1</code>。<code>b</code> 已經改指向新的 array，沒有修改 <code>a</code> 的 array。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">null Array Reference</p>
+          <h2><code>null</code> 代表沒有指向 array object</h2>
+          <div class="deck-code">
+            <pre><code>int[] nums = null;
+
+System.out.println(nums.length);</code></pre>
+          </div>
+          <p class="slide-note">這會造成 <code>NullPointerException</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Enhanced For</p>
+          <h2>For each value in the array</h2>
+          <div class="deck-code">
+            <pre><code>int[] nums = {10, 20, 30, 40};
+
+for (int value : nums)
+{
+    System.out.println(value);
+}</code></pre>
+          </div>
+          <p class="slide-note">適合只需要依序讀取每個 element value。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Enhanced For Limitation</p>
+          <h2>Enhanced for 沒有 index</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Good fit</h3>
+              <p>讀取每個 value、印出、加總、計數。</p>
+            </div>
+            <div>
+              <h3>Use traditional for</h3>
+              <p>需要 index、修改元素、反向走訪、跳著走、相鄰比較。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Primitive Copy Trap</p>
+          <h2>Enhanced for 不能直接修改 primitive array elements</h2>
+          <div class="deck-code">
+            <pre><code>int[] nums = {1, 2, 3};
+
+for (int x : nums)
+{
+    x = 100;
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l17-r6">揭曉答案</button>
+          <div class="reveal-panel" id="l17-r6">
+            <p><code>nums</code> 仍然是 <code>{1, 2, 3}</code>。<code>x</code> 只是 element value 的 copy。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Correct Mutation</p>
+          <h2>要修改 array element，使用 index</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; nums.length; i++)
+{
+    nums[i] = 100;
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>nums[i]</code> 才是 array 裡真正那一格。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Type Recognition</p>
+          <h2>分清楚 reference、element、length</h2>
+          <div class="exit-grid">
+            <div><code>int[] nums</code> 型別是 <code>int[]</code></div>
+            <div><code>nums[0]</code> 型別是 <code>int</code></div>
+            <div><code>nums.length</code> 型別是 <code>int</code></div>
+            <div><code>String[] names</code> 的元素型別是 <code>String</code></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Mistakes</p>
+          <h2>Lesson 17 最常見錯誤</h2>
+          <div class="exit-grid">
+            <div><code>arr[arr.length]</code></div>
+            <div><code>i &lt;= arr.length</code></div>
+            <div><code>arr.length()</code></div>
+            <div>index 從 1 開始</div>
+            <div>reference copy 當成 array copy</div>
+            <div>enhanced for 修改 primitive element</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Final Trace</p>
+          <h2>這段最後印出什麼？</h2>
+          <div class="deck-code">
+            <pre><code>int[] nums = {4, 8, 12, 16};
+
+for (int i = 0; i &lt; nums.length; i++)
+{
+    nums[i] = nums[i] + i;
+}
+
+for (int value : nums)
+{
+    System.out.print(value + " ");
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l17-r7">揭曉答案</button>
+          <div class="reveal-panel" id="l17-r7">
+            <p><code>4 9 14 19 </code>。每一格都加上自己的 index。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的六個練習</h2>
+          <div class="exit-grid">
+            <div>建立 <code>int[] scores</code>。</div>
+            <div>印出第一格與最後一格。</div>
+            <div>寫正向 traversal。</div>
+            <div>交換第一格和最後一格。</div>
+            <div>trace <code>int[] b = a</code>。</div>
+            <div>判斷 enhanced for 是否真的修改 array。</div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-17-practice.html">開始 Lesson 17 課後練習</a>
+            <a class="button" href="lesson-17.html">回到文章版</a>
+            <a class="button" href="lesson-18.html">前往 Lesson 18</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十二句</h2>
+          <div class="exit-grid">
+            <div>Array stores values of the same type。</div>
+            <div>Array length is fixed after creation。</div>
+            <div>First index is <code>0</code>。</div>
+            <div>Last index is <code>arr.length - 1</code>。</div>
+            <div>Array uses <code>arr.length</code>。</div>
+            <div>String uses <code>str.length()</code>。</div>
+            <div>Default <code>int</code> value is <code>0</code>。</div>
+            <div>Object array default value is <code>null</code>。</div>
+            <div>Invalid index causes bounds error。</div>
+            <div>Array variables store references。</div>
+            <div><code>int[] b = a</code> makes aliases。</div>
+            <div>Enhanced for has no index。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

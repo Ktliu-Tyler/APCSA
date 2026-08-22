@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 17｜Arrays</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 17：Java arrays、declaration、new、initializer list、index、.length、default values、bounds、array references、aliasing 與 enhanced for loop。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 17</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第十七堂課導覽">
+        <a href="lesson-17-presentation.html">投影模式</a>
+        <a href="lesson-17-practice.html">課後練習</a>
+        <a href="lesson-16.html">上一課</a>
+        <a href="lesson-18.html">下一課</a>
+        <a href="#create">Create</a>
+        <a href="#index-length">Index / Length</a>
+        <a href="#defaults">Defaults</a>
+        <a href="#references">References</a>
+        <a href="#enhanced-for">Enhanced For</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 17</p>
+          <h1>Arrays：固定長度、多個同型別資料與 0-based index</h1>
+          <p class="lead">
+            前面我們多半用一個變數存一個值。Array 讓同一個變數名稱指向一整排相同型別的元素：
+            成績、氣溫、測驗結果、物件 reference 都可以放進 array。這堂課先把 array 的基本規則
+            學穩，下一課再用 array 寫演算法。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-17-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-17-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-16.html">回 Lesson 16</a>
+            <a class="button" href="lesson-18.html">前往 Lesson 18</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#what-is-array">Array 是什麼</a>
+          <a href="#declare">宣告 Array</a>
+          <a href="#create">建立 Array</a>
+          <a href="#initializer">Initializer List</a>
+          <a href="#index-length">Index / Length</a>
+          <a href="#elements">Array Element</a>
+          <a href="#defaults">Default Values</a>
+          <a href="#bounds">Bounds</a>
+          <a href="#traversal">Traversal</a>
+          <a href="#references">References</a>
+          <a href="#object-arrays">Object Arrays / null</a>
+          <a href="#enhanced-for">Enhanced For</a>
+          <a href="#types">Type Recognition</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>說明 array 是固定長度、相同型別元素的資料結構。</div>
+              <div>正確宣告 <code>int[]</code>、<code>double[]</code>、<code>boolean[]</code>、<code>String[]</code>。</div>
+              <div>使用 <code>new int[5]</code> 建立 array，並知道 5 是元素數量。</div>
+              <div>使用 initializer list，例如 <code>int[] nums = {1, 2, 3};</code>。</div>
+              <div>判斷 <code>arr.length</code> 與最後合法 index <code>arr.length - 1</code>。</div>
+              <div>讀取與修改 array element，例如 <code>arr[i]</code>、<code>arr[0]++</code>。</div>
+              <div>說明 primitive array 與 object array 的 default values。</div>
+              <div>辨認 <code>ArrayIndexOutOfBoundsException</code> 與 <code>NullPointerException</code>。</div>
+              <div>理解 array 是 reference type，能追蹤 aliasing 與 reassignment。</div>
+              <div>判斷 enhanced for loop 適合讀取，且不能直接修改 primitive array elements。</div>
+            </div>
+            <div class="progress-card">
+              <h3>Array tracing checklist</h3>
+              <label><input type="checkbox" data-progress="lesson17-flow-1" /> <span><strong>Find length</strong>：先寫出 array 有幾個元素。</span></label>
+              <label><input type="checkbox" data-progress="lesson17-flow-2" /> <span><strong>Write indexes</strong>：合法 index 是 <code>0</code> 到 <code>length - 1</code>。</span></label>
+              <label><input type="checkbox" data-progress="lesson17-flow-3" /> <span><strong>Check aliases</strong>：若看到 <code>b = a</code>，先畫成同一個 array。</span></label>
+              <label><input type="checkbox" data-progress="lesson17-flow-4" /> <span><strong>Update every assignment</strong>：每次 <code>arr[i] = ...</code> 都重畫 array。</span></label>
+              <label><input type="checkbox" data-progress="lesson17-flow-5" /> <span><strong>Check loop bound</strong>：看到 <code>&lt;= arr.length</code> 立刻檢查是否越界。</span></label>
+            </div>
+          </section>
+
+          <section id="what-is-array" class="article-section">
+            <p class="eyebrow">What Is An Array</p>
+            <h2>Array 用一個 reference 存一整排資料</h2>
+            <p>
+              Array 是一種可以儲存固定數量、相同資料型別元素的資料結構。若有 30 位學生的分數，
+              不需要寫 30 個變數；可以用一個 <code>int[]</code> 表示整組成績。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>array idea</span>
+                <button class="copy-button" type="button" data-copy="l17-code-array-idea">Copy</button>
+              </div>
+              <pre><code id="l17-code-array-idea">int[] scores = {90, 85, 73, 100};
+
+System.out.println(scores[0]); // 90
+System.out.println(scores[3]); // 100</code></pre>
+            </div>
+            <div class="flow-strip">
+              <span>index 0 → 90</span>
+              <span>index 1 → 85</span>
+              <span>index 2 → 73</span>
+              <span>index 3 → 100</span>
+            </div>
+            <p>
+              這個 array 的型別是 <code>int[]</code>，裡面每一格 element 的型別是 <code>int</code>。
+            </p>
+          </section>
+
+          <section id="declare" class="article-section">
+            <p class="eyebrow">Declaration</p>
+            <h2>宣告 array variable 不代表已經建立 array</h2>
+            <p>Java array 宣告的基本格式是：<code>資料型別[] 變數名稱;</code></p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>array declaration</span>
+                <button class="copy-button" type="button" data-copy="l17-code-declare">Copy</button>
+              </div>
+              <pre><code id="l17-code-declare">int[] numbers;
+double[] prices;
+boolean[] answers;
+String[] names;</code></pre>
+            </div>
+            <p>
+              <code>int[] numbers;</code> 只宣告 <code>numbers</code> 可以存一個 int array 的 reference。
+              這和 <code>Scanner input;</code> 只是宣告 reference variable 很像，還沒有真正建立物件。
+            </p>
+          </section>
+
+          <section id="create" class="article-section">
+            <p class="eyebrow">Create With new</p>
+            <h2><code>new int[5]</code> 建立 5 個元素，不是最大 index 是 5</h2>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>create array</span>
+                <button class="copy-button" type="button" data-copy="l17-code-create">Copy</button>
+              </div>
+              <pre><code id="l17-code-create">int[] numbers = new int[5];
+
+System.out.println(numbers.length); // 5</code></pre>
+            </div>
+            <p>
+              <code>new int[5]</code> 建立一個長度為 5 的 array。合法 index 是
+              <code>0</code>、<code>1</code>、<code>2</code>、<code>3</code>、<code>4</code>。
+              <code>5</code> 是元素數量，不是最後一格的位置。
+            </p>
+            <div class="callout warn">
+              <strong>Array 長度建立後不能改。</strong>
+              <span>若寫 <code>numbers = new int[10];</code>，不是把原本 array 擴大，而是讓 <code>numbers</code> 改指向新的 array。</span>
+            </div>
+          </section>
+
+          <section id="initializer" class="article-section">
+            <p class="eyebrow">Initializer List</p>
+            <h2>一開始就知道元素時，可以直接列出來</h2>
+            <p>Initializer list 會依照你列出的元素自動決定 array 長度。</p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>initializer list</span>
+                <button class="copy-button" type="button" data-copy="l17-code-initializer">Copy</button>
+              </div>
+              <pre><code id="l17-code-initializer">int[] nums = {10, 20, 30, 40};
+double[] prices = {3.5, 7.2, 10.0};
+String[] names = {"Amy", "Bob", "Chris"};
+boolean[] flags = {true, false, true};</code></pre>
+            </div>
+            <p>
+              AP CSA 常用寫法是 <code>int[] nums = {10, 20, 30, 40};</code>。
+              不需要同時寫 <code>new int[4]</code> 和 initializer list。
+            </p>
+          </section>
+
+          <section id="index-length" class="article-section">
+            <p class="eyebrow">Index / Length</p>
+            <h2>Array index 從 0 開始，<code>.length</code> 沒有括號</h2>
+            <p>
+              Array 用 <code>arrayName[index]</code> 取出某一格，用 <code>arrayName.length</code>
+              取得元素數量。注意 array 的 <code>.length</code> 是 field，不是 method。
+            </p>
+            <div class="contrast-grid">
+              <div>
+                <h3>Array</h3>
+                <pre><code>int[] nums = {10, 20, 30};
+System.out.println(nums.length);
+System.out.println(nums[nums.length - 1]);</code></pre>
+                <p>Array 使用 <code>nums.length</code>。</p>
+              </div>
+              <div>
+                <h3>String</h3>
+                <pre><code>String word = "hello";
+System.out.println(word.length());
+System.out.println(word.substring(0, 1));</code></pre>
+                <p>String 使用 <code>word.length()</code>。</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Expression</th><th>意思</th><th>型別</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>arr.length</code></td><td>array 元素數量</td><td><code>int</code></td></tr>
+                  <tr><td><code>arr[0]</code></td><td>第一個元素</td><td>元素型別</td></tr>
+                  <tr><td><code>arr[arr.length - 1]</code></td><td>最後一個元素</td><td>元素型別</td></tr>
+                  <tr><td><code>arr[arr.length]</code></td><td>越界</td><td>runtime error</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="elements" class="article-section">
+            <p class="eyebrow">Array Element</p>
+            <h2>Array element 可以像普通變數一樣讀取、賦值與更新</h2>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>array element assignments</span>
+                <button class="copy-button" type="button" data-copy="l17-code-index">Copy</button>
+              </div>
+              <pre><code id="l17-code-index">int[] nums = {10, 20, 30};
+
+nums[1] = 100;                  // {10, 100, 30}
+nums[0]++;                      // {11, 100, 30}
+nums[2] = nums[0] + nums[1];    // {11, 100, 111}</code></pre>
+            </div>
+            <p>
+              Index 也可以是 expression。Java 會先算出 index expression，再去取對應元素。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>index expression</span>
+                <button class="copy-button" type="button" data-copy="l17-code-expression">Copy</button>
+              </div>
+              <pre><code id="l17-code-expression">int[] nums = {4, 8, 12, 16, 20};
+int x = 1;
+
+System.out.println(nums[x + 2]); // nums[3], so 16</code></pre>
+            </div>
+          </section>
+
+          <section id="defaults" class="article-section">
+            <p class="eyebrow">Default Values</p>
+            <h2><code>new 型別[size]</code> 會自動填入 default values</h2>
+            <p>
+              Java array 建立後，每一格都有預設值。Primitive array 和 object array 的預設值不同。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>default values</span>
+                <button class="copy-button" type="button" data-copy="l17-code-default">Copy</button>
+              </div>
+              <pre><code id="l17-code-default">int[] nums = new int[4];          // {0, 0, 0, 0}
+double[] data = new double[3];    // {0.0, 0.0, 0.0}
+boolean[] flags = new boolean[3]; // {false, false, false}
+String[] names = new String[3];   // {null, null, null}</code></pre>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Array 型別</th><th>Default element value</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>int[]</code></td><td><code>0</code></td></tr>
+                  <tr><td><code>double[]</code></td><td><code>0.0</code></td></tr>
+                  <tr><td><code>boolean[]</code></td><td><code>false</code></td></tr>
+                  <tr><td>Object array，例如 <code>String[]</code></td><td><code>null</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="bounds" class="article-section">
+            <p class="eyebrow">Bounds</p>
+            <h2>合法 index 必須滿足 <code>0 &lt;= index &lt; arr.length</code></h2>
+            <p>
+              存取不存在的位置會造成 <code>ArrayIndexOutOfBoundsException</code>。這通常是 runtime error，
+              因為 compiler 不一定能在編譯時知道 index 最後是多少。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>bounds error</span>
+                <button class="copy-button" type="button" data-copy="l17-code-bounds">Copy</button>
+              </div>
+              <pre><code id="l17-code-bounds">int[] nums = {10, 20, 30};
+
+System.out.println(nums[2]); // OK, 30
+System.out.println(nums[3]); // ArrayIndexOutOfBoundsException</code></pre>
+            </div>
+            <div class="callout warn">
+              <strong>最經典 off-by-one error</strong>
+              <span><code>for (int i = 0; i &lt;= arr.length; i++)</code> 最後會跑到 <code>arr[arr.length]</code>，一定越界。</span>
+            </div>
+          </section>
+
+          <section id="traversal" class="article-section">
+            <p class="eyebrow">Traversal</p>
+            <h2>遍歷 array 的標準寫法</h2>
+            <p>
+              若要依序存取每個元素，最重要的 pattern 是 traditional for loop。
+              這個 pattern 會剛好走過所有合法 index。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>standard traversal</span>
+                <button class="copy-button" type="button" data-copy="l17-code-traversal">Copy</button>
+              </div>
+              <pre><code id="l17-code-traversal">int[] nums = {10, 20, 30, 40, 50};
+
+for (int i = 0; i &lt; nums.length; i++)
+{
+    System.out.println(nums[i]);
+}</code></pre>
+            </div>
+            <p>
+              看到 <code>for (int i = 0; i &lt; arr.length; i++)</code>，
+              你要能立刻讀成：從第一個合法 index 走到最後一個合法 index。
+            </p>
+          </section>
+
+          <section id="references" class="article-section">
+            <p class="eyebrow">Reference Type</p>
+            <h2>Array variable 存的是 reference，不是整排元素本身</h2>
+            <p>
+              Array 是 object。<code>int[] a = {10, 20, 30};</code> 中的 <code>a</code>
+              存的是 array object 的 reference。把 <code>a</code> assign 給 <code>b</code>，
+              只會複製 reference value，不會複製整個 array。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>array reference copy</span>
+                <button class="copy-button" type="button" data-copy="l17-code-reference">Copy</button>
+              </div>
+              <pre><code id="l17-code-reference">int[] a = {10, 20, 30};
+int[] b = a;
+
+b[0] = 100;
+
+System.out.println(a[0]); // 100</code></pre>
+            </div>
+            <p>
+              <code>a</code> 和 <code>b</code> 指向同一個 array，這稱為 aliasing。透過任何一個 reference
+              修改元素，另一個 reference 也會看見改變。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>reassignment is different</span>
+                <button class="copy-button" type="button" data-copy="l17-code-reassign">Copy</button>
+              </div>
+              <pre><code id="l17-code-reassign">int[] a = {1, 2, 3};
+int[] b = a;
+
+b = new int[3];
+b[0] = 10;
+
+System.out.println(a[0]); // 1</code></pre>
+            </div>
+            <p>
+              <code>b = new int[3];</code> 是讓 <code>b</code> 改指向新的 array，原本 <code>a</code>
+              指到的 array 沒有被修改。
+            </p>
+          </section>
+
+          <section id="object-arrays" class="article-section">
+            <p class="eyebrow">Object Arrays / null</p>
+            <h2>Object array 存的是 object references</h2>
+            <p>
+              <code>String[] names = new String[3];</code> 建立的是三個可以存 <code>String</code>
+              reference 的位置，不是三個空字串。預設元素值是 <code>null</code>。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>object array and null</span>
+                <button class="copy-button" type="button" data-copy="l17-code-object-array">Copy</button>
+              </div>
+              <pre><code id="l17-code-object-array">String[] names = new String[3];
+
+System.out.println(names[0]); // null
+
+names[0] = "Amy";
+System.out.println(names[0]); // Amy</code></pre>
+            </div>
+            <p>
+              Array variable 本身也可以是 <code>null</code>。若 <code>int[] nums = null;</code>，
+              再執行 <code>nums.length</code>，會造成 <code>NullPointerException</code>。
+            </p>
+          </section>
+
+          <section id="enhanced-for" class="article-section">
+            <p class="eyebrow">Enhanced For</p>
+            <h2>Enhanced for loop 適合依序讀取每個元素</h2>
+            <p>
+              Enhanced for loop 也叫 for-each loop，可以讀成「對 array 裡每一個 value」。
+              如果只需要看每個元素的值，它很簡潔。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>enhanced for loop</span>
+                <button class="copy-button" type="button" data-copy="l17-code-enhanced">Copy</button>
+              </div>
+              <pre><code id="l17-code-enhanced">int[] nums = {10, 20, 30, 40};
+
+for (int value : nums)
+{
+    System.out.println(value);
+}</code></pre>
+            </div>
+            <div class="contrast-grid">
+              <div>
+                <h3>適合 enhanced for</h3>
+                <p>只讀元素、印出元素、加總、計數、檢查每個 value。</p>
+              </div>
+              <div>
+                <h3>通常要 traditional for</h3>
+                <p>需要 index、修改元素、反向走訪、跳著走、比較相鄰元素。</p>
+              </div>
+            </div>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>primitive copy trap</span>
+                <button class="copy-button" type="button" data-copy="l17-code-modify">Copy</button>
+              </div>
+              <pre><code id="l17-code-modify">int[] nums = {1, 2, 3};
+
+for (int x : nums)
+{
+    x = 100;
+}
+
+System.out.println(nums[0]); // still 1</code></pre>
+            </div>
+            <p>
+              <code>x</code> 只是 primitive value 的 copy。若要真的修改 array element，
+              必須用 <code>nums[i]</code>。
+            </p>
+          </section>
+
+          <section id="types" class="article-section">
+            <p class="eyebrow">Type Recognition</p>
+            <h2>分清楚 array reference、array element 與 length 的型別</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>程式碼</th><th>型別</th><th>意義</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>int[] nums</code></td><td><code>int[]</code></td><td>整個 int array 的 reference</td></tr>
+                  <tr><td><code>nums[0]</code></td><td><code>int</code></td><td>第一個 int element</td></tr>
+                  <tr><td><code>nums.length</code></td><td><code>int</code></td><td>元素數量</td></tr>
+                  <tr><td><code>String[] names</code></td><td><code>String[]</code></td><td>String reference array</td></tr>
+                  <tr><td><code>names[0]</code></td><td><code>String</code></td><td>某一格的 String reference</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Array index 必須是整數型 expression，例如 <code>nums[2]</code> 或 <code>nums[i + 1]</code>。
+              <code>nums[2.5]</code> 不合法。
+            </p>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Mistakes</p>
+            <h2>Lesson 17 常見錯誤總表</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>錯誤</th><th>原因</th><th>修法</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>arr[arr.length]</code></td><td>最大合法 index 是 <code>arr.length - 1</code></td><td><code>arr[arr.length - 1]</code></td></tr>
+                  <tr><td><code>i &lt;= arr.length</code></td><td>最後會跑到 invalid index</td><td><code>i &lt; arr.length</code></td></tr>
+                  <tr><td><code>arr.length()</code></td><td>Array 的 length 不是 method</td><td><code>arr.length</code></td></tr>
+                  <tr><td>認為 index 從 1 開始</td><td>Java array 永遠 0-based</td><td>第一格是 <code>arr[0]</code></td></tr>
+                  <tr><td><code>int[] b = a</code> 當成複製</td><td>這只是 reference copy</td><td>真正 copy 要建立新 array 再逐格複製</td></tr>
+                  <tr><td>用 enhanced for 修改 primitive array</td><td>loop variable 是元素值的 copy</td><td>用 traditional for 和 <code>arr[i]</code></td></tr>
+                  <tr><td>存取 <code>null</code> array</td><td>reference 沒有指到 array object</td><td>先建立 array 或檢查不為 <code>null</code></td></tr>
+                  <tr><td>以為 <code>new int[5]</code> 沒有值</td><td>Java 會給 default values</td><td><code>int</code> 預設為 <code>0</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Array</strong><span>儲存固定數量、相同型別的元素。</span></div>
+              <div><strong>Declaration</strong><span><code>int[] nums;</code> 只宣告 reference variable。</span></div>
+              <div><strong>Creation</strong><span><code>new int[5]</code> 建立 5 個元素。</span></div>
+              <div><strong>Initializer</strong><span><code>int[] nums = {1, 2, 3};</code> 自動決定 length。</span></div>
+              <div><strong>Index</strong><span>第一格是 <code>0</code>，最後一格是 <code>arr.length - 1</code>。</span></div>
+              <div><strong>Length</strong><span>Array 用 <code>arr.length</code>，String 用 <code>str.length()</code>。</span></div>
+              <div><strong>Defaults</strong><span><code>int</code> 0、<code>double</code> 0.0、<code>boolean</code> false、object reference null。</span></div>
+              <div><strong>Bounds</strong><span>合法 index 滿足 <code>0 &lt;= index &lt; arr.length</code>。</span></div>
+              <div><strong>Reference</strong><span><code>int[] b = a</code> 是 aliasing，不是複製元素。</span></div>
+              <div><strong>Enhanced For</strong><span>適合讀值；primitive loop variable 不能直接改 array element。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十句</summary>
+              <p>Arrays store multiple values of the same type.</p>
+              <p>Array length is fixed after creation.</p>
+              <p>The first valid index is <code>0</code>.</p>
+              <p>The last valid index is <code>arr.length - 1</code>.</p>
+              <p>Arrays use <code>arr.length</code>, not <code>arr.length()</code>.</p>
+              <p><code>new int[n]</code> creates <code>n</code> elements initialized to <code>0</code>.</p>
+              <p>Object array elements default to <code>null</code>.</p>
+              <p>Invalid indexes cause <code>ArrayIndexOutOfBoundsException</code>.</p>
+              <p>Array assignment copies a reference, not all elements.</p>
+              <p>Enhanced for reads values cleanly, but it does not give you an index.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 17｜Arrays。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

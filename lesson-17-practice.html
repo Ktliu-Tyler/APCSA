@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 17 課後練習｜Arrays</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 17 課後練習：arrays、declaration、creation、initializer list、index、length、default values、bounds、references、aliasing、enhanced for。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 17 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-17-presentation.html">投影模式</a>
+        <a href="lesson-17.html">文章版</a>
+        <a href="lesson-16-practice.html">上一課練習</a>
+        <a href="lesson-18-practice.html">下一課練習</a>
+        <a href="#concepts">概念</a>
+        <a href="#index-length">Index</a>
+        <a href="#defaults-bounds">Defaults</a>
+        <a href="#references">References</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 17</p>
+          <h1>課後練習：Arrays</h1>
+          <p class="lead">
+            這份題本練習 array 宣告、建立、initializer list、index、<code>.length</code>、
+            default values、bounds error、array reference copy、aliasing、<code>null</code>
+            與 enhanced for loop。每題先自己 trace，再打開詳解。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>0-based</strong><span>Index thinking</span></div>
+            <div><strong>AP-style</strong><span>Array tracing</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#declare-create">B. 宣告與建立</a>
+          <a href="#index-length">C. Index / Length</a>
+          <a href="#defaults-bounds">D. Defaults / Bounds</a>
+          <a href="#references">E. References / Aliasing</a>
+          <a href="#enhanced-for">F. Enhanced For</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先確認 array 的核心語言：固定長度、相同型別、0-based index、reference type。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Definition</span></div>
+              <h3>Array 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p1">詳解</button>
+              <div class="reveal-panel" id="l17p1">
+                <p>Array 是一種儲存固定數量、相同資料型別元素的資料結構。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Same Type</span></div>
+              <h3><code>int[] nums = {3, 7, "hello"};</code> 合法嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p2">詳解</button>
+              <div class="reveal-panel" id="l17p2">
+                <p>不合法。<code>int[]</code> 的每個 element 都必須是 <code>int</code>，不能放 <code>String</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Fixed Length</span></div>
+              <h3>Array 建立後，<code>length</code> 可以直接改變嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p3">詳解</button>
+              <div class="reveal-panel" id="l17p3">
+                <p>不可以。Array 長度固定。若需要不同大小，要建立新的 array；若需要可變長度，後面會學 <code>ArrayList</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Index</span></div>
+              <h3>Java array 的第一個 index 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p4">詳解</button>
+              <div class="reveal-panel" id="l17p4">
+                <p>是 <code>0</code>。Java array 是 0-based indexing。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Reference Type</span></div>
+              <h3><code>int[] nums</code> 中的 <code>nums</code> 直接存整排數字，還是存 reference？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p5">詳解</button>
+              <div class="reveal-panel" id="l17p5">
+                <p><code>nums</code> 存的是 array object 的 reference。Array 是 reference type。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Element Type</span></div>
+              <h3>若 <code>double[] data</code> 是一個 array，<code>data[2]</code> 的型別是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p6">詳解</button>
+              <div class="reveal-panel" id="l17p6">
+                <p><code>data[2]</code> 的型別是 <code>double</code>。<code>data</code> 是 <code>double[]</code>，單一元素是 <code>double</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="declare-create" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Declaration / Creation</p>
+              <h2>宣告、建立與 initializer list</h2>
+              <p>分清楚 declaration 只是 reference variable，<code>new</code> 才真的建立 array object。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Declaration</span></div>
+              <h3>寫出一個可以指向 <code>int</code> array 的 variable <code>scores</code> 宣告。</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p7">詳解</button>
+              <div class="reveal-panel" id="l17p7">
+                <pre><code>int[] scores;</code></pre>
+                <p>這只宣告 reference variable，尚未建立 array。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Create</span></div>
+              <h3>建立一個長度為 6 的 <code>boolean</code> array，變數名稱是 <code>flags</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p8">詳解</button>
+              <div class="reveal-panel" id="l17p8">
+                <pre><code>boolean[] flags = new boolean[6];</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Creation Meaning</span></div>
+              <h3><code>new int[8]</code> 中的 <code>8</code> 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p9">詳解</button>
+              <div class="reveal-panel" id="l17p9">
+                <p>是元素數量，也就是 array length。不是最大 index。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Initializer</span></div>
+              <h3>以下 array 的 <code>words.length</code> 是多少？</h3>
+              <pre><code>String[] words = {"red", "blue", "green"};</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p10">詳解</button>
+              <div class="reveal-panel" id="l17p10">
+                <p><code>words.length</code> 是 <code>3</code>。Initializer list 有三個元素。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Valid Code</span></div>
+              <h3><code>int[] nums = {10, 20, 30};</code> 是否需要額外寫 <code>new int[3]</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p11">詳解</button>
+              <div class="reveal-panel" id="l17p11">
+                <p>不需要。Initializer list 會自動建立 array 並決定長度。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Variable Size</span></div>
+              <h3>以下 code 合法嗎？</h3>
+              <pre><code>int n = 10;
+int[] nums = new int[n];</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p12">詳解</button>
+              <div class="reveal-panel" id="l17p12">
+                <p>合法。Array 建立時的 size 可以是整數型 variable 或 expression，只要執行時是非負整數。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Zero Length</span></div>
+              <h3><code>int[] nums = new int[0];</code> 合法嗎？<code>nums.length</code> 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p13">詳解</button>
+              <div class="reveal-panel" id="l17p13">
+                <p>合法。這是 empty array，<code>nums.length</code> 是 <code>0</code>，但 <code>nums[0]</code> 會越界。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>Length Field</span></div>
+              <h3><code>nums.length = 10;</code> 可以用來改變 array 長度嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p14">詳解</button>
+              <div class="reveal-panel" id="l17p14">
+                <p>不可以。Array 的 <code>length</code> 不能被 assign。若需要新長度，要建立新 array 並讓 reference 指向它。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="index-length" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Index / Length</p>
+              <h2>0-based index 與 <code>.length</code></h2>
+              <p>這組題目專練長度、最後一格、index expression、array vs String length。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Max Index</span></div>
+              <h3>若 <code>int[] nums = new int[8];</code>，最後一個合法 index 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p15">詳解</button>
+              <div class="reveal-panel" id="l17p15">
+                <p>是 <code>7</code>，也就是 <code>nums.length - 1</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Last Element</span></div>
+              <h3>寫出讀取 array <code>arr</code> 最後一個元素的標準 expression。</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p16">詳解</button>
+              <div class="reveal-panel" id="l17p16">
+                <pre><code>arr[arr.length - 1]</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Output</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>int[] nums = {10, 20, 30, 40};
+System.out.println(nums[2]);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p17">詳解</button>
+              <div class="reveal-panel" id="l17p17">
+                <p>印出 <code>30</code>。Index 2 是第三個元素。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Index Expression</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>int[] nums = {4, 8, 12, 16, 20};
+int x = 1;
+System.out.println(nums[x + 2]);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p18">詳解</button>
+              <div class="reveal-panel" id="l17p18">
+                <p>先算 <code>x + 2</code> 得到 <code>3</code>，所以讀 <code>nums[3]</code>，印出 <code>16</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Array vs String</span></div>
+              <h3><code>int[] nums</code> 和 <code>String word</code> 取得長度的語法分別是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p19">詳解</button>
+              <div class="reveal-panel" id="l17p19">
+                <p>Array 用 <code>nums.length</code>；String 用 <code>word.length()</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Mutation Trace</span></div>
+              <h3>以下程式最後 <code>nums[2]</code> 是多少？</h3>
+              <pre><code>int[] nums = {10, 20, 30};
+nums[1] = 100;
+nums[0]++;
+nums[2] = nums[0] + nums[1];</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p20">詳解</button>
+              <div class="reveal-panel" id="l17p20">
+                <p>最後是 <code>111</code>。Array 依序變成 <code>{10, 100, 30}</code>、<code>{11, 100, 30}</code>、<code>{11, 100, 111}</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Swap</span></div>
+              <h3>為什麼交換 <code>nums[0]</code> 與 <code>nums[2]</code> 時通常需要 <code>temp</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p21">詳解</button>
+              <div class="reveal-panel" id="l17p21">
+                <p>如果先做 <code>nums[0] = nums[2];</code>，原本 <code>nums[0]</code> 的值會被覆蓋。<code>temp</code> 用來暫存舊值。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Index Type</span></div>
+              <h3><code>nums[2.5]</code> 合法嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p22">詳解</button>
+              <div class="reveal-panel" id="l17p22">
+                <p>不合法。Array index 必須是整數型 expression。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="defaults-bounds" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Defaults / Bounds</p>
+              <h2>預設值與越界錯誤</h2>
+              <p>看到 <code>new 型別[size]</code>，立刻想預設值；看到 <code>arr.length</code> 當 index，立刻想越界。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>int Default</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>int[] nums = new int[4];
+System.out.println(nums[2]);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p23">詳解</button>
+              <div class="reveal-panel" id="l17p23">
+                <p>印出 <code>0</code>。<code>int[]</code> 的 default element value 是 <code>0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>double Default</span></div>
+              <h3><code>double[] data = new double[3];</code> 中 <code>data[1]</code> 初始值是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p24">詳解</button>
+              <div class="reveal-panel" id="l17p24">
+                <p>是 <code>0.0</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>boolean Default</span></div>
+              <h3><code>boolean[] flags = new boolean[3];</code> 中 <code>flags[1]</code> 初始值是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p25">詳解</button>
+              <div class="reveal-panel" id="l17p25">
+                <p>是 <code>false</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Object Default</span></div>
+              <h3><code>String[] names = new String[4];</code> 中 <code>names[2]</code> 初始值是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p26">詳解</button>
+              <div class="reveal-panel" id="l17p26">
+                <p>是 <code>null</code>，不是空字串。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Bounds</span></div>
+              <h3>以下程式會發生什麼？</h3>
+              <pre><code>int[] nums = {5, 10, 15};
+System.out.println(nums[3]);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p27">詳解</button>
+              <div class="reveal-panel" id="l17p27">
+                <p>會發生 <code>ArrayIndexOutOfBoundsException</code>。合法 index 只有 <code>0</code>、<code>1</code>、<code>2</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Negative Index</span></div>
+              <h3><code>nums[-1]</code> 在 Java 中合法嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p28">詳解</button>
+              <div class="reveal-panel" id="l17p28">
+                <p>不合法。Java array index 不能是負數，執行時會造成 bounds error。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Classic Loop Error</span></div>
+              <h3>以下 loop 的問題是什麼？</h3>
+              <pre><code>for (int i = 0; i &lt;= nums.length; i++)
+{
+    System.out.println(nums[i]);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p29">詳解</button>
+              <div class="reveal-panel" id="l17p29">
+                <p>最後一圈會有 <code>i == nums.length</code>，因此存取 <code>nums[nums.length]</code>，造成 <code>ArrayIndexOutOfBoundsException</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>null</span></div>
+              <h3>以下程式會發生什麼？</h3>
+              <pre><code>int[] nums = null;
+System.out.println(nums.length);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p30">詳解</button>
+              <div class="reveal-panel" id="l17p30">
+                <p>會發生 <code>NullPointerException</code>，因為 <code>nums</code> 沒有指向任何 array object。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="references" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. References / Aliasing</p>
+              <h2>Reference copy、mutation 與 reassignment</h2>
+              <p>看到 <code>int[] b = a;</code>，先畫成兩個 reference 指向同一個 array。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Aliasing</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>int[] a = {2, 4, 6};
+int[] b = a;
+b[1] = 9;
+System.out.println(a[1]);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p31">詳解</button>
+              <div class="reveal-panel" id="l17p31">
+                <p>印出 <code>9</code>。<code>a</code> 和 <code>b</code> 指向同一個 array。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Primitive Copy</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>int x = 10;
+int y = x;
+y = 50;
+System.out.println(x);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p32">詳解</button>
+              <div class="reveal-panel" id="l17p32">
+                <p>印出 <code>10</code>。Primitive assignment 是 value copy，<code>y</code> 改變不會影響 <code>x</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Reassignment</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>int[] a = {1, 2};
+int[] b = a;
+b = new int[2];
+b[0] = 10;
+System.out.println(a[0]);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p33">詳解</button>
+              <div class="reveal-panel" id="l17p33">
+                <p>印出 <code>1</code>。<code>b = new int[2]</code> 讓 <code>b</code> 改指向新 array，沒有修改 <code>a</code> 指到的 array。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Mutation vs Reassign</span></div>
+              <h3><code>b[0] = 100;</code> 和 <code>b = new int[5];</code> 差在哪裡？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p34">詳解</button>
+              <div class="reveal-panel" id="l17p34">
+                <p><code>b[0] = 100;</code> 修改 <code>b</code> 指向的 array element；<code>b = new int[5];</code> 是改變 <code>b</code> 這個 reference variable 指向哪個 array。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Reference Trace</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>int[] x = {1, 2, 3};
+int[] y = x;
+y[0] = 8;
+x[2] = y[0];
+System.out.println(x[0] + " " + x[2]);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p35">詳解</button>
+              <div class="reveal-panel" id="l17p35">
+                <p>印出 <code>8 8</code>。<code>x</code> 和 <code>y</code> 是 aliases，修改的是同一個 array。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Object Array</span></div>
+              <h3><code>String[] names = new String[3];</code> 是否建立了三個 <code>String</code> object？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p36">詳解</button>
+              <div class="reveal-panel" id="l17p36">
+                <p>沒有。它建立三個可以存 <code>String</code> reference 的位置，預設值都是 <code>null</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>Method Parameter</span></div>
+              <h3>以下 method 呼叫後，caller 的 array 第一格會變嗎？</h3>
+              <pre><code>public static void change(int[] arr)
+{
+    arr[0] = 99;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p37">詳解</button>
+              <div class="reveal-panel" id="l17p37">
+                <p>會。Parameter copy 了 reference value，透過 <code>arr[0]</code> 修改的是同一個 array object 的 element。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Parameter Reassign</span></div>
+              <h3>以下 method 會讓 caller 的 variable 改指向新 array 嗎？</h3>
+              <pre><code>public static void replace(int[] arr)
+{
+    arr = new int[3];
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p38">詳解</button>
+              <div class="reveal-panel" id="l17p38">
+                <p>不會。這只改變 local parameter <code>arr</code> 的 reference，caller 的 variable 不會被重新指定。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="enhanced-for" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Enhanced For</p>
+              <h2>讀值方便，但沒有 index</h2>
+              <p>Enhanced for 適合只看每個 value；需要修改元素或需要 index 時，回到 traditional for。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Output</span></div>
+              <h3>以下程式印出什麼？</h3>
+              <pre><code>int[] nums = {4, 8, 12};
+
+for (int x : nums)
+{
+    System.out.println(x + 1);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p39">詳解</button>
+              <div class="reveal-panel" id="l17p39">
+                <p>依序印出 <code>5</code>、<code>9</code>、<code>13</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Primitive Copy</span></div>
+              <h3>以下程式執行後 <code>nums</code> 是什麼？</h3>
+              <pre><code>int[] nums = {1, 2, 3};
+
+for (int x : nums)
+{
+    x = 10;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p40">詳解</button>
+              <div class="reveal-panel" id="l17p40">
+                <p>仍然是 <code>{1, 2, 3}</code>。<code>x</code> 是 primitive value copy，改 <code>x</code> 不會改 array element。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Modify Correctly</span></div>
+              <h3>把 <code>nums</code> 每一格都改成 <code>10</code>，應該用哪種 loop？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p41">詳解</button>
+              <div class="reveal-panel" id="l17p41">
+                <pre><code>for (int i = 0; i &lt; nums.length; i++)
+{
+    nums[i] = 10;
+}</code></pre>
+                <p>需要修改 array element 時，用 index 和 <code>nums[i]</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>No Index</span></div>
+              <h3>Enhanced for loop 裡是否自動提供 index <code>i</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p42">詳解</button>
+              <div class="reveal-panel" id="l17p42">
+                <p>不會。Enhanced for 只提供當前 element value。如果需要 index，通常用 traditional for。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>Object Mutation</span></div>
+              <h3>Enhanced for loop 走訪 object array 時，呼叫物件的 mutator method 可能改到 object state 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p43">詳解</button>
+              <div class="reveal-panel" id="l17p43">
+                <p>可能。Loop variable 是 reference 的 copy，但它仍可能指向同一個 mutable object；呼叫 mutator 會改 object state。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Reassign Object Loop Variable</span></div>
+              <h3>在 enhanced for 裡寫 <code>obj = new SomeClass();</code> 會改掉 array 裡那一格嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p44">詳解</button>
+              <div class="reveal-panel" id="l17p44">
+                <p>不會。這只是讓 loop variable <code>obj</code> 改指向新 object，不會重新指定 array element。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding / Trace</p>
+              <h2>程式練習與 final tracing</h2>
+              <p>最後六題把建立、讀取、修改、交換、reference tracing 與 enhanced for 串起來。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>First / Last</span></div>
+              <h3>寫出程式碼，印出 <code>scores</code> 的第一個與最後一個元素。</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p45">詳解</button>
+              <div class="reveal-panel" id="l17p45">
+                <pre><code>System.out.println(scores[0]);
+System.out.println(scores[scores.length - 1]);</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>Print Indexes</span></div>
+              <h3>寫一個 loop，印出每個元素的 index 與 value。</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p46">詳解</button>
+              <div class="reveal-panel" id="l17p46">
+                <pre><code>for (int i = 0; i &lt; nums.length; i++)
+{
+    System.out.println("index " + i + ": " + nums[i]);
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>Swap</span></div>
+              <h3>寫程式交換 <code>nums[0]</code> 和 <code>nums[nums.length - 1]</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p47">詳解</button>
+              <div class="reveal-panel" id="l17p47">
+                <pre><code>int last = nums.length - 1;
+int temp = nums[0];
+nums[0] = nums[last];
+nums[last] = temp;</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>Set All</span></div>
+              <h3>寫程式把 <code>nums</code> 每一格都設成 <code>0</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l17p48">詳解</button>
+              <div class="reveal-panel" id="l17p48">
+                <pre><code>for (int i = 0; i &lt; nums.length; i++)
+{
+    nums[i] = 0;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>Trace</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>int[] a = {3, 6, 9, 12};
+a[0] = a[2];
+a[2] = a[1];
+System.out.println(a[0] + a[2]);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p49">詳解</button>
+              <div class="reveal-panel" id="l17p49">
+                <p>先變成 <code>{9, 6, 9, 12}</code>，再變成 <code>{9, 6, 6, 12}</code>，所以印出 <code>15</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>int[] nums = {4, 8, 12, 16};
+
+for (int i = 0; i &lt; nums.length; i++)
+{
+    nums[i] = nums[i] + i;
+}
+
+for (int value : nums)
+{
+    System.out.print(value + " ");
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l17p50">詳解</button>
+              <div class="reveal-panel" id="l17p50">
+                <p>Array 依序變成 <code>{4, 9, 14, 19}</code>，所以印出 <code>4 9 14 19 </code>。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 17 課後練習。先找 length 與合法 index，再追蹤 reference 和每次 element assignment。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>
