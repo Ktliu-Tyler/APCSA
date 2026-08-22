@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 19 投影模式｜ArrayList</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 19 投影模式：ArrayList、import、generic type、wrapper classes、add、get、set、remove、size、index shift、array vs ArrayList。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 19</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-19.html">文章版</a>
+        <a href="lesson-19-practice.html">課後練習</a>
+        <a href="lesson-18.html">上一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 19</p>
+          <h1>ArrayList</h1>
+          <p class="slide-lead">
+            今天從 fixed-size array 走到可變長度的 list：<code>ArrayList&lt;E&gt;</code>、
+            wrapper classes、<code>add</code>、<code>get</code>、<code>set</code>、<code>remove</code>、
+            <code>size()</code> 與 index shift。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-19-practice.html">Lesson 19 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">From Array</p>
+          <h2>Array 長度固定；ArrayList 長度可變</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Array</h3>
+              <p><code>arr.length</code> fixed after creation。</p>
+              <p>Use <code>[]</code>。</p>
+            </div>
+            <div>
+              <h3>ArrayList</h3>
+              <p><code>size()</code> changes after add/remove。</p>
+              <p>Use methods。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Import</p>
+          <h2>ArrayList 在 <code>java.util</code></h2>
+          <div class="deck-code">
+            <pre><code>import java.util.ArrayList;</code></pre>
+          </div>
+          <p class="slide-note">忘記 import 是初學 ArrayList 最常見 compile error。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Create</p>
+          <h2>建立空的 ArrayList</h2>
+          <div class="deck-code">
+            <pre><code>ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+names.add("Amy");
+names.add("Ben");</code></pre>
+          </div>
+          <p class="slide-note"><code>ArrayList&lt;String&gt;</code> 表示每個元素都是 String。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Generic Type</p>
+          <h2><code>ArrayList&lt;E&gt;</code> 的 <code>E</code> 是元素型別</h2>
+          <div class="deck-code">
+            <pre><code>ArrayList&lt;String&gt; words = new ArrayList&lt;String&gt;();
+ArrayList&lt;Student&gt; roster = new ArrayList&lt;Student&gt;();
+ArrayList&lt;Integer&gt; scores = new ArrayList&lt;Integer&gt;();</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Wrapper Classes</p>
+          <h2>Generic type 不能是 primitive</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Wrong</h3>
+              <pre><code>ArrayList&lt;int&gt; nums;</code></pre>
+            </div>
+            <div>
+              <h3>Correct</h3>
+              <pre><code>ArrayList&lt;Integer&gt; nums;</code></pre>
+            </div>
+          </div>
+          <p class="slide-note"><code>int</code> → <code>Integer</code>，<code>double</code> → <code>Double</code>，<code>boolean</code> → <code>Boolean</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>要建立存放小數的 ArrayList，型別應該寫什麼？</h2>
+          <button class="reveal-button" type="button" data-reveal="l19-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l19-r1">
+            <p><code>ArrayList&lt;Double&gt;</code>，使用 wrapper class <code>Double</code>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Core Methods</p>
+          <h2>AP CSA 必熟六個 ArrayList methods</h2>
+          <div class="exit-grid">
+            <div><code>size()</code></div>
+            <div><code>add(obj)</code></div>
+            <div><code>add(index, obj)</code></div>
+            <div><code>get(index)</code></div>
+            <div><code>set(index, obj)</code></div>
+            <div><code>remove(index)</code></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">size</p>
+          <h2><code>size()</code> 是目前元素數量</h2>
+          <div class="deck-code">
+            <pre><code>ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+names.add("Amy");
+names.add("Ben");
+
+System.out.println(names.size()); // 2</code></pre>
+          </div>
+          <p class="slide-note">ArrayList 用 method call：<code>size()</code>，不是 <code>.length</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">add to End</p>
+          <h2><code>add(obj)</code> 加到最後</h2>
+          <div class="deck-code">
+            <pre><code>names.add("Amy");   // [Amy]
+names.add("Ben");   // [Amy, Ben]
+names.add("Cara");  // [Amy, Ben, Cara]</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">add at Index</p>
+          <h2><code>add(index, obj)</code> 插入並讓後面右移</h2>
+          <div class="deck-code">
+            <pre><code>names.add("Amy");       // [Amy]
+names.add("Cara");      // [Amy, Cara]
+names.add(1, "Ben");    // [Amy, Ben, Cara]</code></pre>
+          </div>
+          <p class="slide-note">合法 add index 可以到 <code>size()</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>若 list size 是 3，<code>add(3, value)</code> 合法嗎？</h2>
+          <button class="reveal-button" type="button" data-reveal="l19-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l19-r2">
+            <p>合法。<code>add(size(), value)</code> 代表加到尾端。但 <code>get(size())</code> 不合法。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">get</p>
+          <h2><code>get(index)</code> 讀取元素</h2>
+          <div class="deck-code">
+            <pre><code>String first = names.get(0);</code></pre>
+          </div>
+          <p class="slide-note">ArrayList 不使用 <code>names[0]</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">set</p>
+          <h2><code>set(index, obj)</code> 取代元素，不改 size</h2>
+          <div class="deck-code">
+            <pre><code>ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+names.add("Amy");
+names.add("Ben");
+
+String old = names.set(1, "Cara");
+// old is "Ben"
+// names is [Amy, Cara]</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">remove</p>
+          <h2><code>remove(index)</code> 移除元素並讓後面左移</h2>
+          <div class="deck-code">
+            <pre><code>ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+names.add("Amy");
+names.add("Ben");
+names.add("Cara");
+
+String removed = names.remove(1);
+// removed is "Ben"
+// names is [Amy, Cara]</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Index Shift</p>
+          <h2>每次 add/remove 後都要重新 trace indexes</h2>
+          <div class="big-flow">
+            <span>add index</span>
+            <span>right shift</span>
+            <span>remove index</span>
+            <span>left shift</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Trace</p>
+          <h2>最後 list 是什麼？</h2>
+          <div class="deck-code">
+            <pre><code>ArrayList&lt;String&gt; words = new ArrayList&lt;String&gt;();
+words.add("A");
+words.add("C");
+words.add(1, "B");
+words.remove(0);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l19-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l19-r3">
+            <p><code>[B, C]</code>。先插入成 <code>[A, B, C]</code>，再移除 index 0。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Traversal</p>
+          <h2>ArrayList traversal 用 <code>size()</code> 和 <code>get(i)</code></h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; list.size(); i++)
+{
+    System.out.println(list.get(i));
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Enhanced For</p>
+          <h2>只讀每個元素時，可以用 enhanced for</h2>
+          <div class="deck-code">
+            <pre><code>for (String word : words)
+{
+    System.out.println(word);
+}</code></pre>
+          </div>
+          <p class="slide-note">若要修改元素，用 traditional for 和 <code>set</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Modify Each Element</p>
+          <h2>修改每一格要用 <code>set</code></h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; nums.size(); i++)
+{
+    nums.set(i, nums.get(i) * 2);
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Array vs ArrayList</p>
+          <h2>語法對照</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Array</h3>
+              <p><code>arr.length</code></p>
+              <p><code>arr[i]</code></p>
+              <p><code>arr[i] = value</code></p>
+            </div>
+            <div>
+              <h3>ArrayList</h3>
+              <p><code>list.size()</code></p>
+              <p><code>list.get(i)</code></p>
+              <p><code>list.set(i, value)</code></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>這段錯在哪？</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; list.length; i++)
+{
+    System.out.println(list[i]);
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l19-r4">揭曉答案</button>
+          <div class="reveal-panel" id="l19-r4">
+            <p>ArrayList 要用 <code>list.size()</code> 和 <code>list.get(i)</code>，不是 <code>.length</code> 和 brackets。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Autoboxing</p>
+          <h2><code>ArrayList&lt;Integer&gt;</code> 可以直接 add int value</h2>
+          <div class="deck-code">
+            <pre><code>ArrayList&lt;Integer&gt; scores = new ArrayList&lt;Integer&gt;();
+scores.add(90);
+
+int first = scores.get(0);</code></pre>
+          </div>
+          <p class="slide-note">Java 自動 boxing / unboxing。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Search in ArrayList</p>
+          <h2>找 target 時常用 <code>equals</code> 比較 objects</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; words.size(); i++)
+{
+    if (words.get(i).equals(target))
+    {
+        return i;
+    }
+}
+return -1;</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Trace</p>
+          <h2>最後印出什麼？</h2>
+          <div class="deck-code">
+            <pre><code>ArrayList&lt;String&gt; list = new ArrayList&lt;String&gt;();
+list.add("A");
+list.add("C");
+list.add(1, "B");
+String x = list.set(2, "D");
+list.add(x);
+list.remove(0);
+System.out.println(list);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l19-r5">揭曉答案</button>
+          <div class="reveal-panel" id="l19-r5">
+            <p><code>[B, D, C]</code>。<code>set</code> 回傳舊值 <code>C</code>，後來被加回尾端。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Common Mistakes</p>
+          <h2>Lesson 19 最常見錯誤</h2>
+          <div class="exit-grid">
+            <div>忘記 <code>import java.util.ArrayList;</code></div>
+            <div><code>ArrayList&lt;int&gt;</code></div>
+            <div><code>list.length</code></div>
+            <div><code>list[i]</code></div>
+            <div>以為 <code>set</code> 會新增元素</div>
+            <div>忽略 remove 後 index 左移</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP SOP</p>
+          <h2>ArrayList 題解題流程</h2>
+          <div class="big-flow">
+            <span>Track list</span>
+            <span>Track size</span>
+            <span>Apply method</span>
+            <span>Shift indexes</span>
+            <span>Re-read question</span>
+            <span>Answer output/error</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Mini Coding</p>
+          <h2>今天可以完成的六個 method 練習</h2>
+          <div class="exit-grid">
+            <div><code>countLong(ArrayList&lt;String&gt; words, int n)</code></div>
+            <div><code>sumList(ArrayList&lt;Integer&gt; nums)</code></div>
+            <div><code>replaceNegatives(ArrayList&lt;Integer&gt; nums)</code></div>
+            <div><code>firstIndex(ArrayList&lt;String&gt; words, String target)</code></div>
+            <div><code>copyList(ArrayList&lt;String&gt; words)</code></div>
+            <div><code>maxList(ArrayList&lt;Integer&gt; nums)</code></div>
+          </div>
+          <div class="slide-actions">
+            <a class="button primary" href="lesson-19-practice.html">開始 Lesson 19 課後練習</a>
+            <a class="button" href="lesson-19.html">回到文章版</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十二句</h2>
+          <div class="exit-grid">
+            <div>ArrayList size can change。</div>
+            <div>Import <code>java.util.ArrayList</code>。</div>
+            <div>Generic type must be a reference type。</div>
+            <div>Use <code>Integer</code>, not <code>int</code>。</div>
+            <div>Use <code>size()</code>, not <code>.length</code>。</div>
+            <div>Use <code>get(i)</code>, not brackets。</div>
+            <div><code>set</code> replaces and returns old value。</div>
+            <div><code>set</code> does not change size。</div>
+            <div><code>add(index,obj)</code> shifts right。</div>
+            <div><code>remove(index)</code> shifts left。</div>
+            <div><code>add(size(), obj)</code> is valid。</div>
+            <div><code>get(size())</code> is invalid。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 19 課後練習｜ArrayList</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 19 課後練習：ArrayList、generic type、wrapper classes、add、get、set、remove、size、index shift、array vs ArrayList。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 19 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-19-presentation.html">投影模式</a>
+        <a href="lesson-19.html">文章版</a>
+        <a href="lesson-18-practice.html">上一課練習</a>
+        <a href="#concepts">概念</a>
+        <a href="#methods">Methods</a>
+        <a href="#trace">Trace</a>
+        <a href="#errors">錯誤判斷</a>
+        <a href="#coding">程式練習</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 19</p>
+          <h1>課後練習：ArrayList</h1>
+          <p class="lead">
+            這份題本練習 <code>ArrayList</code> 建立、generic type、wrapper classes、
+            <code>add</code>、<code>get</code>、<code>set</code>、<code>remove</code>、<code>size()</code>、
+            index shift、traversal，以及 array vs ArrayList 的語法差異。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>50</strong><span>題課後練習</span></div>
+            <div><strong>7</strong><span>主題分區</span></div>
+            <div><strong>methods</strong><span>add / get / set / remove</span></div>
+            <div><strong>AP-style</strong><span>Index shift tracing</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#create">B. 建立 / 型別</a>
+          <a href="#methods">C. Methods</a>
+          <a href="#trace">D. Index Shift Trace</a>
+          <a href="#traversal">E. Traversal</a>
+          <a href="#errors">F. 錯誤判斷</a>
+          <a href="#coding">G. 程式練習</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先確認 ArrayList 和 array 的核心差異。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>ArrayList</span></div>
+              <h3><code>ArrayList</code> 和 array 最大的差異是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p1">詳解</button>
+              <div class="reveal-panel" id="l19p1">
+                <p>Array 長度固定；<code>ArrayList</code> 的 size 可以因為 <code>add</code> 和 <code>remove</code> 改變。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Import</span></div>
+              <h3>使用 <code>ArrayList</code> 前通常需要哪一行 import？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p2">詳解</button>
+              <div class="reveal-panel" id="l19p2">
+                <pre><code>import java.util.ArrayList;</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Generic</span></div>
+              <h3><code>ArrayList&lt;String&gt;</code> 中的 <code>String</code> 代表什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p3">詳解</button>
+              <div class="reveal-panel" id="l19p3">
+                <p>代表 list 中元素的型別。這個 list 應該存放 <code>String</code> objects。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Wrapper</span></div>
+              <h3>為什麼不能寫 <code>ArrayList&lt;int&gt;</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p4">詳解</button>
+              <div class="reveal-panel" id="l19p4">
+                <p>Generic type 必須是 reference type，不是 primitive type。要存整數應寫 <code>ArrayList&lt;Integer&gt;</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>size</span></div>
+              <h3>ArrayList 用什麼取得目前元素數量？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p5">詳解</button>
+              <div class="reveal-panel" id="l19p5">
+                <p>使用 <code>size()</code> method，例如 <code>list.size()</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Index</span></div>
+              <h3>若 <code>list.size()</code> 是 4，最大合法讀取 index 是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p6">詳解</button>
+              <div class="reveal-panel" id="l19p6">
+                <p>最大合法讀取 index 是 <code>3</code>。Valid indexes 是 <code>0</code> 到 <code>size() - 1</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="create" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Create / Types</p>
+              <h2>建立 ArrayList 與型別規則</h2>
+              <p>這組題目確認 import、generic type、wrapper class 和 autoboxing。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Create</span></div>
+              <h3>建立一個存放 <code>String</code> 的空 <code>ArrayList</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p7">詳解</button>
+              <div class="reveal-panel" id="l19p7">
+                <pre><code>ArrayList&lt;String&gt; words = new ArrayList&lt;String&gt;();</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Integer List</span></div>
+              <h3>建立一個存放整數的 <code>ArrayList</code>，型別應該寫什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p8">詳解</button>
+              <div class="reveal-panel" id="l19p8">
+                <pre><code>ArrayList&lt;Integer&gt; scores = new ArrayList&lt;Integer&gt;();</code></pre>
+                <p>用 <code>Integer</code>，不是 <code>int</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Double List</span></div>
+              <h3>要存 <code>double</code> values 時，wrapper class 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p9">詳解</button>
+              <div class="reveal-panel" id="l19p9">
+                <p>Wrapper class 是 <code>Double</code>，所以寫 <code>ArrayList&lt;Double&gt;</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>Boolean List</span></div>
+              <h3>要存 <code>boolean</code> values 時，wrapper class 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p10">詳解</button>
+              <div class="reveal-panel" id="l19p10">
+                <p>Wrapper class 是 <code>Boolean</code>，所以寫 <code>ArrayList&lt;Boolean&gt;</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Autoboxing</span></div>
+              <h3><code>scores.add(90);</code> 可以加入 <code>ArrayList&lt;Integer&gt;</code> 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p11">詳解</button>
+              <div class="reveal-panel" id="l19p11">
+                <p>可以。Java 會 autobox，把 <code>int</code> value 包成 <code>Integer</code> object。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Unboxing</span></div>
+              <h3><code>int score = scores.get(0);</code> 可以從 <code>ArrayList&lt;Integer&gt;</code> 取值嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p12">詳解</button>
+              <div class="reveal-panel" id="l19p12">
+                <p>可以。Java 會 unbox，把 <code>Integer</code> 取成 <code>int</code> value。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="methods" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Methods</p>
+              <h2>size / add / get / set / remove</h2>
+              <p>這組題目確認每個 method 的效果與回傳值。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>add End</span></div>
+              <h3>以下程式後 <code>names</code> 內容是什麼？</h3>
+              <pre><code>ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+names.add("Amy");
+names.add("Ben");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p13">詳解</button>
+              <div class="reveal-panel" id="l19p13">
+                <p><code>[Amy, Ben]</code>。<code>add(obj)</code> 加到尾端。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>add Index</span></div>
+              <h3>以下程式後 <code>names</code> 內容是什麼？</h3>
+              <pre><code>names.add("Amy");
+names.add("Cara");
+names.add(1, "Ben");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p14">詳解</button>
+              <div class="reveal-panel" id="l19p14">
+                <p><code>[Amy, Ben, Cara]</code>。<code>Cara</code> 被往右移。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>get</span></div>
+              <h3>若 <code>names</code> 是 <code>[Amy, Ben, Cara]</code>，<code>names.get(2)</code> 是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p15">詳解</button>
+              <div class="reveal-panel" id="l19p15">
+                <p>是 <code>"Cara"</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>set</span></div>
+              <h3>以下程式後 list 內容和 <code>old</code> 是什麼？</h3>
+              <pre><code>ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+names.add("Amy");
+names.add("Ben");
+String old = names.set(1, "Cara");</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p16">詳解</button>
+              <div class="reveal-panel" id="l19p16">
+                <p><code>names</code> 是 <code>[Amy, Cara]</code>，<code>old</code> 是 <code>"Ben"</code>。<code>set</code> 回傳被取代的舊元素。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>set Size</span></div>
+              <h3><code>set(index, obj)</code> 會改變 <code>size()</code> 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p17">詳解</button>
+              <div class="reveal-panel" id="l19p17">
+                <p>不會。<code>set</code> 只是取代既有元素，不新增也不刪除元素。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>remove</span></div>
+              <h3>以下程式後 list 內容和 <code>removed</code> 是什麼？</h3>
+              <pre><code>ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+names.add("Amy");
+names.add("Ben");
+names.add("Cara");
+String removed = names.remove(1);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p18">詳解</button>
+              <div class="reveal-panel" id="l19p18">
+                <p><code>names</code> 是 <code>[Amy, Cara]</code>，<code>removed</code> 是 <code>"Ben"</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>remove Size</span></div>
+              <h3><code>remove(index)</code> 後 <code>size()</code> 會怎樣？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p19">詳解</button>
+              <div class="reveal-panel" id="l19p19">
+                <p><code>size()</code> 減少 1，右邊元素往左移。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Valid add index</span></div>
+              <h3>若 list size 是 3，<code>add(index, obj)</code> 的合法 index 可以到多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p20">詳解</button>
+              <div class="reveal-panel" id="l19p20">
+                <p>可以是 <code>0</code>、<code>1</code>、<code>2</code>、<code>3</code>。<code>add(3, obj)</code> 等於加到最後。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="trace" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Index Shift Trace</p>
+              <h2>新增與移除後重新寫出 list</h2>
+              <p>每次 add/remove 之後，index 會改變，請一行一行追蹤。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Trace</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>ArrayList&lt;String&gt; words = new ArrayList&lt;String&gt;();
+words.add("A");
+words.add("C");
+words.add(1, "B");
+System.out.println(words);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p21">詳解</button>
+              <div class="reveal-panel" id="l19p21">
+                <p>印出 <code>[A, B, C]</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Trace</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>ArrayList&lt;String&gt; words = new ArrayList&lt;String&gt;();
+words.add("A");
+words.add("B");
+words.add("C");
+words.remove(0);
+System.out.println(words.get(0));</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p22">詳解</button>
+              <div class="reveal-panel" id="l19p22">
+                <p>印出 <code>B</code>。移除 index 0 後，<code>B</code> 左移到 index 0。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Trace</span></div>
+              <h3>以下程式最後 list 是什麼？</h3>
+              <pre><code>ArrayList&lt;Integer&gt; nums = new ArrayList&lt;Integer&gt;();
+nums.add(2);
+nums.add(4);
+nums.add(1, 3);
+nums.set(0, 1);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p23">詳解</button>
+              <div class="reveal-panel" id="l19p23">
+                <p><code>[1, 3, 4]</code>。先 <code>[2, 4]</code>，插入 3 變 <code>[2, 3, 4]</code>，再把 index 0 改成 1。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Trace</span></div>
+              <h3>以下程式最後 <code>nums.size()</code> 是多少？</h3>
+              <pre><code>ArrayList&lt;Integer&gt; nums = new ArrayList&lt;Integer&gt;();
+nums.add(10);
+nums.add(20);
+nums.add(30);
+nums.set(1, 99);
+nums.remove(2);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p24">詳解</button>
+              <div class="reveal-panel" id="l19p24">
+                <p><code>size()</code> 是 <code>2</code>。<code>set</code> 不改 size；<code>remove</code> 減少 1。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>Trace</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>ArrayList&lt;String&gt; list = new ArrayList&lt;String&gt;();
+list.add("red");
+list.add("blue");
+list.add(1, "green");
+String x = list.remove(2);
+System.out.println(x + " " + list);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p25">詳解</button>
+              <div class="reveal-panel" id="l19p25">
+                <p>先變 <code>[red, green, blue]</code>，移除 index 2 回傳 <code>blue</code>，所以印出 <code>blue [red, green]</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Trace</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>ArrayList&lt;Integer&gt; nums = new ArrayList&lt;Integer&gt;();
+nums.add(5);
+nums.add(10);
+nums.add(15);
+nums.add(nums.size(), 20);
+System.out.println(nums.get(3));</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p26">詳解</button>
+              <div class="reveal-panel" id="l19p26">
+                <p>印出 <code>20</code>。<code>add(size(), value)</code> 是加到尾端。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="traversal" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Traversal</p>
+              <h2>走訪 ArrayList</h2>
+              <p>ArrayList traversal 要用 <code>size()</code> 和 <code>get(i)</code>。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Traditional For</span></div>
+              <h3>完成 loop header：走訪所有 <code>names</code>。</h3>
+              <pre><code>for (int i = 0; __________; i++)
+{
+    System.out.println(names.get(i));
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p27">詳解</button>
+              <div class="reveal-panel" id="l19p27">
+                <pre><code>i &lt; names.size()</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Sum</span></div>
+              <h3>以下程式最後 <code>sum</code> 是多少？</h3>
+              <pre><code>ArrayList&lt;Integer&gt; nums = new ArrayList&lt;Integer&gt;();
+nums.add(4);
+nums.add(7);
+nums.add(2);
+int sum = 0;
+
+for (int value : nums)
+{
+    sum += value;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p28">詳解</button>
+              <div class="reveal-panel" id="l19p28">
+                <p><code>sum</code> 是 <code>13</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>Count</span></div>
+              <h3>以下程式最後 <code>count</code> 是多少？</h3>
+              <pre><code>ArrayList&lt;String&gt; words = new ArrayList&lt;String&gt;();
+words.add("apple");
+words.add("AP");
+words.add("code");
+int count = 0;
+
+for (String word : words)
+{
+    if (word.length() &gt; 3)
+    {
+        count++;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p29">詳解</button>
+              <div class="reveal-panel" id="l19p29">
+                <p><code>count</code> 是 <code>2</code>，因為 <code>"apple"</code> 和 <code>"code"</code> 長度大於 3。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Modify</span></div>
+              <h3>若要把每個數字加 1，應用 enhanced for 還是 traditional for？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p30">詳解</button>
+              <div class="reveal-panel" id="l19p30">
+                <p>用 traditional for，因為需要 index 呼叫 <code>set(i, nums.get(i) + 1)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>set Loop</span></div>
+              <h3>完成：把每個 <code>nums</code> 元素乘以 2。</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p31">詳解</button>
+              <div class="reveal-panel" id="l19p31">
+                <pre><code>for (int i = 0; i &lt; nums.size(); i++)
+{
+    nums.set(i, nums.get(i) * 2);
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>Enhanced For Limit</span></div>
+              <h3>為什麼 enhanced for 不適合用來刪除符合條件的元素？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p32">詳解</button>
+              <div class="reveal-panel" id="l19p32">
+                <p>Enhanced for 沒有 index，而且在走訪中修改 list 會造成問題。移除 while looping 的安全策略會在 Lesson 20 深入。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="errors" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Error Spotting</p>
+              <h2>ArrayList 常見錯誤判斷</h2>
+              <p>這組題目練習 AP 常見 compile error 和 logic error。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>.length</span></div>
+              <h3>以下 code 的問題是什麼？</h3>
+              <pre><code>for (int i = 0; i &lt; list.length; i++)</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p33">詳解</button>
+              <div class="reveal-panel" id="l19p33">
+                <p><code>ArrayList</code> 沒有 <code>.length</code>。應寫 <code>list.size()</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Brackets</span></div>
+              <h3>以下 code 的問題是什麼？</h3>
+              <pre><code>System.out.println(list[0]);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p34">詳解</button>
+              <div class="reveal-panel" id="l19p34">
+                <p><code>ArrayList</code> 不用 bracket indexing。應寫 <code>list.get(0)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Primitive Generic</span></div>
+              <h3>以下 code 的問題是什麼？</h3>
+              <pre><code>ArrayList&lt;int&gt; nums = new ArrayList&lt;int&gt;();</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p35">詳解</button>
+              <div class="reveal-panel" id="l19p35">
+                <p>Generic type 不能是 primitive。應寫 <code>ArrayList&lt;Integer&gt;</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Missing Import</span></div>
+              <h3>如果 compiler 說找不到 <code>ArrayList</code> symbol，最常見原因是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p36">詳解</button>
+              <div class="reveal-panel" id="l19p36">
+                <p>忘記寫 <code>import java.util.ArrayList;</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>Bounds</span></div>
+              <h3>若 <code>list.size()</code> 是 3，<code>list.get(3)</code> 合法嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p37">詳解</button>
+              <div class="reveal-panel" id="l19p37">
+                <p>不合法。最大合法 index 是 <code>2</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>add Bounds</span></div>
+              <h3>若 <code>list.size()</code> 是 3，<code>list.add(3, value)</code> 合法嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p38">詳解</button>
+              <div class="reveal-panel" id="l19p38">
+                <p>合法。<code>add(size(), value)</code> 是加到最後。但 <code>get(size())</code> 不合法。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>set vs add</span></div>
+              <h3>想在尾端新增元素，應使用 <code>set(list.size(), value)</code> 嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p39">詳解</button>
+              <div class="reveal-panel" id="l19p39">
+                <p>不應該。<code>set</code> 只能取代既有 index；尾端新增應使用 <code>add(value)</code> 或 <code>add(list.size(), value)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Array vs ArrayList</span></div>
+              <h3><code>arr.size()</code> 對一般 array 合法嗎？</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p40">詳解</button>
+              <div class="reveal-panel" id="l19p40">
+                <p>不合法。Array 用 <code>arr.length</code>，ArrayList 用 <code>list.size()</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="coding" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">G. Coding / Trace</p>
+              <h2>方法撰寫與 final tracing</h2>
+              <p>最後十題把 ArrayList basics 寫成 AP-style methods。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>countLong</span></div>
+              <h3>寫 <code>countLong</code>，回傳長度大於 <code>n</code> 的字串數量。</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p41">詳解</button>
+              <div class="reveal-panel" id="l19p41">
+                <pre><code>public static int countLong(ArrayList&lt;String&gt; words, int n)
+{
+    int count = 0;
+    for (String word : words)
+    {
+        if (word.length() &gt; n)
+        {
+            count++;
+        }
+    }
+    return count;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>sumList</span></div>
+              <h3>寫 <code>sumList</code>，回傳 <code>ArrayList&lt;Integer&gt;</code> 中所有元素總和。</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p42">詳解</button>
+              <div class="reveal-panel" id="l19p42">
+                <pre><code>public static int sumList(ArrayList&lt;Integer&gt; nums)
+{
+    int sum = 0;
+    for (int value : nums)
+    {
+        sum += value;
+    }
+    return sum;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>replaceNegatives</span></div>
+              <h3>寫 <code>replaceNegatives</code>，把所有負數改成 0。</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p43">詳解</button>
+              <div class="reveal-panel" id="l19p43">
+                <pre><code>public static void replaceNegatives(ArrayList&lt;Integer&gt; nums)
+{
+    for (int i = 0; i &lt; nums.size(); i++)
+    {
+        if (nums.get(i) &lt; 0)
+        {
+            nums.set(i, 0);
+        }
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>firstIndex</span></div>
+              <h3>寫 <code>firstIndex</code>，找到 target 回傳 index，找不到回傳 <code>-1</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p44">詳解</button>
+              <div class="reveal-panel" id="l19p44">
+                <pre><code>public static int firstIndex(ArrayList&lt;String&gt; words, String target)
+{
+    for (int i = 0; i &lt; words.size(); i++)
+    {
+        if (words.get(i).equals(target))
+        {
+            return i;
+        }
+    }
+    return -1;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>appendAll</span></div>
+              <h3>寫 <code>appendAll</code>，把 <code>source</code> 的每個元素加到 <code>target</code> 後面。</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p45">詳解</button>
+              <div class="reveal-panel" id="l19p45">
+                <pre><code>public static void appendAll(ArrayList&lt;String&gt; target, ArrayList&lt;String&gt; source)
+{
+    for (String item : source)
+    {
+        target.add(item);
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q46</span><span>insertStart</span></div>
+              <h3>寫一行 code，把 <code>"start"</code> 插到 <code>words</code> 開頭。</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p46">詳解</button>
+              <div class="reveal-panel" id="l19p46">
+                <pre><code>words.add(0, "start");</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q47</span><span>removeLast</span></div>
+              <h3>寫一行 code，移除並保存 <code>words</code> 的最後一個元素。</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p47">詳解</button>
+              <div class="reveal-panel" id="l19p47">
+                <pre><code>String removed = words.remove(words.size() - 1);</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q48</span><span>maxList</span></div>
+              <h3>寫 <code>maxList</code>，回傳非空 <code>ArrayList&lt;Integer&gt;</code> 的最大值。</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p48">詳解</button>
+              <div class="reveal-panel" id="l19p48">
+                <pre><code>public static int maxList(ArrayList&lt;Integer&gt; nums)
+{
+    int max = nums.get(0);
+    for (int value : nums)
+    {
+        if (value &gt; max)
+        {
+            max = value;
+        }
+    }
+    return max;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q49</span><span>copyList</span></div>
+              <h3>寫 <code>copyList</code>，回傳新的 list，元素和原 list 相同。</h3>
+              <button class="reveal-button" type="button" data-reveal="l19p49">詳解</button>
+              <div class="reveal-panel" id="l19p49">
+                <pre><code>public static ArrayList&lt;String&gt; copyList(ArrayList&lt;String&gt; words)
+{
+    ArrayList&lt;String&gt; copy = new ArrayList&lt;String&gt;();
+    for (String word : words)
+    {
+        copy.add(word);
+    }
+    return copy;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q50</span><span>Final Challenge</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>ArrayList&lt;String&gt; list = new ArrayList&lt;String&gt;();
+list.add("A");
+list.add("C");
+list.add(1, "B");
+String x = list.set(2, "D");
+list.add(x);
+list.remove(0);
+System.out.println(list);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l19p50">詳解</button>
+              <div class="reveal-panel" id="l19p50">
+                <p>先 <code>[A, B, C]</code>，<code>set(2, "D")</code> 讓 list 變 <code>[A, B, D]</code> 並回傳 <code>C</code>；<code>add(x)</code> 變 <code>[A, B, D, C]</code>；<code>remove(0)</code> 後是 <code>[B, D, C]</code>。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 19 課後練習。每次 add/remove 後都重新 trace size 與 indexes。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

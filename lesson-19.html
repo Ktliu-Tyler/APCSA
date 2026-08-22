@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 19｜ArrayList</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 19：ArrayList、import java.util.ArrayList、generic type、wrapper classes、add、get、set、remove、size、index shift、array vs ArrayList。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 19</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第十九堂課導覽">
+        <a href="lesson-19-presentation.html">投影模式</a>
+        <a href="lesson-19-practice.html">課後練習</a>
+        <a href="lesson-18.html">上一課</a>
+        <a href="#create">Create</a>
+        <a href="#methods">Methods</a>
+        <a href="#wrapper">Wrapper</a>
+        <a href="#index-shift">Index Shift</a>
+        <a href="#array-vs-arraylist">Array vs ArrayList</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 19</p>
+          <h1>ArrayList：可變長度的 List 與常用 Methods</h1>
+          <p class="lead">
+            Array 的長度固定，insert/remove 只能靠搬動與 logical size 模擬。<code>ArrayList</code>
+            提供可變長度的 list，能直接 <code>add</code>、<code>remove</code>，但也帶來新的規則：
+            使用 generic type、只能存 object type、用 <code>size()</code> 而不是 <code>.length</code>。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-19-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-19-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-18.html">回 Lesson 18</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#why">為什麼需要 ArrayList</a>
+          <a href="#create">建立 ArrayList</a>
+          <a href="#generic">Generic Type</a>
+          <a href="#wrapper">Wrapper Classes</a>
+          <a href="#methods">常用 Methods</a>
+          <a href="#add">add</a>
+          <a href="#get-set">get / set</a>
+          <a href="#remove">remove</a>
+          <a href="#index-shift">Index Shift</a>
+          <a href="#traversal">Traversal</a>
+          <a href="#array-vs-arraylist">Array vs ArrayList</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>知道 <code>ArrayList</code> 是可變長度的 list，和 fixed-size array 不同。</div>
+              <div>正確使用 <code>import java.util.ArrayList;</code>。</div>
+              <div>建立 <code>ArrayList&lt;String&gt;</code>、<code>ArrayList&lt;Integer&gt;</code> 等 generic lists。</div>
+              <div>理解 generic type 需要 object type，不能寫 <code>ArrayList&lt;int&gt;</code>。</div>
+              <div>使用 wrapper classes，例如 <code>Integer</code>、<code>Double</code>、<code>Boolean</code>。</div>
+              <div>熟練 <code>size()</code>、<code>add</code>、<code>get</code>、<code>set</code>、<code>remove</code>。</div>
+              <div>追蹤 <code>add(index, value)</code> 和 <code>remove(index)</code> 造成的 index shift。</div>
+              <div>比較 array 和 <code>ArrayList</code> 的語法與適用情境。</div>
+              <div>使用 traditional for、enhanced for 走訪 ArrayList。</div>
+              <div>避免 <code>.length</code>、<code>[]</code>、primitive generic type 等常見 compile errors。</div>
+            </div>
+            <div class="progress-card">
+              <h3>ArrayList tracing checklist</h3>
+              <label><input type="checkbox" data-progress="lesson19-flow-1" /> <span><strong>Track size</strong>：每次 <code>add</code>/<code>remove</code> 後更新 size。</span></label>
+              <label><input type="checkbox" data-progress="lesson19-flow-2" /> <span><strong>Track indexes</strong>：<code>add(index,...)</code> 右移，<code>remove(index)</code> 左移。</span></label>
+              <label><input type="checkbox" data-progress="lesson19-flow-3" /> <span><strong>Use methods</strong>：ArrayList 用 <code>get</code>/<code>set</code>/<code>size()</code>，不是 <code>[]</code>/<code>.length</code>。</span></label>
+              <label><input type="checkbox" data-progress="lesson19-flow-4" /> <span><strong>Check type</strong>：generic type 要是 object type，例如 <code>Integer</code>。</span></label>
+              <label><input type="checkbox" data-progress="lesson19-flow-5" /> <span><strong>Choose traversal</strong>：需要 index 或修改時，用 traditional for。</span></label>
+            </div>
+          </section>
+
+          <section id="why" class="article-section">
+            <p class="eyebrow">Why ArrayList</p>
+            <h2>Array 長度固定，ArrayList 長度可變</h2>
+            <p>
+              Array 一旦建立，<code>.length</code> 就固定。若資料數量會改變，<code>ArrayList</code>
+              讓你直接加入或移除元素，list 會調整自己的 size。
+            </p>
+            <div class="contrast-grid">
+              <div>
+                <h3>Array</h3>
+                <pre><code>String[] names = new String[3];
+names[0] = "Amy";</code></pre>
+                <p>長度固定，用 <code>[]</code> 存取，用 <code>.length</code>。</p>
+              </div>
+              <div>
+                <h3>ArrayList</h3>
+                <pre><code>ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+names.add("Amy");</code></pre>
+                <p>長度可變，用 methods 存取，用 <code>size()</code>。</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="create" class="article-section">
+            <p class="eyebrow">Create ArrayList</p>
+            <h2>使用 ArrayList 前要 import</h2>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>create ArrayList</span>
+                <button class="copy-button" type="button" data-copy="l19-code-create">Copy</button>
+              </div>
+              <pre><code id="l19-code-create">import java.util.ArrayList;
+
+public class Demo
+{
+    public static void main(String[] args)
+    {
+        ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+        names.add("Amy");
+        names.add("Ben");
+        System.out.println(names);
+    }
+}</code></pre>
+            </div>
+            <p>
+              AP CSA 常見寫法是 <code>new ArrayList&lt;String&gt;()</code>。Java 也允許 diamond operator
+              <code>new ArrayList&lt;&gt;()</code>，但課堂上先用完整型別比較清楚。
+            </p>
+          </section>
+
+          <section id="generic" class="article-section">
+            <p class="eyebrow">Generic Type</p>
+            <h2><code>ArrayList&lt;E&gt;</code> 的 <code>E</code> 代表元素型別</h2>
+            <p>
+              <code>ArrayList&lt;String&gt;</code> 表示 list 中每個元素都應該是 <code>String</code>。
+              <code>ArrayList&lt;Student&gt;</code> 表示每個元素是 <code>Student</code> reference。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>generic type examples</span>
+                <button class="copy-button" type="button" data-copy="l19-code-generic">Copy</button>
+              </div>
+              <pre><code id="l19-code-generic">ArrayList&lt;String&gt; words = new ArrayList&lt;String&gt;();
+ArrayList&lt;Student&gt; roster = new ArrayList&lt;Student&gt;();
+ArrayList&lt;Integer&gt; scores = new ArrayList&lt;Integer&gt;();</code></pre>
+            </div>
+            <div class="callout warn">
+              <strong>Generic type 不能是 primitive。</strong>
+              <span>不能寫 <code>ArrayList&lt;int&gt;</code>；要寫 <code>ArrayList&lt;Integer&gt;</code>。</span>
+            </div>
+          </section>
+
+          <section id="wrapper" class="article-section">
+            <p class="eyebrow">Wrapper Classes</p>
+            <h2>Primitive 要放進 ArrayList 時，使用 wrapper class</h2>
+            <p>
+              <code>ArrayList</code> 只能存 object reference。Java 提供 wrapper classes 讓 primitive values
+              可以被當作 objects 使用。
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Primitive</th><th>Wrapper Class</th><th>ArrayList 寫法</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>int</code></td><td><code>Integer</code></td><td><code>ArrayList&lt;Integer&gt;</code></td></tr>
+                  <tr><td><code>double</code></td><td><code>Double</code></td><td><code>ArrayList&lt;Double&gt;</code></td></tr>
+                  <tr><td><code>boolean</code></td><td><code>Boolean</code></td><td><code>ArrayList&lt;Boolean&gt;</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Autoboxing 讓 <code>scores.add(90);</code> 自動把 <code>int</code> 包成 <code>Integer</code>；
+              unboxing 讓 <code>int score = scores.get(0);</code> 自動取出 primitive value。
+            </p>
+          </section>
+
+          <section id="methods" class="article-section">
+            <p class="eyebrow">Core Methods</p>
+            <h2>AP CSA ArrayList 必熟 methods</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Method</th><th>效果</th><th>回傳值</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>size()</code></td><td>取得目前元素數量</td><td><code>int</code></td></tr>
+                  <tr><td><code>add(obj)</code></td><td>加到最後</td><td>AP CSA 通常當作 no return 使用</td></tr>
+                  <tr><td><code>add(index, obj)</code></td><td>插入指定 index，原本元素右移</td><td><code>void</code></td></tr>
+                  <tr><td><code>get(index)</code></td><td>取得指定 index 元素</td><td>元素型別</td></tr>
+                  <tr><td><code>set(index, obj)</code></td><td>取代指定 index 元素</td><td>被取代的舊元素</td></tr>
+                  <tr><td><code>remove(index)</code></td><td>移除指定 index 元素，後面左移</td><td>被移除的元素</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="add" class="article-section">
+            <p class="eyebrow">add</p>
+            <h2><code>add</code> 可以加到尾端，也可以插入中間</h2>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>add examples</span>
+                <button class="copy-button" type="button" data-copy="l19-code-add">Copy</button>
+              </div>
+              <pre><code id="l19-code-add">ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+names.add("Amy");          // [Amy]
+names.add("Cara");         // [Amy, Cara]
+names.add(1, "Ben");       // [Amy, Ben, Cara]</code></pre>
+            </div>
+            <p>
+              <code>add(index, obj)</code> 會把原本位於該 index 和後面的元素往右移。合法插入 index
+              可以是 <code>0</code> 到 <code>size()</code>，其中 <code>size()</code> 表示插到最後。
+            </p>
+          </section>
+
+          <section id="get-set" class="article-section">
+            <p class="eyebrow">get / set</p>
+            <h2><code>get</code> 讀取元素，<code>set</code> 取代元素</h2>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>get and set</span>
+                <button class="copy-button" type="button" data-copy="l19-code-get-set">Copy</button>
+              </div>
+              <pre><code id="l19-code-get-set">ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+names.add("Amy");
+names.add("Ben");
+
+String first = names.get(0);          // Amy
+String old = names.set(1, "Cara");    // old is Ben
+
+System.out.println(names);            // [Amy, Cara]</code></pre>
+            </div>
+            <p>
+              <code>set</code> 不會改變 size，只是用新元素取代舊元素。
+            </p>
+          </section>
+
+          <section id="remove" class="article-section">
+            <p class="eyebrow">remove</p>
+            <h2><code>remove(index)</code> 會刪除並回傳舊元素</h2>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>remove example</span>
+                <button class="copy-button" type="button" data-copy="l19-code-remove">Copy</button>
+              </div>
+              <pre><code id="l19-code-remove">ArrayList&lt;String&gt; names = new ArrayList&lt;String&gt;();
+names.add("Amy");
+names.add("Ben");
+names.add("Cara");
+
+String removed = names.remove(1); // removed is Ben
+System.out.println(names);        // [Amy, Cara]</code></pre>
+            </div>
+            <p>
+              移除後，右邊的元素會往左移，size 減少 1。
+            </p>
+          </section>
+
+          <section id="index-shift" class="article-section">
+            <p class="eyebrow">Index Shift</p>
+            <h2>新增或移除中間元素時，後面元素 index 會改變</h2>
+            <p>
+              這是 ArrayList 題目最常考的 trace。每次 <code>add(index,...)</code> 或
+              <code>remove(index)</code> 後，都要重新寫出 list。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>index shift trace</span>
+                <button class="copy-button" type="button" data-copy="l19-code-shift">Copy</button>
+              </div>
+              <pre><code id="l19-code-shift">ArrayList&lt;String&gt; words = new ArrayList&lt;String&gt;();
+words.add("A");
+words.add("C");
+words.add(1, "B");     // [A, B, C]
+words.remove(0);       // [B, C]
+words.set(1, "D");     // [B, D]</code></pre>
+            </div>
+          </section>
+
+          <section id="traversal" class="article-section">
+            <p class="eyebrow">Traversal</p>
+            <h2>ArrayList traversal 使用 <code>size()</code> 和 <code>get(i)</code></h2>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>ArrayList traversal</span>
+                <button class="copy-button" type="button" data-copy="l19-code-traversal">Copy</button>
+              </div>
+              <pre><code id="l19-code-traversal">for (int i = 0; i &lt; names.size(); i++)
+{
+    System.out.println(names.get(i));
+}
+
+for (String name : names)
+{
+    System.out.println(name);
+}</code></pre>
+            </div>
+            <p>
+              只讀每個元素可用 enhanced for。若需要 index、呼叫 <code>set</code>、或之後要移除元素，
+              traditional for 更清楚。移除 while looping 的細節會在 Lesson 20 深入。
+            </p>
+          </section>
+
+          <section id="array-vs-arraylist" class="article-section">
+            <p class="eyebrow">Array vs ArrayList</p>
+            <h2>語法對照表</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>操作</th><th>Array</th><th>ArrayList</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>建立</td><td><code>new int[5]</code></td><td><code>new ArrayList&lt;Integer&gt;()</code></td></tr>
+                  <tr><td>長度 / 數量</td><td><code>arr.length</code></td><td><code>list.size()</code></td></tr>
+                  <tr><td>讀取</td><td><code>arr[i]</code></td><td><code>list.get(i)</code></td></tr>
+                  <tr><td>修改</td><td><code>arr[i] = value</code></td><td><code>list.set(i, value)</code></td></tr>
+                  <tr><td>加到最後</td><td>不能直接變長</td><td><code>list.add(value)</code></td></tr>
+                  <tr><td>移除</td><td>不能直接變短</td><td><code>list.remove(i)</code></td></tr>
+                  <tr><td>primitive 元素</td><td>可以 <code>int[]</code></td><td>用 wrapper：<code>Integer</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Mistakes</p>
+            <h2>ArrayList 常見錯誤</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>錯誤</th><th>原因</th><th>修法</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>忘記 import</td><td><code>ArrayList</code> 在 <code>java.util</code></td><td><code>import java.util.ArrayList;</code></td></tr>
+                  <tr><td><code>ArrayList&lt;int&gt;</code></td><td>Generic type 不能是 primitive</td><td><code>ArrayList&lt;Integer&gt;</code></td></tr>
+                  <tr><td><code>list.length</code></td><td>ArrayList 沒有 <code>.length</code></td><td><code>list.size()</code></td></tr>
+                  <tr><td><code>list[i]</code></td><td>ArrayList 不用 bracket indexing</td><td><code>list.get(i)</code></td></tr>
+                  <tr><td>以為 <code>set</code> 會增加 size</td><td><code>set</code> 是取代</td><td>若要新增，用 <code>add</code></td></tr>
+                  <tr><td>忽略 remove 後 index 左移</td><td>後面元素補上空位</td><td>每次 remove 後重新 trace list</td></tr>
+                  <tr><td>存取 <code>index == size()</code></td><td>讀取/修改最大合法 index 是 <code>size() - 1</code></td><td><code>i &lt; list.size()</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section answer-section">
+            <p class="eyebrow">Checklist</p>
+            <h2>本課核心觀念總整理</h2>
+            <div class="takeaway-grid">
+              <div><strong>Import</strong><span>使用 <code>ArrayList</code> 前要 <code>import java.util.ArrayList;</code>。</span></div>
+              <div><strong>Generic</strong><span><code>ArrayList&lt;E&gt;</code> 的 <code>E</code> 是元素型別。</span></div>
+              <div><strong>Wrapper</strong><span>Primitive 要用 wrapper，例如 <code>Integer</code>。</span></div>
+              <div><strong>size</strong><span><code>size()</code> 回傳目前元素數量。</span></div>
+              <div><strong>add</strong><span><code>add(obj)</code> 加尾端；<code>add(index,obj)</code> 插入並右移。</span></div>
+              <div><strong>get</strong><span><code>get(index)</code> 讀取元素。</span></div>
+              <div><strong>set</strong><span><code>set(index,obj)</code> 取代元素，不改 size。</span></div>
+              <div><strong>remove</strong><span><code>remove(index)</code> 移除並回傳舊元素，後面左移。</span></div>
+              <div><strong>Bounds</strong><span>讀取/修改最大合法 index 是 <code>size() - 1</code>。</span></div>
+              <div><strong>Array</strong><span>Array 用 <code>.length</code> 和 <code>[]</code>；ArrayList 用 methods。</span></div>
+            </div>
+            <details>
+              <summary>考前必背十二句</summary>
+              <p>ArrayList is in <code>java.util</code>.</p>
+              <p>ArrayList size can change.</p>
+              <p>Use <code>size()</code>, not <code>.length</code>.</p>
+              <p>Use <code>get(index)</code>, not brackets.</p>
+              <p>Use <code>set(index, obj)</code> to replace an element.</p>
+              <p><code>set</code> does not change size.</p>
+              <p><code>add(obj)</code> adds at the end.</p>
+              <p><code>add(index, obj)</code> shifts elements right.</p>
+              <p><code>remove(index)</code> shifts elements left.</p>
+              <p>Generic type must be a reference type.</p>
+              <p>Use <code>Integer</code>, not <code>int</code>, in <code>ArrayList</code>.</p>
+              <p>Re-trace indexes after every add or remove.</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 19｜ArrayList。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>
