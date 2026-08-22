@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 20｜ArrayList Algorithms</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 20：ArrayList algorithms、traversal、sum、count、filter、remove while looping、index shift、backward traversal、enhanced for limitations、data analysis、FRQ patterns。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 20</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="第二十堂課導覽">
+        <a href="lesson-20-presentation.html">投影模式</a>
+        <a href="lesson-20-practice.html">課後練習</a>
+        <a href="lesson-19.html">上一課</a>
+        <a href="#traversal">Traversal</a>
+        <a href="#filter">Filter</a>
+        <a href="#remove">Remove</a>
+        <a href="#enhanced-for">Enhanced For</a>
+        <a href="#frq">FRQ Strategy</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lesson-hero">
+        <div class="lesson-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 20</p>
+          <h1>ArrayList Algorithms：Traversal、Filter 與 Safe Removal</h1>
+          <p class="lead">
+            Lesson 19 學會 <code>ArrayList</code> methods；Lesson 20 把它們放進 algorithms。
+            你會練習走訪、sum/count/search、建立 filtered copy、直接刪除元素、處理 index shift，
+            並判斷什麼時候該用 traditional for、enhanced for、while 或 backward traversal。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="lesson-20-presentation.html">開啟投影模式</a>
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-20-practice.html">開始課後練習</a>
+            <a class="button" href="lesson-19.html">回 Lesson 19</a>
+            <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+            <a class="button" href="index.html">回課程首頁</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson-shell" id="story">
+        <aside class="lesson-toc" aria-label="本課目錄">
+          <h2>本課目錄</h2>
+          <a href="#goals">學習目標</a>
+          <a href="#core">核心問題</a>
+          <a href="#traversal">ArrayList Traversal</a>
+          <a href="#readonly">Read-Only Algorithms</a>
+          <a href="#filter">Filter：建立新 List</a>
+          <a href="#remove">Remove 與 Index Shift</a>
+          <a href="#safe-remove">Safe Removal Patterns</a>
+          <a href="#enhanced-for">Enhanced For 限制</a>
+          <a href="#transform">Transform / set</a>
+          <a href="#data-analysis">Data Analysis</a>
+          <a href="#frq">FRQ Strategy</a>
+          <a href="#errors">常見錯誤</a>
+          <a href="#checklist">本課檢核</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="goals" class="article-section">
+            <p class="eyebrow">Learning Goals</p>
+            <h2>這堂課結束後，你應該能做到什麼</h2>
+            <div class="goal-grid">
+              <div>用 traditional for 正確走訪 <code>ArrayList</code>。</div>
+              <div>用 enhanced for 寫 read-only algorithms。</div>
+              <div>把 array 的 sum、count、average、max/min、linear search 改寫成 ArrayList 版本。</div>
+              <div>建立新的 filtered list，而不是一定修改原本 list。</div>
+              <div>解釋 <code>remove(i)</code> 為什麼會讓後方元素向左移。</div>
+              <div>看出 forward remove 可能跳過元素的 bug。</div>
+              <div>使用 while loop 或 backward traversal 安全刪除所有符合條件的元素。</div>
+              <div>判斷 enhanced for 什麼時候不適合。</div>
+              <div>用 <code>set(index, value)</code> 做 replace / transform。</div>
+              <div>在 FRQ 中先判斷題目要 read-only、return new list、replace，還是 remove original list。</div>
+            </div>
+
+            <div class="progress-card">
+              <h3>ArrayList algorithm tracing checklist</h3>
+              <label><input type="checkbox" data-progress="lesson20-flow-1" /> <span><strong>Track current list</strong>：每次 <code>add</code>/<code>remove</code> 後，list 內容都要重寫。</span></label>
+              <label><input type="checkbox" data-progress="lesson20-flow-2" /> <span><strong>Track index</strong>：目前 <code>i</code> 指到誰？下一輪會變多少？</span></label>
+              <label><input type="checkbox" data-progress="lesson20-flow-3" /> <span><strong>Track size</strong>：loop condition 中的 <code>list.size()</code> 可能是動態的。</span></label>
+              <label><input type="checkbox" data-progress="lesson20-flow-4" /> <span><strong>Identify mutation</strong>：程式是 read、set、add、remove，還是 build new list？</span></label>
+              <label><input type="checkbox" data-progress="lesson20-flow-5" /> <span><strong>Choose loop</strong>：需要刪除時，優先考慮 backward traversal。</span></label>
+            </div>
+          </section>
+
+          <section id="core" class="article-section">
+            <p class="eyebrow">Core Problem</p>
+            <h2>ArrayList Algorithm 真正難的是：size 和 index 會變</h2>
+            <p>
+              Array 的長度固定，所以 traversal 時 index 的意義通常很穩定。<code>ArrayList</code>
+              可以 <code>add</code> 和 <code>remove</code>，因此程式跑到一半時，<code>size()</code>
+              可能改變，後面元素的 index 也可能改變。
+            </p>
+            <div class="contrast-grid">
+              <div>
+                <h3><code>set(i, value)</code></h3>
+                <p>取代元素，不改 size，不造成 index shift。</p>
+                <pre><code>list.set(i, 0);</code></pre>
+              </div>
+              <div>
+                <h3><code>remove(i)</code></h3>
+                <p>刪除元素，size 減 1，後方元素全部向左移。</p>
+                <pre><code>list.remove(i);</code></pre>
+              </div>
+              <div>
+                <h3><code>add(i, value)</code></h3>
+                <p>插入元素，size 加 1，原本位置之後的元素全部向右移。</p>
+                <pre><code>list.add(i, value);</code></pre>
+              </div>
+            </div>
+            <div class="callout warn">
+              <strong>本課最重要的一句話：</strong>
+              <span>只要在 traversal 中使用 <code>add</code> 或 <code>remove</code>，就要重新追蹤 list、index 和 size。</span>
+            </div>
+          </section>
+
+          <section id="traversal" class="article-section">
+            <p class="eyebrow">Traversal</p>
+            <h2>ArrayList Traversal：用 <code>size()</code> 和 <code>get(i)</code></h2>
+            <p>
+              ArrayList 不用 <code>[]</code>，也沒有 <code>.length</code>。需要 index 時，用 traditional for；
+              只需要逐一讀取元素時，可以用 enhanced for。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>traditional for traversal</span>
+                <button class="copy-button" type="button" data-copy="l20-code-traverse">Copy</button>
+              </div>
+              <pre><code id="l20-code-traverse">for (int i = 0; i &lt; list.size(); i++)
+{
+    int value = list.get(i);
+    System.out.println(value);
+}</code></pre>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Loop</th><th>適合情境</th><th>不適合情境</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>traditional for</td><td>需要 index、需要 <code>set</code>、可能 <code>remove</code></td><td>語法較長，但最彈性</td></tr>
+                  <tr><td>enhanced for</td><td>只讀取每個元素、sum/count/search</td><td>需要 index、修改位置、add/remove</td></tr>
+                  <tr><td>while</td><td>forward remove 後需要控制 <code>i</code> 是否增加</td><td>read-only 題通常不需要</td></tr>
+                  <tr><td>backward for</td><td>remove all matching values</td><td>需要保持從前到後處理順序時要小心</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="readonly" class="article-section">
+            <p class="eyebrow">Read-Only Algorithms</p>
+            <h2>Array 的基本 algorithm 幾乎可以搬到 ArrayList</h2>
+            <p>
+              如果 algorithm 只是讀取，不改變 list，通常只需要把 <code>arr.length</code> 改成
+              <code>list.size()</code>，把 <code>arr[i]</code> 改成 <code>list.get(i)</code>。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>sum / count / max / search</span>
+                <button class="copy-button" type="button" data-copy="l20-code-readonly">Copy</button>
+              </div>
+              <pre><code id="l20-code-readonly">public static int sum(ArrayList&lt;Integer&gt; nums)
+{
+    int total = 0;
+    for (int n : nums)
+    {
+        total += n;
+    }
+    return total;
+}
+
+public static int countAbove(ArrayList&lt;Integer&gt; nums, int threshold)
+{
+    int count = 0;
+    for (int n : nums)
+    {
+        if (n &gt; threshold)
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
+public static int indexOf(ArrayList&lt;String&gt; words, String target)
+{
+    for (int i = 0; i &lt; words.size(); i++)
+    {
+        if (words.get(i).equals(target))
+        {
+            return i;
+        }
+    }
+    return -1;
+}</code></pre>
+            </div>
+            <div class="callout">
+              <strong>注意 empty list。</strong>
+              <span>寫 max/min 時，若從 <code>list.get(0)</code> 開始，要確定題目保證 list 不是空的，或先處理空 list。</span>
+            </div>
+          </section>
+
+          <section id="filter" class="article-section">
+            <p class="eyebrow">Filter</p>
+            <h2>Filter Pattern 1：建立新的 List</h2>
+            <p>
+              如果題目說「return a list containing...」、「build a list...」、「do not modify the original list」，
+              最安全的做法是建立新的 <code>ArrayList</code>，把符合條件的元素加入新 list。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>filtered copy pattern</span>
+                <button class="copy-button" type="button" data-copy="l20-code-filter">Copy</button>
+              </div>
+              <pre><code id="l20-code-filter">public static ArrayList&lt;Integer&gt; getPassingScores(ArrayList&lt;Integer&gt; scores)
+{
+    ArrayList&lt;Integer&gt; passing = new ArrayList&lt;Integer&gt;();
+
+    for (int score : scores)
+    {
+        if (score &gt;= 60)
+        {
+            passing.add(score);
+        }
+    }
+
+    return passing;
+}</code></pre>
+            </div>
+            <div class="contrast-grid">
+              <div>
+                <h3>保留偶數</h3>
+                <pre><code>if (n % 2 == 0)
+{
+    result.add(n);
+}</code></pre>
+              </div>
+              <div>
+                <h3>保留長字串</h3>
+                <pre><code>if (word.length() &gt;= minLen)
+{
+    result.add(word);
+}</code></pre>
+              </div>
+              <div>
+                <h3>保留區間內資料</h3>
+                <pre><code>if (x &gt;= low &amp;&amp; x &lt;= high)
+{
+    result.add(x);
+}</code></pre>
+              </div>
+            </div>
+            <p>
+              建立新 list 的優點是沒有 index shift 問題，因為原本 list 沒有被刪除或插入。
+            </p>
+          </section>
+
+          <section id="remove" class="article-section">
+            <p class="eyebrow">Index Shift</p>
+            <h2>Filter Pattern 2：直接 remove 原本 List</h2>
+            <p>
+              如果題目說「remove all... from the list」、「modify the given list」、「the original list should no longer contain...」，
+              就是要改原本 list。這時最常見錯誤是 forward loop 刪除後仍然直接 <code>i++</code>。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>common forward remove bug</span>
+                <button class="copy-button" type="button" data-copy="l20-code-bug">Copy</button>
+              </div>
+              <pre><code id="l20-code-bug">for (int i = 0; i &lt; nums.size(); i++)
+{
+    if (nums.get(i) &lt; 0)
+    {
+        nums.remove(i);   // bug risk: next element shifts into index i
+    }
+}</code></pre>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Step</th><th>List</th><th><code>i</code></th><th>發生什麼事</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>start</td><td><code>[4, -2, -5, 7]</code></td><td><code>1</code></td><td><code>-2</code> 符合 remove 條件</td></tr>
+                  <tr><td>remove</td><td><code>[4, -5, 7]</code></td><td><code>1</code></td><td><code>-5</code> 從 index 2 左移到 index 1</td></tr>
+                  <tr><td>loop update</td><td><code>[4, -5, 7]</code></td><td><code>2</code></td><td>下一輪直接檢查 <code>7</code>，跳過 <code>-5</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout warn">
+              <strong>連續符合刪除條件的元素最危險。</strong>
+              <span>測 remove algorithm 時，務必測 <code>[2, 2, 2]</code>、<code>[-1, -2]</code> 這種連續案例。</span>
+            </div>
+          </section>
+
+          <section id="safe-remove" class="article-section">
+            <p class="eyebrow">Safe Removal</p>
+            <h2>三種安全 remove 寫法</h2>
+            <p>
+              要刪除所有符合條件的元素，AP CSA 最推薦你能熟練 backward traversal。
+              forward while 也正確，但需要你明確控制 <code>i</code> 什麼時候增加。
+            </p>
+            <div class="contrast-grid">
+              <div>
+                <h3>1. Forward while</h3>
+                <pre><code>int i = 0;
+while (i &lt; list.size())
+{
+    if (shouldRemove(list.get(i)))
+    {
+        list.remove(i);
+    }
+    else
+    {
+        i++;
+    }
+}</code></pre>
+                <p>remove 後不加 <code>i</code>，因為下一個元素已經移到目前 index。</p>
+              </div>
+              <div>
+                <h3>2. Forward + <code>i--</code></h3>
+                <pre><code>for (int i = 0; i &lt; list.size(); i++)
+{
+    if (shouldRemove(list.get(i)))
+    {
+        list.remove(i);
+        i--;
+    }
+}</code></pre>
+                <p>用 <code>i--</code> 抵消 for loop 結尾的 <code>i++</code>。</p>
+              </div>
+              <div>
+                <h3>3. Backward traversal</h3>
+                <pre><code>for (int i = list.size() - 1; i &gt;= 0; i--)
+{
+    if (shouldRemove(list.get(i)))
+    {
+        list.remove(i);
+    }
+}</code></pre>
+                <p>從後面刪，左移只影響已經走過的右側位置。</p>
+              </div>
+            </div>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>recommended remove-all pattern</span>
+                <button class="copy-button" type="button" data-copy="l20-code-backward">Copy</button>
+              </div>
+              <pre><code id="l20-code-backward">public static void removeBelow(ArrayList&lt;Integer&gt; scores, int min)
+{
+    for (int i = scores.size() - 1; i &gt;= 0; i--)
+    {
+        if (scores.get(i) &lt; min)
+        {
+            scores.remove(i);
+        }
+    }
+}</code></pre>
+            </div>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>safe forward while pattern</span>
+                <button class="copy-button" type="button" data-copy="l20-code-while">Copy</button>
+              </div>
+              <pre><code id="l20-code-while">public static void removeNegatives(ArrayList&lt;Integer&gt; nums)
+{
+    int i = 0;
+    while (i &lt; nums.size())
+    {
+        if (nums.get(i) &lt; 0)
+        {
+            nums.remove(i);
+        }
+        else
+        {
+            i++;
+        }
+    }
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="enhanced-for" class="article-section">
+            <p class="eyebrow">Enhanced For Limitations</p>
+            <h2>Enhanced for 適合讀取，不適合結構性修改</h2>
+            <p>
+              Enhanced for 的優點是簡潔，但它沒有 index。當你需要使用 <code>set(index,...)</code>、
+              <code>add</code>、<code>remove</code>，或需要知道位置時，請改用 index-based loop。
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>任務</th><th>Enhanced for 適合嗎？</th><th>原因</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>sum / count</td><td>適合</td><td>只需要讀取每個 value</td></tr>
+                  <tr><td>linear search value</td><td>有時適合</td><td>若只回傳 boolean；需要 index 時不適合</td></tr>
+                  <tr><td>replace every negative with 0</td><td>不適合</td><td>需要 <code>set(i, 0)</code></td></tr>
+                  <tr><td>remove all invalid values</td><td>不適合</td><td><code>remove</code> 會改變 list structure</td></tr>
+                  <tr><td>insert while looping</td><td>不適合</td><td><code>add</code> 會改變 size 和 index</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="contrast-grid">
+              <div>
+                <h3>不會真的改 list</h3>
+                <pre><code>for (int value : nums)
+{
+    value = 0;
+}</code></pre>
+                <p><code>value</code> 是 loop variable 的 copy，不是 list 中的位置。</p>
+              </div>
+              <div>
+                <h3>正確 replace</h3>
+                <pre><code>for (int i = 0; i &lt; nums.size(); i++)
+{
+    nums.set(i, 0);
+}</code></pre>
+                <p>使用 <code>set</code> 才會改變指定 index 的元素。</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="transform" class="article-section">
+            <p class="eyebrow">Transform</p>
+            <h2><code>set</code> 用來 replace，不會改變 size</h2>
+            <p>
+              Transform 題型常見指令是「replace」、「change every」、「set invalid values to...」。
+              這類題不需要 backward traversal，因為 <code>set</code> 不會造成 index shift。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>transform with set</span>
+                <button class="copy-button" type="button" data-copy="l20-code-transform">Copy</button>
+              </div>
+              <pre><code id="l20-code-transform">public static void replaceNegatives(ArrayList&lt;Integer&gt; nums)
+{
+    for (int i = 0; i &lt; nums.size(); i++)
+    {
+        if (nums.get(i) &lt; 0)
+        {
+            nums.set(i, 0);
+        }
+    }
+}</code></pre>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Operation</th><th>Size</th><th>Index Shift</th><th>常用 loop</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>set(i, value)</code></td><td>不變</td><td>沒有</td><td>traditional for</td></tr>
+                  <tr><td><code>remove(i)</code></td><td>減 1</td><td>後面左移</td><td>backward for / while</td></tr>
+                  <tr><td><code>add(i, value)</code></td><td>加 1</td><td>後面右移</td><td>小心分析題目需求</td></tr>
+                  <tr><td><code>add(value)</code></td><td>加 1</td><td>尾端新增</td><td>通常用在 build new list</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="data-analysis" class="article-section">
+            <p class="eyebrow">Data Analysis</p>
+            <h2>ArrayList Data Analysis 題型</h2>
+            <p>
+              AP CSA 常把 ArrayList algorithm 包成資料分析題：成績、溫度、字串清單、物件清單。核心仍是
+              sum、count、average、max/min、search、filter、remove invalid data 的組合。
+            </p>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>average and above-average count</span>
+                <button class="copy-button" type="button" data-copy="l20-code-data">Copy</button>
+              </div>
+              <pre><code id="l20-code-data">public static int countAboveAverage(ArrayList&lt;Integer&gt; scores)
+{
+    int total = 0;
+    for (int score : scores)
+    {
+        total += score;
+    }
+
+    double average = (double) total / scores.size();
+
+    int count = 0;
+    for (int score : scores)
+    {
+        if (score &gt; average)
+        {
+            count++;
+        }
+    }
+
+    return count;
+}</code></pre>
+            </div>
+            <div class="callout">
+              <strong>為什麼需要兩次 traversal？</strong>
+              <span>第一次先算 average；第二次才知道哪些 value 大於 average。</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>題目關鍵字</th><th>常見做法</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>sum / total</td><td>accumulator 從 0 開始</td></tr>
+                  <tr><td>count values that...</td><td>符合條件時 <code>count++</code></td></tr>
+                  <tr><td>average</td><td>先 sum，再除以 <code>size()</code></td></tr>
+                  <tr><td>largest / smallest</td><td>從第一個元素初始化 max/min</td></tr>
+                  <tr><td>remove invalid readings</td><td>backward traversal</td></tr>
+                  <tr><td>return valid readings</td><td>filtered copy</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="frq" class="article-section">
+            <p class="eyebrow">FRQ Strategy</p>
+            <h2>寫 ArrayList FRQ 前先判斷 mutation 類型</h2>
+            <p>
+              ArrayList FRQ 最容易錯不是語法，而是你誤判題目到底要改原本 list，還是回傳新 list。
+              先圈出 prompt 的動詞，再選 loop。
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Prompt words</th><th>意思</th><th>建議 pattern</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>return a new list</td><td>原 list 通常不改</td><td>filtered copy</td></tr>
+                  <tr><td>remove all</td><td>改原本 list</td><td>backward traversal</td></tr>
+                  <tr><td>replace / change to</td><td>改元素值，不改 size</td><td><code>set</code> with traditional for</td></tr>
+                  <tr><td>count / sum / find</td><td>只讀取</td><td>enhanced for 或 traditional for</td></tr>
+                  <tr><td>first index / last index</td><td>需要 index</td><td>traditional for / backward for</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-card">
+              <div class="code-toolbar">
+                <span>FRQ contrast: remove vs return</span>
+                <button class="copy-button" type="button" data-copy="l20-code-frq">Copy</button>
+              </div>
+              <pre><code id="l20-code-frq">// Mutates original list.
+public static void removeShortWords(ArrayList&lt;String&gt; words, int minLen)
+{
+    for (int i = words.size() - 1; i &gt;= 0; i--)
+    {
+        if (words.get(i).length() &lt; minLen)
+        {
+            words.remove(i);
+        }
+    }
+}
+
+// Returns a new list and leaves original list unchanged.
+public static ArrayList&lt;String&gt; getLongWords(ArrayList&lt;String&gt; words, int minLen)
+{
+    ArrayList&lt;String&gt; result = new ArrayList&lt;String&gt;();
+    for (String word : words)
+    {
+        if (word.length() &gt;= minLen)
+        {
+            result.add(word);
+        }
+    }
+    return result;
+}</code></pre>
+            </div>
+          </section>
+
+          <section id="errors" class="article-section">
+            <p class="eyebrow">Common Errors</p>
+            <h2>Lesson 20 常見錯誤總表</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>錯誤</th><th>為什麼錯</th><th>改法</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>forward remove 後直接 <code>i++</code></td><td>可能跳過左移到目前 index 的元素</td><td>用 backward traversal 或 while</td></tr>
+                  <tr><td>enhanced for 中 <code>remove</code></td><td>結構性修改 list</td><td>改用 index loop</td></tr>
+                  <tr><td><code>for (int x : nums) x = 0;</code></td><td>只改 loop variable，不改 list</td><td>用 <code>nums.set(i, 0)</code></td></tr>
+                  <tr><td>忘記 <code>size()</code> 會變</td><td>add/remove 會改變 loop condition</td><td>每一步 trace current size</td></tr>
+                  <tr><td>把 remove 題寫成 filtered copy</td><td>原 list 沒被修改</td><td>看 prompt 是否要求 remove from original list</td></tr>
+                  <tr><td>把 filtered copy 題寫成 remove</td><td>破壞原 list</td><td>建立新 list 並 return</td></tr>
+                  <tr><td>使用 <code>==</code> 比較 String</td><td>比較 reference，不是內容</td><td>用 <code>.equals()</code></td></tr>
+                  <tr><td>空 list 上做 <code>get(0)</code></td><td>index out of bounds</td><td>確認題目保證非空，或先檢查 size</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="checklist" class="article-section">
+            <p class="eyebrow">Takeaways</p>
+            <h2>本課檢核：看到題目時，你應該問的十件事</h2>
+            <div class="goal-grid">
+              <div><strong>1. 這題是 read-only 嗎？</strong><span>若只是 sum/count/search，enhanced for 常常夠用。</span></div>
+              <div><strong>2. 是否需要 index？</strong><span>需要位置、first/last index、replace by position，就用 traditional for。</span></div>
+              <div><strong>3. 是否要改原本 list？</strong><span>prompt 說 remove/modify，通常要改原 list。</span></div>
+              <div><strong>4. 是否要回傳新 list？</strong><span>prompt 說 return a list containing，通常建立新 list。</span></div>
+              <div><strong>5. Body 裡有 <code>remove</code> 嗎？</strong><span>先想到 index shift。</span></div>
+              <div><strong>6. Body 裡有 <code>add(index,...)</code> 嗎？</strong><span>後方元素會右移，size 會增加。</span></div>
+              <div><strong>7. Body 裡只有 <code>set</code> 嗎？</strong><span>size 不變，照順序走通常安全。</span></div>
+              <div><strong>8. 有連續符合條件的元素嗎？</strong><span>這是測 forward remove 是否有 bug 的關鍵。</span></div>
+              <div><strong>9. List 可能是空的嗎？</strong><span>max/min 與 <code>get(0)</code> 要特別小心。</span></div>
+              <div><strong>10. 每次 mutation 後有沒有重新 trace？</strong><span>寫出 current list、current index、current size。</span></div>
+            </div>
+            <details>
+              <summary>Lesson 20 必背十五句</summary>
+              <p><code>ArrayList</code> traversal 用 <code>size()</code> 和 <code>get(i)</code>。</p>
+              <p>Enhanced for 適合 read-only traversal。</p>
+              <p>需要 index 時，用 traditional for。</p>
+              <p><code>set(i, value)</code> 不改變 size。</p>
+              <p><code>remove(i)</code> 會讓後方元素全部左移。</p>
+              <p>Forward remove 可能因 index shift 跳過元素。</p>
+              <p>連續符合 remove 條件的元素最容易暴露 bug。</p>
+              <p>Backward traversal 是 remove-all 題最穩定的 pattern。</p>
+              <p>Forward while remove 後不要增加 <code>i</code>。</p>
+              <p>Enhanced for 中不應做 structural modification。</p>
+              <p>改 loop variable 不等於改 list 元素。</p>
+              <p>Filter 可以修改原 list，也可以建立新 list。</p>
+              <p>Prompt 說 return new list 時，不要破壞原 list。</p>
+              <p>Prompt 說 remove from list 時，原 list 應該真的變短。</p>
+              <p>任何 add/remove tracing 題，都同步追蹤 list、index 與 size。</p>
+            </details>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 20｜ArrayList Algorithms。官方 AP CSA 規則以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

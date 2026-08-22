@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 20 課後練習｜ArrayList Algorithms</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 20 課後練習：ArrayList algorithms、traversal、filter、remove while looping、index shift、backward traversal、enhanced for limitations、data analysis、FRQ-style coding。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 入門課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜Java 入門課程</strong>
+          <small>Lesson 20 Practice</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="課後練習導覽">
+        <a href="lesson-20-presentation.html">投影模式</a>
+        <a href="lesson-20.html">文章版</a>
+        <a href="lesson-19-practice.html">上一課練習</a>
+        <a href="#concepts">概念</a>
+        <a href="#readonly">Read-only</a>
+        <a href="#filter">Filter</a>
+        <a href="#remove">Remove</a>
+        <a href="#transform">Transform</a>
+        <a href="#frq">FRQ</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="practice-hero">
+        <div class="practice-hero-inner">
+          <p class="eyebrow">AP Computer Science A｜Lesson 20</p>
+          <h1>課後練習：ArrayList Algorithms</h1>
+          <p class="lead">
+            這份題本練習 <code>ArrayList</code> traversal、sum/count/search、filtered copy、
+            remove while looping、index shift、backward traversal、enhanced for limitations、
+            transform with <code>set</code>，以及 data analysis / FRQ-style pattern selection。
+          </p>
+          <div class="practice-stats" aria-label="練習摘要">
+            <div><strong>45</strong><span>題課後練習</span></div>
+            <div><strong>6</strong><span>主題分區</span></div>
+            <div><strong>trace</strong><span>index shift debugging</span></div>
+            <div><strong>FRQ</strong><span>choose the right pattern</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="practice-shell">
+        <aside class="practice-nav" aria-label="練習目錄">
+          <h2>練習目錄</h2>
+          <a href="#concepts">A. 概念確認</a>
+          <a href="#readonly">B. Read-only Algorithms</a>
+          <a href="#filter">C. Filtered Copy</a>
+          <a href="#remove">D. Remove / Index Shift</a>
+          <a href="#transform">E. Enhanced For / Transform</a>
+          <a href="#frq">F. Data Analysis / FRQ</a>
+        </aside>
+
+        <div class="practice-main">
+          <section id="concepts" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">A. Concepts</p>
+              <h2>概念確認</h2>
+              <p>先確認 ArrayList algorithm 的核心：loop 選擇、size 變化、index shift。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q1</span><span>Core Idea</span></div>
+              <h3>Lesson 20 和 Lesson 19 最大的差異是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p1">詳解</button>
+              <div class="reveal-panel" id="l20p1">
+                <p>Lesson 19 重點是 <code>ArrayList</code> methods；Lesson 20 重點是把 methods 放進 loop，並正確處理 traversal、filter、remove、index shift。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q2</span><span>Mutation</span></div>
+              <h3>哪兩個 ArrayList operations 會改變 <code>size()</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p2">詳解</button>
+              <div class="reveal-panel" id="l20p2">
+                <p><code>add</code> 會讓 size 增加；<code>remove</code> 會讓 size 減少。<code>set</code> 不會改變 size。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q3</span><span>Traversal</span></div>
+              <h3>寫出從前到後走訪 <code>ArrayList&lt;Integer&gt; nums</code> 的 traditional for loop。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p3">詳解</button>
+              <div class="reveal-panel" id="l20p3">
+                <pre><code>for (int i = 0; i &lt; nums.size(); i++)
+{
+    int value = nums.get(i);
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q4</span><span>Enhanced For</span></div>
+              <h3>Enhanced for loop 最適合哪一類 ArrayList algorithm？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p4">詳解</button>
+              <div class="reveal-panel" id="l20p4">
+                <p>最適合 read-only traversal，例如 sum、count、print、boolean search。它不適合需要 index 或 add/remove/set by index 的任務。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q5</span><span>Loop Choice</span></div>
+              <h3>題目要求回傳第一個符合條件的 index，應該用 enhanced for 還是 traditional for？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p5">詳解</button>
+              <div class="reveal-panel" id="l20p5">
+                <p>用 traditional for，因為需要 <code>i</code> 作為 index。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q6</span><span>Index Shift</span></div>
+              <h3><code>list.remove(i)</code> 之後，原本在 <code>i + 1</code> 的元素會發生什麼事？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p6">詳解</button>
+              <div class="reveal-panel" id="l20p6">
+                <p>它會左移到 index <code>i</code>。這就是 forward remove 可能跳過元素的原因。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="readonly" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">B. Read-only Algorithms</p>
+              <h2>Sum / Count / Search / Max</h2>
+              <p>這組題目不修改 list，重點是把 array algorithm 改成 ArrayList 寫法。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q7</span><span>Sum</span></div>
+              <h3>寫出 method：回傳 <code>nums</code> 中所有整數總和。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p7">詳解</button>
+              <div class="reveal-panel" id="l20p7">
+                <pre><code>public static int sum(ArrayList&lt;Integer&gt; nums)
+{
+    int total = 0;
+    for (int n : nums)
+    {
+        total += n;
+    }
+    return total;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q8</span><span>Count</span></div>
+              <h3>寫出 method：計算 <code>nums</code> 中大於 <code>threshold</code> 的數量。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p8">詳解</button>
+              <div class="reveal-panel" id="l20p8">
+                <pre><code>public static int countAbove(ArrayList&lt;Integer&gt; nums, int threshold)
+{
+    int count = 0;
+    for (int n : nums)
+    {
+        if (n &gt; threshold)
+        {
+            count++;
+        }
+    }
+    return count;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q9</span><span>Trace</span></div>
+              <h3>以下程式最後 <code>total</code> 是多少？</h3>
+              <pre><code>ArrayList&lt;Integer&gt; nums = new ArrayList&lt;Integer&gt;();
+nums.add(3);
+nums.add(8);
+nums.add(-2);
+
+int total = 0;
+for (int n : nums)
+{
+    total += n;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l20p9">詳解</button>
+              <div class="reveal-panel" id="l20p9">
+                <p><code>total</code> 是 <code>9</code>，因為 <code>3 + 8 + (-2) = 9</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q10</span><span>First Index</span></div>
+              <h3>寫出 method：回傳 <code>target</code> 第一次出現在 <code>words</code> 的 index，若不存在回傳 <code>-1</code>。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p10">詳解</button>
+              <div class="reveal-panel" id="l20p10">
+                <pre><code>public static int indexOf(ArrayList&lt;String&gt; words, String target)
+{
+    for (int i = 0; i &lt; words.size(); i++)
+    {
+        if (words.get(i).equals(target))
+        {
+            return i;
+        }
+    }
+    return -1;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q11</span><span>Last Index</span></div>
+              <h3>若要找最後一次出現的 index，loop 應該從哪裡開始？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p11">詳解</button>
+              <div class="reveal-panel" id="l20p11">
+                <p>從 <code>words.size() - 1</code> 開始往 <code>0</code> 走，第一次找到就是最後一次出現的位置。</p>
+                <pre><code>for (int i = words.size() - 1; i &gt;= 0; i--)</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q12</span><span>Max</span></div>
+              <h3>假設 <code>nums</code> 保證非空，寫出找最大值的 method。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p12">詳解</button>
+              <div class="reveal-panel" id="l20p12">
+                <pre><code>public static int max(ArrayList&lt;Integer&gt; nums)
+{
+    int largest = nums.get(0);
+    for (int i = 1; i &lt; nums.size(); i++)
+    {
+        if (nums.get(i) &gt; largest)
+        {
+            largest = nums.get(i);
+        }
+    }
+    return largest;
+}</code></pre>
+                <p>若題目沒有保證非空，就不能直接 <code>get(0)</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q13</span><span>Average</span></div>
+              <h3>若 <code>scores</code> 非空，計算平均時為什麼常寫 <code>(double) total / scores.size()</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p13">詳解</button>
+              <div class="reveal-panel" id="l20p13">
+                <p>為了避免整數除法。把 <code>total</code> cast 成 <code>double</code> 後，結果會是小數。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q14</span><span>String Count</span></div>
+              <h3>寫出 method：計算 <code>words</code> 中內容等於 <code>target</code> 的字串數量。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p14">詳解</button>
+              <div class="reveal-panel" id="l20p14">
+                <pre><code>public static int countMatches(ArrayList&lt;String&gt; words, String target)
+{
+    int count = 0;
+    for (String word : words)
+    {
+        if (word.equals(target))
+        {
+            count++;
+        }
+    }
+    return count;
+}</code></pre>
+                <p>比較 String 內容用 <code>.equals()</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="filter" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">C. Filtered Copy</p>
+              <h2>建立新的 ArrayList</h2>
+              <p>這組題目練習不修改原 list，而是回傳一個新的 filtered list。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q15</span><span>Pattern</span></div>
+              <h3>Filtered copy 的基本骨架是什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p15">詳解</button>
+              <div class="reveal-panel" id="l20p15">
+                <pre><code>ArrayList&lt;Integer&gt; result = new ArrayList&lt;Integer&gt;();
+for (int value : list)
+{
+    if (condition)
+    {
+        result.add(value);
+    }
+}
+return result;</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q16</span><span>Passing Scores</span></div>
+              <h3>寫出 method：回傳所有大於等於 60 的成績，原本 <code>scores</code> 不改變。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p16">詳解</button>
+              <div class="reveal-panel" id="l20p16">
+                <pre><code>public static ArrayList&lt;Integer&gt; getPassingScores(ArrayList&lt;Integer&gt; scores)
+{
+    ArrayList&lt;Integer&gt; passing = new ArrayList&lt;Integer&gt;();
+    for (int score : scores)
+    {
+        if (score &gt;= 60)
+        {
+            passing.add(score);
+        }
+    }
+    return passing;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q17</span><span>Long Words</span></div>
+              <h3>寫出 method：回傳長度至少為 <code>minLen</code> 的字串。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p17">詳解</button>
+              <div class="reveal-panel" id="l20p17">
+                <pre><code>public static ArrayList&lt;String&gt; getLongWords(ArrayList&lt;String&gt; words, int minLen)
+{
+    ArrayList&lt;String&gt; result = new ArrayList&lt;String&gt;();
+    for (String word : words)
+    {
+        if (word.length() &gt;= minLen)
+        {
+            result.add(word);
+        }
+    }
+    return result;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q18</span><span>Original List</span></div>
+              <h3>Filtered copy pattern 會改變原本 list 嗎？為什麼？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p18">詳解</button>
+              <div class="reveal-panel" id="l20p18">
+                <p>不會。它只讀取原 list，並把符合條件的元素加入新建的 <code>result</code> list。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q19</span><span>Even Values</span></div>
+              <h3>寫出 method：回傳 <code>nums</code> 中所有偶數。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p19">詳解</button>
+              <div class="reveal-panel" id="l20p19">
+                <pre><code>public static ArrayList&lt;Integer&gt; getEvens(ArrayList&lt;Integer&gt; nums)
+{
+    ArrayList&lt;Integer&gt; evens = new ArrayList&lt;Integer&gt;();
+    for (int n : nums)
+    {
+        if (n % 2 == 0)
+        {
+            evens.add(n);
+        }
+    }
+    return evens;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q20</span><span>Prompt</span></div>
+              <h3>題目寫「Return a list of all valid readings. Do not modify readings.」應該 remove 還是 build new list？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p20">詳解</button>
+              <div class="reveal-panel" id="l20p20">
+                <p>Build new list。題目明確說不要修改 <code>readings</code>，所以不能對原 list 做 <code>remove</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q21</span><span>Trace</span></div>
+              <h3>以下程式最後 <code>result</code> 是什麼？</h3>
+              <pre><code>ArrayList&lt;Integer&gt; nums = new ArrayList&lt;Integer&gt;();
+nums.add(5);
+nums.add(-1);
+nums.add(8);
+
+ArrayList&lt;Integer&gt; result = new ArrayList&lt;Integer&gt;();
+for (int n : nums)
+{
+    if (n &gt; 0)
+    {
+        result.add(n);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l20p21">詳解</button>
+              <div class="reveal-panel" id="l20p21">
+                <p><code>[5, 8]</code>。原本 <code>nums</code> 仍是 <code>[5, -1, 8]</code>。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="remove" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">D. Remove / Index Shift</p>
+              <h2>直接刪除原本 List</h2>
+              <p>這組題目是 Lesson 20 最重要的部分：remove 後 index shift 會怎麼影響 loop。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q22</span><span>Bug Trace</span></div>
+              <h3>以下程式最後 <code>nums</code> 是什麼？</h3>
+              <pre><code>ArrayList&lt;Integer&gt; nums = new ArrayList&lt;Integer&gt;();
+nums.add(2);
+nums.add(2);
+nums.add(3);
+
+for (int i = 0; i &lt; nums.size(); i++)
+{
+    if (nums.get(i) == 2)
+    {
+        nums.remove(i);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l20p22">詳解</button>
+              <div class="reveal-panel" id="l20p22">
+                <p><code>[2, 3]</code>。第一個 <code>2</code> 被刪後，第二個 <code>2</code> 左移到 index 0；接著 <code>i++</code> 讓 loop 去檢查 index 1 的 <code>3</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q23</span><span>Explain</span></div>
+              <h3>為什麼 forward remove 後如果直接 <code>i++</code>，可能會跳過元素？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p23">詳解</button>
+              <div class="reveal-panel" id="l20p23">
+                <p><code>remove(i)</code> 會讓後面的元素左移到目前 index；但 for loop 結尾又讓 <code>i</code> 增加，導致剛移過來的元素沒有被檢查。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q24</span><span>Backward Code</span></div>
+              <h3>寫出安全刪除 <code>nums</code> 中所有負數的 backward traversal。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p24">詳解</button>
+              <div class="reveal-panel" id="l20p24">
+                <pre><code>for (int i = nums.size() - 1; i &gt;= 0; i--)
+{
+    if (nums.get(i) &lt; 0)
+    {
+        nums.remove(i);
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q25</span><span>While Code</span></div>
+              <h3>用 forward while loop 安全刪除所有負數。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p25">詳解</button>
+              <div class="reveal-panel" id="l20p25">
+                <pre><code>int i = 0;
+while (i &lt; nums.size())
+{
+    if (nums.get(i) &lt; 0)
+    {
+        nums.remove(i);
+    }
+    else
+    {
+        i++;
+    }
+}</code></pre>
+                <p>重點：remove 後不要增加 <code>i</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q26</span><span>Backward Trace</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>ArrayList&lt;Integer&gt; nums = new ArrayList&lt;Integer&gt;();
+nums.add(1);
+nums.add(4);
+nums.add(4);
+nums.add(7);
+
+for (int i = nums.size() - 1; i &gt;= 0; i--)
+{
+    if (nums.get(i) == 4)
+    {
+        nums.remove(i);
+    }
+}
+System.out.println(nums);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l20p26">詳解</button>
+              <div class="reveal-panel" id="l20p26">
+                <p><code>[1, 7]</code>。從後往前刪，兩個 <code>4</code> 都會被檢查並刪除。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q27</span><span>Remove Below</span></div>
+              <h3>寫出 method：從 <code>scores</code> 中移除所有小於 <code>min</code> 的分數。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p27">詳解</button>
+              <div class="reveal-panel" id="l20p27">
+                <pre><code>public static void removeBelow(ArrayList&lt;Integer&gt; scores, int min)
+{
+    for (int i = scores.size() - 1; i &gt;= 0; i--)
+    {
+        if (scores.get(i) &lt; min)
+        {
+            scores.remove(i);
+        }
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q28</span><span>Remove Word</span></div>
+              <h3>寫出 method：從 <code>words</code> 中移除所有內容等於 <code>target</code> 的字串。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p28">詳解</button>
+              <div class="reveal-panel" id="l20p28">
+                <pre><code>public static void removeWord(ArrayList&lt;String&gt; words, String target)
+{
+    for (int i = words.size() - 1; i &gt;= 0; i--)
+    {
+        if (words.get(i).equals(target))
+        {
+            words.remove(i);
+        }
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q29</span><span>All Remove</span></div>
+              <h3>若 <code>list</code> 是 <code>[5, 5, 5]</code>，以下程式能刪掉全部 <code>5</code> 嗎？</h3>
+              <pre><code>for (int i = 0; i &lt; list.size(); i++)
+{
+    if (list.get(i) == 5)
+    {
+        list.remove(i);
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l20p29">詳解</button>
+              <div class="reveal-panel" id="l20p29">
+                <p>不能。最後會留下一個 <code>5</code>，因為每次 remove 後都跳過移到目前 index 的下一個 <code>5</code>。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q30</span><span>Empty List</span></div>
+              <h3>若 <code>list.size()</code> 是 <code>0</code>，以下 backward loop 會執行嗎？</h3>
+              <pre><code>for (int i = list.size() - 1; i &gt;= 0; i--)
+{
+    list.remove(i);
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l20p30">詳解</button>
+              <div class="reveal-panel" id="l20p30">
+                <p>不會。<code>i</code> 一開始是 <code>-1</code>，條件 <code>i &gt;= 0</code> 為 false。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q31</span><span>Add Shift</span></div>
+              <h3><code>list.add(i, value)</code> 對 index 有什麼影響？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p31">詳解</button>
+              <div class="reveal-panel" id="l20p31">
+                <p>它會把原本 index <code>i</code> 和後方元素全部往右移，size 增加 1。這也可能讓 traversal 變複雜。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q32</span><span>i-- Pattern</span></div>
+              <h3>以下 pattern 中 <code>i--</code> 的目的為何？</h3>
+              <pre><code>for (int i = 0; i &lt; list.size(); i++)
+{
+    if (shouldRemove(list.get(i)))
+    {
+        list.remove(i);
+        i--;
+    }
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l20p32">詳解</button>
+              <div class="reveal-panel" id="l20p32">
+                <p><code>i--</code> 用來抵消 for loop 結尾的 <code>i++</code>，讓下一輪繼續檢查目前 index。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="transform" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">E. Enhanced For / Transform</p>
+              <h2>Enhanced for 的限制與 <code>set</code></h2>
+              <p>這組題目確認什麼時候不能使用 enhanced for，以及如何用 <code>set</code> 修改元素。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q33</span><span>Enhanced For Remove</span></div>
+              <h3>為什麼不建議在 enhanced for loop 中對同一個 list 做 <code>remove</code>？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p33">詳解</button>
+              <div class="reveal-panel" id="l20p33">
+                <p>Enhanced for 是用來逐一讀取元素；在走訪時改變 list structure 會讓 traversal 狀態不穩定。AP 題中遇到 add/remove，應改用 index-based loop。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q34</span><span>Loop Variable</span></div>
+              <h3>以下程式會把 <code>nums</code> 裡所有值改成 <code>0</code> 嗎？</h3>
+              <pre><code>for (int n : nums)
+{
+    n = 0;
+}</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l20p34">詳解</button>
+              <div class="reveal-panel" id="l20p34">
+                <p>不會。<code>n</code> 是 loop variable，改它不等於改 list 裡的元素。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q35</span><span>Correct Set</span></div>
+              <h3>要把 <code>nums</code> 裡每個位置改成 <code>0</code>，應該怎麼寫？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p35">詳解</button>
+              <div class="reveal-panel" id="l20p35">
+                <pre><code>for (int i = 0; i &lt; nums.size(); i++)
+{
+    nums.set(i, 0);
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q36</span><span>Replace Negatives</span></div>
+              <h3>寫出 method：把 <code>nums</code> 中所有負數改成 <code>0</code>，不刪除元素。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p36">詳解</button>
+              <div class="reveal-panel" id="l20p36">
+                <pre><code>public static void replaceNegatives(ArrayList&lt;Integer&gt; nums)
+{
+    for (int i = 0; i &lt; nums.size(); i++)
+    {
+        if (nums.get(i) &lt; 0)
+        {
+            nums.set(i, 0);
+        }
+    }
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q37</span><span>set vs remove</span></div>
+              <h3><code>set</code> 和 <code>remove</code> 對 size 的影響有何不同？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p37">詳解</button>
+              <div class="reveal-panel" id="l20p37">
+                <p><code>set</code> 取代某個 index 的值，size 不變；<code>remove</code> 刪掉元素，size 減 1，後方元素左移。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q38</span><span>Need Index</span></div>
+              <h3>寫出 code：把偶數 index 的元素都加 10。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p38">詳解</button>
+              <div class="reveal-panel" id="l20p38">
+                <pre><code>for (int i = 0; i &lt; nums.size(); i++)
+{
+    if (i % 2 == 0)
+    {
+        nums.set(i, nums.get(i) + 10);
+    }
+}</code></pre>
+                <p>這題需要 index，因此不適合 enhanced for。</p>
+              </div>
+            </article>
+          </section>
+
+          <section id="frq" class="practice-section">
+            <div class="practice-section-head">
+              <p class="eyebrow">F. Data Analysis / FRQ</p>
+              <h2>綜合題與 FRQ-style Pattern Selection</h2>
+              <p>最後練習把 prompt 轉換成正確的 loop pattern。</p>
+            </div>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q39</span><span>Above Average</span></div>
+              <h3>寫出 method：回傳成績中大於平均的數量。假設 <code>scores</code> 非空。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p39">詳解</button>
+              <div class="reveal-panel" id="l20p39">
+                <pre><code>public static int countAboveAverage(ArrayList&lt;Integer&gt; scores)
+{
+    int total = 0;
+    for (int score : scores)
+    {
+        total += score;
+    }
+
+    double average = (double) total / scores.size();
+
+    int count = 0;
+    for (int score : scores)
+    {
+        if (score &gt; average)
+        {
+            count++;
+        }
+    }
+    return count;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q40</span><span>Clean Data</span></div>
+              <h3>寫出 method：從 <code>temps</code> 中移除所有小於 <code>-50</code> 或大於 <code>60</code> 的讀數。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p40">詳解</button>
+              <div class="reveal-panel" id="l20p40">
+                <pre><code>public static void removeInvalidTemps(ArrayList&lt;Integer&gt; temps)
+{
+    for (int i = temps.size() - 1; i &gt;= 0; i--)
+    {
+        int temp = temps.get(i);
+        if (temp &lt; -50 || temp &gt; 60)
+        {
+            temps.remove(i);
+        }
+    }
+}</code></pre>
+                <p>這是 remove original list，所以使用 backward traversal。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q41</span><span>Valid Copy</span></div>
+              <h3>若題目改成「回傳所有有效溫度，原 list 不改變」，應該怎麼寫？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p41">詳解</button>
+              <div class="reveal-panel" id="l20p41">
+                <pre><code>public static ArrayList&lt;Integer&gt; getValidTemps(ArrayList&lt;Integer&gt; temps)
+{
+    ArrayList&lt;Integer&gt; valid = new ArrayList&lt;Integer&gt;();
+    for (int temp : temps)
+    {
+        if (temp &gt;= -50 &amp;&amp; temp &lt;= 60)
+        {
+            valid.add(temp);
+        }
+    }
+    return valid;
+}</code></pre>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q42</span><span>Pattern Selection</span></div>
+              <h3>請為每個 prompt 選 pattern：filtered copy、backward remove、set transform、read-only。</h3>
+              <p>1. Remove all scores below 60.</p>
+              <p>2. Return a list of scores below 60.</p>
+              <p>3. Replace every score below 0 with 0.</p>
+              <p>4. Count scores above 90.</p>
+              <button class="reveal-button" type="button" data-reveal="l20p42">詳解</button>
+              <div class="reveal-panel" id="l20p42">
+                <p>1. backward remove；2. filtered copy；3. set transform；4. read-only count。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q43</span><span>First vs Last</span></div>
+              <h3>若 <code>words</code> 是 <code>[a, b, a, c, a]</code>，target 是 <code>a</code>，first index 和 last index 分別是多少？</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p43">詳解</button>
+              <div class="reveal-panel" id="l20p43">
+                <p>First index 是 <code>0</code>；last index 是 <code>4</code>。找 first 從前往後；找 last 從後往前最直接。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q44</span><span>Duplicates</span></div>
+              <h3>進階：寫出 method，移除 <code>list</code> 中重複的字串，只保留每個字串第一次出現。</h3>
+              <button class="reveal-button" type="button" data-reveal="l20p44">詳解</button>
+              <div class="reveal-panel" id="l20p44">
+                <pre><code>public static void removeDuplicates(ArrayList&lt;String&gt; list)
+{
+    for (int i = 0; i &lt; list.size(); i++)
+    {
+        String current = list.get(i);
+        for (int j = list.size() - 1; j &gt; i; j--)
+        {
+            if (list.get(j).equals(current))
+            {
+                list.remove(j);
+            }
+        }
+    }
+}</code></pre>
+                <p>內層從後面往前刪，避免刪除 duplicate 時發生 index shift 問題。</p>
+              </div>
+            </article>
+
+            <article class="question-card">
+              <div class="question-meta"><span>Q45</span><span>Final Trace</span></div>
+              <h3>以下程式最後印出什麼？</h3>
+              <pre><code>ArrayList&lt;Integer&gt; nums = new ArrayList&lt;Integer&gt;();
+nums.add(4);
+nums.add(4);
+nums.add(5);
+nums.add(4);
+
+for (int i = 0; i &lt; nums.size(); i++)
+{
+    if (nums.get(i) == 4)
+    {
+        nums.remove(i);
+    }
+}
+
+nums.add(0, 9);
+System.out.println(nums);</code></pre>
+              <button class="reveal-button" type="button" data-reveal="l20p45">詳解</button>
+              <div class="reveal-panel" id="l20p45">
+                <p>Forward remove 會留下中間被跳過的 <code>4</code>。remove loop 後是 <code>[4, 5]</code>，再 <code>add(0, 9)</code> 變成 <code>[9, 4, 5]</code>。</p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Lesson 20 課後練習。每次 add/remove 後都重新 trace list、index 與 size。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

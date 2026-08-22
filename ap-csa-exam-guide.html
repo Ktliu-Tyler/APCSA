@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AP CSA 考試規則、規範與拿分重點</title>
+    <meta
+      name="description"
+      content="整理 College Board 與 AP Central 官方文件中的 AP Computer Science A 考試格式、考場規則、配分、FRQ 題型與拿分重點。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="回到 AP CSA Java 課程首頁">
+        <span class="brand-mark">CSA</span>
+        <span>
+          <strong>AP CSA｜考試攻略</strong>
+          <small>Rules, Rubrics, Strategy</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="AP CSA 考試攻略導覽">
+        <a href="index.html">課程首頁</a>
+        <a href="past-papers.html">考古題庫</a>
+        <a href="#overview">考試總覽</a>
+        <a href="#rules">官方規則</a>
+        <a href="#mcq">MCQ</a>
+        <a href="#frq">FRQ</a>
+        <a href="#checklist">考前清單</a>
+        <a href="#sources">官方來源</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero-band exam-hero">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Official AP CSA Exam Guide</p>
+            <h1>AP CSA 考試規則與拿分重點</h1>
+            <p class="lead">
+              這一頁把 College Board / AP Central 官方文件整理成學生真正會用到的版本：
+              考試形式、考場規範、配分邏輯、MCQ 節奏、FRQ 題型與 rubric 拿分策略。
+            </p>
+            <p class="source-note">
+              官方文件核對日期：2026-08-22。考試日期、Bluebook 規則與考場安排仍以 College Board、
+              AP Central 與學校 AP coordinator 最新通知為準。
+            </p>
+            <div class="hero-actions" aria-label="主要操作">
+              <a class="button primary" href="#overview">看考試格式</a>
+              <a class="button primary" href="#frq">看 FRQ 拿分</a>
+              <a class="button" href="past-papers.html">考古題庫</a>
+              <a class="button" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">Java Quick Reference</a>
+              <a class="button" href="#sources">官方來源</a>
+            </div>
+          </div>
+          <figure class="flow-figure exam-figure">
+            <img src="assets/java-compile-flow.png" alt="Java source code, compiler, JVM output flow" />
+            <figcaption>AP CSA 的核心能力：讀懂程式，推理狀態變化，寫出符合規格的 Java 程式碼。</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="summary-band" aria-label="AP CSA 考試快照">
+        <div class="summary-grid exam-summary">
+          <article>
+            <span class="metric">3 hr</span>
+            <h2>考試時間</h2>
+            <p>Section I 與 Section II 各 1 小時 30 分鐘。</p>
+          </article>
+          <article>
+            <span class="metric">42</span>
+            <h2>Multiple Choice</h2>
+            <p>42 題，佔總分 55%。答錯與空白不倒扣。</p>
+          </article>
+          <article>
+            <span class="metric">4</span>
+            <h2>Free Response</h2>
+            <p>4 題，佔總分 45%。全部在 Bluebook 中作答。</p>
+          </article>
+          <article>
+            <span class="metric">0</span>
+            <h2>Calculator</h2>
+            <p>AP Computer Science A 不允許使用計算機，除非有核准的 accommodation。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="overview" class="lesson-shell exam-shell">
+        <aside class="lesson-toc" aria-label="本頁目錄">
+          <h2>本頁目錄</h2>
+          <a href="#snapshot">一頁看懂</a>
+          <a href="#content">考試範圍</a>
+          <a href="#rules">考場規範</a>
+          <a href="#mcq">MCQ 拿分</a>
+          <a href="#frq">FRQ 拿分</a>
+          <a href="#quick-reference">Java Reference</a>
+          <a href="#checklist">考前清單</a>
+          <a href="#sources">官方來源</a>
+        </aside>
+
+        <article class="lesson-article">
+          <section id="snapshot" class="article-section">
+            <p class="eyebrow">Exam Snapshot</p>
+            <h2>一頁看懂 AP CSA 考試</h2>
+            <div class="exam-fact-list" aria-label="AP CSA 考試一頁總覽">
+              <article class="exam-fact-row">
+                <h3>考試日期</h3>
+                <div>
+                  <span>官方資訊整理</span>
+                  <p>2027 AP CSA Exam：2027 年 5 月 12 日，Session 2。</p>
+                </div>
+                <div>
+                  <span>備考提醒</span>
+                  <p>實際地點與報到時間由學校 AP coordinator 通知。</p>
+                </div>
+              </article>
+              <article class="exam-fact-row">
+                <h3>考試模式</h3>
+                <div>
+                  <span>官方資訊整理</span>
+                  <p>Fully digital exam。MCQ 與 FRQ 都在 Bluebook testing app 中完成並提交。</p>
+                </div>
+                <div>
+                  <span>備考提醒</span>
+                  <p>考前要確認 Bluebook 已安裝、可登入、裝置電量足夠。</p>
+                </div>
+              </article>
+              <article class="exam-fact-row">
+                <h3>Section I</h3>
+                <div>
+                  <span>官方資訊整理</span>
+                  <p>Multiple Choice：42 題，1 小時 30 分鐘，佔總分 55%。</p>
+                </div>
+                <div>
+                  <span>備考提醒</span>
+                  <p>平均每題約 2 分 8 秒。看懂程式比背語法更重要。</p>
+                </div>
+              </article>
+              <article class="exam-fact-row">
+                <h3>Section II</h3>
+                <div>
+                  <span>官方資訊整理</span>
+                  <p>Free Response：4 題，1 小時 30 分鐘，佔總分 45%。</p>
+                </div>
+                <div>
+                  <span>備考提醒</span>
+                  <p>四題各有固定主題：methods、class design、ArrayList、2D array。</p>
+                </div>
+              </article>
+              <article class="exam-fact-row">
+                <h3>參考資料</h3>
+                <div>
+                  <span>官方資訊整理</span>
+                  <p>Java Quick Reference 會在 Bluebook 中提供，學校也可以在考場印給學生。</p>
+                </div>
+                <div>
+                  <span>備考提醒</span>
+                  <p>平常練習就要熟悉表上可用的 <code>String</code>、<code>Math</code>、array、<code>ArrayList</code> 方法。</p>
+                </div>
+              </article>
+              <article class="exam-fact-row">
+                <h3>計分方式</h3>
+                <div>
+                  <span>官方資訊整理</span>
+                  <p>MCQ 由電腦計分，FRQ 由 AP Readers 依 scoring guidelines 評分，再合成 1-5 分。</p>
+                </div>
+                <div>
+                  <span>備考提醒</span>
+                  <p>AP 分數不是固定比例排名。不要用坊間「猜切分」取代紮實練題。</p>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section id="content" class="article-section">
+            <p class="eyebrow">Course Framework</p>
+            <h2>考試範圍與比重</h2>
+            <p>
+              AP CSA 的官方課程架構在 2025-26 學年更新為四個大單元。以下比重是
+              Multiple-Choice Section 的 approximate weighting，實際題目仍會依 learning objectives 與 skills 出題。
+            </p>
+            <div class="weight-grid">
+              <article>
+                <span>Unit 1</span>
+                <h3>Using Objects and Methods</h3>
+                <strong>15%-25%</strong>
+                <p>物件、method calls、String、Math、API 閱讀與基本程式推理。</p>
+              </article>
+              <article>
+                <span>Unit 2</span>
+                <h3>Selection and Iteration</h3>
+                <strong>25%-35%</strong>
+                <p>Boolean、if/else、loops、nested loops、algorithm tracing。</p>
+              </article>
+              <article>
+                <span>Unit 3</span>
+                <h3>Class Creation</h3>
+                <strong>10%-18%</strong>
+                <p>class、fields、constructors、methods、encapsulation、state。</p>
+              </article>
+              <article>
+                <span>Unit 4</span>
+                <h3>Data Collections</h3>
+                <strong>30%-40%</strong>
+                <p>arrays、ArrayList、2D arrays、data traversal、searching/sorting 相關演算法。</p>
+              </article>
+            </div>
+
+            <h3>Computational Thinking Practices 的考點</h3>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Practice</th>
+                    <th>意思</th>
+                    <th>MCQ 比重</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Design Code</td>
+                    <td>選擇合適的程式設計與演算法。</td>
+                    <td>2%-10%</td>
+                  </tr>
+                  <tr>
+                    <td>Develop Code</td>
+                    <td>撰寫並實作程式碼。</td>
+                    <td>22%-38%</td>
+                  </tr>
+                  <tr>
+                    <td>Analyze Code</td>
+                    <td>判斷輸出、結果，或解釋程式為何不如預期。</td>
+                    <td>37%-53%</td>
+                  </tr>
+                  <tr>
+                    <td>Document Code and Computing Systems</td>
+                    <td>描述造成特定結果的程式行為與條件。</td>
+                    <td>10%-15%</td>
+                  </tr>
+                  <tr>
+                    <td>Use Computers Responsibly</td>
+                    <td>理解電腦使用的倫理與社會影響。</td>
+                    <td>2%-10%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout">
+              <strong>備考重心：</strong>官方比重最高的是 Analyze Code 與 Develop Code。也就是說，
+              你要能追蹤程式狀態、預測 output、找錯、補齊方法，並把規格轉成可執行的 Java。
+            </div>
+          </section>
+
+          <section id="rules" class="article-section">
+            <p class="eyebrow">Exam Rules</p>
+            <h2>考場規則與 Bluebook 規範</h2>
+            <p>
+              AP 考試當天，學生需要同意 College Board 的 test security 與 administration policies。
+              沒有遵守規範可能導致分數被取消；刻意作弊或分享安全題目可能導致未來考試資格受限。
+            </p>
+            <div class="rule-grid">
+              <article>
+                <h3>要準備</h3>
+                <ul>
+                  <li>記住 College Board 帳號與密碼，不能只依賴瀏覽器或裝置自動儲存密碼。</li>
+                  <li>確認 testing device 可執行 Bluebook，電量足夠，並帶相容的充電器。</li>
+                  <li>帶鉛筆或筆，在學校提供的 scratch paper 上做筆記。</li>
+                  <li>若不是在自己學校考試，準備政府或學校核發的 photo ID。</li>
+                  <li>若用平板參加 fully digital AP Exam，需要外接鍵盤；外接滑鼠可選。</li>
+                </ul>
+              </article>
+              <article>
+                <h3>不能帶或不能用</h3>
+                <ul>
+                  <li>手機、智慧手錶、智慧眼鏡、穿戴裝置、錄音錄影設備或其他通訊設備。</li>
+                  <li>書、筆記、字典、highlighter、自己帶的 scratch paper 或 reference guide。</li>
+                  <li>未核准的電腦、計算機、獨立計時器、privacy screen、keyboard map。</li>
+                  <li>食物或飲料不能帶進考場，除非有 College Board SSD accommodation。</li>
+                  <li>AP CSA 不允許使用計算機，除非有核准的 4-function calculator accommodation。</li>
+                </ul>
+              </article>
+              <article>
+                <h3>Bluebook 作答規則</h3>
+                <ul>
+                  <li>考試中不能使用 Bluebook 以外的程式或 app。</li>
+                  <li>不能從其他程式貼上答案到 Bluebook。</li>
+                  <li>答案必須輸入在 Bluebook 中，只有 Bluebook 內的答案會被提交評分。</li>
+                  <li>可在同一 section 或 part 內回頭檢查，但不能回到前一個 section 或 part。</li>
+                  <li>結束時若網路連線正常會自動提交；若沒有連線，需要依 Bluebook 指示在 submission window 內送出。</li>
+                </ul>
+              </article>
+              <article>
+                <h3>題目保密</h3>
+                <ul>
+                  <li>Multiple-choice 題目不會公開，不能在考試中或考後討論內容。</li>
+                  <li>Regular testing 的 FRQ 只有在 College Board 公布後才可討論。</li>
+                  <li>Late-testing FRQ 與未釋出的 FRQ 不可分享。</li>
+                  <li>考試中或休息時間不能使用網站、AI 工具、手機、筆記或他人協助。</li>
+                  <li>不要拍照、截圖、記錄、背題後轉寫或分享任何安全題目。</li>
+                </ul>
+              </article>
+            </div>
+          </section>
+
+          <section id="mcq" class="article-section">
+            <p class="eyebrow">Section I</p>
+            <h2>Multiple Choice：怎麼穩定拿分</h2>
+            <p>
+              MCQ 會要求你判斷程式輸出、變數值、錯誤、等價程式片段、條件行為與必要 code segment。
+              它不是單純背 API，而是考你是否能在有限時間內準確 trace 程式。
+            </p>
+            <div class="takeaway-grid">
+              <div>
+                <h3>1. 每題先分類</h3>
+                <p>先看它是在考 output、錯誤、method call、object alias、loop bounds、String、array 還是 ArrayList。分類後才知道該畫 trace table 還是檢查語法。</p>
+              </div>
+              <div>
+                <h3>2. 用表格追蹤狀態</h3>
+                <p>遇到 loop、nested loop、array 或 object mutation，不要只在腦中想。把 index、condition、更新後的值寫在 scratch paper 上。</p>
+              </div>
+              <div>
+                <h3>3. 看清楚 Java 陷阱</h3>
+                <p>常見陷阱包含 integer division、<code>==</code> vs <code>.equals()</code>、String index、off-by-one、ArrayList remove 後 index shift、reference aliasing。</p>
+              </div>
+              <div>
+                <h3>4. 最後一定填完</h3>
+                <p>官方說明指出 MCQ 分數看答對題數，答錯或空白不倒扣。剩下時間不足時，先排除再作答，不要留下空題。</p>
+              </div>
+            </div>
+            <div class="callout">
+              <strong>時間策略：</strong>前 30 題不要讓單題卡超過 2 分鐘；不確定先標記。最後 8-10 分鐘回來處理標記題，並確認每題都有答案。
+            </div>
+          </section>
+
+          <section id="frq" class="article-section">
+            <p class="eyebrow">Section II</p>
+            <h2>Free Response：四大題型與 rubric 拿分</h2>
+            <p>
+              官方 AP CSA Exam 頁面列出 4 題 FRQ 的固定方向，且全部評量 Develop Code。
+              你的目標不是寫出最漂亮的 Java，而是在時間內交出符合 method/class specification 的可評分答案。
+            </p>
+
+            <div class="frq-grid">
+              <article>
+                <span>Question 1</span>
+                <h3>Methods and Control Structures</h3>
+                <p>通常要求寫 2 個 methods，或 1 個 constructor 加 1 個 method。重點是 conditional、iteration、method calls 與 String methods。</p>
+                <ul>
+                  <li>先保留官方提供的 header，不要改參數型別或回傳型別。</li>
+                  <li>所有 loop 都要檢查 initialization、condition、update、termination。</li>
+                  <li>String 題要小心 <code>substring</code> 結束位置、<code>indexOf</code> 找不到回傳 <code>-1</code>、以及 <code>.equals()</code>。</li>
+                </ul>
+              </article>
+              <article>
+                <span>Question 2</span>
+                <h3>Class Design</h3>
+                <p>要求你根據 scenario 與規格表設計 class。通常需要 class header、private instance variables、constructor 與 method。</p>
+                <ul>
+                  <li>先寫 class header，再列 fields；不要把 instance variable 寫進 method 裡。</li>
+                  <li>constructor 必須把每個物件狀態初始化到規格要求的值。</li>
+                  <li>method 要更新 state 時，只更新題目要求的 persistent data。</li>
+                </ul>
+              </article>
+              <article>
+                <span>Question 3</span>
+                <h3>Data Analysis with ArrayList</h3>
+                <p>給定 scenario 與相關 class，要求你在 <code>ArrayList</code> 中取得、分析、更新或篩選資料。</p>
+                <ul>
+                  <li>使用 <code>size()</code>、<code>get(i)</code>、<code>set(i, value)</code>、<code>add</code>、<code>remove</code>，不要把 ArrayList 當 array 用。</li>
+                  <li>若要 remove，多半從後往前走，或在移除後正確調整 index。</li>
+                  <li>先取出物件，再呼叫題目提供的方法，例如 <code>list.get(i).getCost()</code>。</li>
+                </ul>
+              </article>
+              <article>
+                <span>Question 4</span>
+                <h3>2D Array</h3>
+                <p>要求你建立、走訪、分析或操作 2D array。核心是 row/column 的 nested loop 與邊界條件。</p>
+                <ul>
+                  <li><code>arr.length</code> 是 row 數；<code>arr[0].length</code> 是 column 數。</li>
+                  <li>每換一列或一欄時，該重設的 count、sum、flag 必須重設。</li>
+                  <li>題目要求 column 時，不要把 row 當 column；這是常見失分點。</li>
+                </ul>
+              </article>
+            </div>
+
+            <h3>Scoring Guidelines 要怎麼讀</h3>
+            <div class="rubric-list">
+              <article>
+                <strong>Algorithm points</strong>
+                <p>這類分數看的是必要步驟是否齊全、順序是否合理、整體演算法是否達成規格。若漏掉核心步驟、把步驟組錯、加入會破壞結果的額外程式碼，通常很難拿到。</p>
+              </article>
+              <article>
+                <strong>Non-algorithm points</strong>
+                <p>這類分數範圍比較窄。就算其他地方錯，只要某個指定元素正確，例如正確宣告 class header、正確呼叫指定 method，仍可能拿到該點。</p>
+              </article>
+              <article>
+                <strong>Minor errors</strong>
+                <p>官方範例 scoring guidelines 說明，有些小錯可能不影響該點，例如可明確推斷的拼字大小寫、少分號但結構清楚、局部變數宣告瑕疵等。不要因此放棄寫完整邏輯。</p>
+              </article>
+              <article>
+                <strong>Partial credit mindset</strong>
+                <p>FRQ 的分數是拆開給的。卡住時先寫出你確定的 header、初始化、loop skeleton、條件判斷、方法呼叫與 return，讓 reader 有可給分的結構。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="quick-reference" class="article-section">
+            <p class="eyebrow">Java Quick Reference</p>
+            <h2>考試提供的 Java Reference 要會用</h2>
+            <p>
+              Java Quick Reference 列出 AP CSA 考試可能使用的 Java library 方法。它不是課本，也不是完整 Java 文件；
+              它是考試中可以查的 reference table。真正的能力是看到方法名稱後，能正確判斷回傳值、index 範圍與 side effect。
+            </p>
+            <div class="reference-grid">
+              <article>
+                <h3>String</h3>
+                <p><code>length</code>、<code>substring</code>、<code>indexOf</code>、<code>equals</code>、<code>compareTo</code> 是 MCQ 與 FRQ Q1 高頻核心。</p>
+              </article>
+              <article>
+                <h3>Math</h3>
+                <p><code>abs</code>、<code>pow</code>、<code>sqrt</code>、<code>random</code> 要知道回傳型別與常見 casting 寫法。</p>
+              </article>
+              <article>
+                <h3>ArrayList</h3>
+                <p><code>size</code>、<code>add</code>、<code>get</code>、<code>set</code>、<code>remove</code> 要熟到不用查也知道 index 怎麼變。</p>
+              </article>
+              <article>
+                <h3>Arrays</h3>
+                <p>array 使用 <code>length</code> 欄位，不是 <code>length()</code>；2D array 要分清楚 row 與 column。</p>
+              </article>
+            </div>
+            <a class="button primary" href="apcsa_teacher_resources/official_pdfs/ap-csa-java-quick-reference.pdf">開啟 Java Quick Reference</a>
+          </section>
+
+          <section id="checklist" class="article-section">
+            <p class="eyebrow">Final Prep</p>
+            <h2>考前最後清單</h2>
+            <div class="time-plan">
+              <label><input type="checkbox" data-progress="exam-guide-0" /> <span><strong>官方資訊：</strong>確認考試日期、地點、報到時間、Bluebook 裝置要求與學校規定。</span></label>
+              <label><input type="checkbox" data-progress="exam-guide-1" /> <span><strong>Reference：</strong>把 Java Quick Reference 看過一次，特別是 String、Math、ArrayList。</span></label>
+              <label><input type="checkbox" data-progress="exam-guide-2" /> <span><strong>MCQ：</strong>做一回限時 42 題練習，錯題分類成 tracing、syntax、API、object、collection。</span></label>
+              <label><input type="checkbox" data-progress="exam-guide-3" /> <span><strong>FRQ：</strong>各寫一題 Q1-Q4，並用 scoring guidelines 自評，不只看答案。</span></label>
+              <label><input type="checkbox" data-progress="exam-guide-6" /> <span><strong>考古題：</strong>到 <a href="past-papers.html">考古題庫</a> 做 released exam，記錄錯題類型與 rubric 丟分原因。</span></label>
+              <label><input type="checkbox" data-progress="exam-guide-4" /> <span><strong>考場：</strong>準備帳號密碼、裝置、充電器、筆、必要 ID；不要帶禁用物品進考場。</span></label>
+              <label><input type="checkbox" data-progress="exam-guide-5" /> <span><strong>當天策略：</strong>MCQ 不留空；FRQ 先拿 header、初始化、loop、method call、return 這些可拆分的分數。</span></label>
+            </div>
+          </section>
+
+          <section id="sources" class="article-section">
+            <p class="eyebrow">Official Sources</p>
+            <h2>本頁使用的官方來源</h2>
+            <p>以下連結建議考前再開一次確認，因為 AP Exam policies 與 Bluebook 規則可能每年更新。</p>
+            <div class="resource-grid exam-source-grid" aria-label="官方來源連結">
+              <a class="resource-card highlight" href="https://apcentral.collegeboard.org/courses/ap-computer-science-a/exam" target="_blank" rel="noreferrer">
+                <span>AP Central</span>
+                <strong>AP CSA Exam</strong>
+                <small>考試格式、日期、FRQ 題型與 reference information。</small>
+              </a>
+              <a class="resource-card" href="https://apcentral.collegeboard.org/media/pdf/ap-computer-science-a-course-and-exam-description.pdf" target="_blank" rel="noreferrer">
+                <span>Official PDF</span>
+                <strong>Course and Exam Description</strong>
+                <small>2025-26 課程架構、單元比重、sample exam 與 scoring guidelines。</small>
+              </a>
+              <a class="resource-card" href="https://apstudents.collegeboard.org/courses/ap-computer-science-a/assessment" target="_blank" rel="noreferrer">
+                <span>AP Students</span>
+                <strong>AP CSA Assessment</strong>
+                <small>學生版考試時間、日期、section 說明與備考資源。</small>
+              </a>
+              <a class="resource-card" href="https://apcentral.collegeboard.org/media/pdf/ap-computer-science-a-java-quick-reference.pdf" target="_blank" rel="noreferrer">
+                <span>Official PDF</span>
+                <strong>Java Quick Reference</strong>
+                <small>考試可用的 Java library 方法參考表。</small>
+              </a>
+              <a class="resource-card highlight" href="past-papers.html">
+                <span>本站整理</span>
+                <strong>AP CSA 考古題庫</strong>
+                <small>2015 released exam 的 MCQ、答案、FRQ 題本與 scoring guidelines。</small>
+              </a>
+              <a class="resource-card" href="https://apstudents.collegeboard.org/exam-policies-guidelines" target="_blank" rel="noreferrer">
+                <span>Policies</span>
+                <strong>AP Exam Policies</strong>
+                <small>考試政策、違規後果、考場規範與相關主題入口。</small>
+              </a>
+              <a class="resource-card" href="https://apstudents.collegeboard.org/exam-policies-guidelines/what-to-bring-on-exam-day" target="_blank" rel="noreferrer">
+                <span>Exam Day</span>
+                <strong>What to Bring</strong>
+                <small>考試當天可帶與不可帶物品。</small>
+              </a>
+              <a class="resource-card" href="https://apstudents.collegeboard.org/exam-policies-guidelines/calculator-policies" target="_blank" rel="noreferrer">
+                <span>Policy</span>
+                <strong>Calculator Policy</strong>
+                <small>AP CSA 不允許計算機，除非有核准 accommodation。</small>
+              </a>
+              <a class="resource-card" href="https://apstudents.collegeboard.org/exam-policies-guidelines/exam-security-policies" target="_blank" rel="noreferrer">
+                <span>Security</span>
+                <strong>Exam Security</strong>
+                <small>題目保密、違規與分數取消規則。</small>
+              </a>
+            </div>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>AP CSA 考試規則、規範與拿分重點。官方資訊以 College Board/AP Central 最新公告為準。</p>
+      <p class="footer-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></p>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

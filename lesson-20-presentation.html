@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 20 投影模式｜ArrayList Algorithms</title>
+    <meta
+      name="description"
+      content="AP CSA Lesson 20 投影模式：ArrayList algorithms、traversal、filter、remove while looping、index shift、backward traversal、enhanced for limitations、FRQ strategy。"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="auth.js"></script>
+    <noscript><meta http-equiv="refresh" content="0; url=login.html" /></noscript>
+  </head>
+  <body class="presentation-body">
+    <header class="presentation-topbar">
+      <a class="presentation-brand" href="index.html">AP CSA｜Lesson 20</a>
+      <div class="presentation-actions" aria-label="簡報操作">
+        <a href="lesson-20.html">文章版</a>
+        <a href="lesson-20-practice.html">課後練習</a>
+        <a href="lesson-19.html">上一課</a>
+        <a href="https://onecompiler.com/java" target="_blank" rel="noreferrer">Java 執行器</a>
+        <button class="deck-button" type="button" data-deck-action="prev">上一張</button>
+        <button class="deck-button primary" type="button" data-deck-action="next">下一張</button>
+      </div>
+    </header>
+
+    <main class="deck" data-deck>
+      <section class="slide active" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">AP Computer Science A｜Lesson 20</p>
+          <h1>ArrayList Algorithms</h1>
+          <p class="slide-lead">
+            從會用 <code>ArrayList</code> methods，進到會寫 algorithms：
+            traversal、filter、remove while looping、index shift、backward traversal、
+            enhanced for limitations 與 FRQ strategy。
+          </p>
+          <div class="slide-actions">
+            <a class="button primary" href="https://onecompiler.com/java" target="_blank" rel="noreferrer">開啟 OneCompiler</a>
+            <a class="button" href="lesson-20-practice.html">Lesson 20 課後練習</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">From Lesson 19</p>
+          <h2>Lesson 19 是 API；Lesson 20 是 Algorithm</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Lesson 19</h3>
+              <p>會用 <code>add</code>、<code>get</code>、<code>set</code>、<code>remove</code>、<code>size()</code>。</p>
+            </div>
+            <div>
+              <h3>Lesson 20</h3>
+              <p>會把 methods 放進 loop，並正確處理 size 與 index 的變化。</p>
+            </div>
+          </div>
+          <p class="slide-note">今天的核心不是背更多 methods，而是選對 traversal pattern。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Core Idea</p>
+          <h2>ArrayList 難在 size 和 index 會變</h2>
+          <div class="exit-grid">
+            <div><code>set(i, value)</code><br />不改 size</div>
+            <div><code>remove(i)</code><br />size - 1，後方左移</div>
+            <div><code>add(i, value)</code><br />size + 1，後方右移</div>
+            <div><code>add(value)</code><br />加到尾端</div>
+          </div>
+          <p class="slide-note">任何 add/remove tracing 題，都要同步追蹤 list、index、size。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Traversal</p>
+          <h2>Traditional for：需要 index 時使用</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; list.size(); i++)
+{
+    int value = list.get(i);
+    System.out.println(value);
+}</code></pre>
+          </div>
+          <p class="slide-note">ArrayList 用 <code>size()</code> 和 <code>get(i)</code>，不是 <code>.length</code> 或 <code>[]</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Enhanced For</p>
+          <h2>Enhanced for：只讀取每個元素時最乾淨</h2>
+          <div class="deck-code">
+            <pre><code>int total = 0;
+for (int score : scores)
+{
+    total += score;
+}</code></pre>
+          </div>
+          <p class="slide-note">只需要 value，不需要 index，不改 list structure，enhanced for 很適合。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Read-Only Algorithms</p>
+          <h2>Array algorithm 可以直接換成 ArrayList 版本</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Array</h3>
+              <pre><code>arr.length
+arr[i]</code></pre>
+            </div>
+            <div>
+              <h3>ArrayList</h3>
+              <pre><code>list.size()
+list.get(i)</code></pre>
+            </div>
+          </div>
+          <div class="exit-grid">
+            <div>sum</div>
+            <div>count</div>
+            <div>average</div>
+            <div>max / min</div>
+            <div>linear search</div>
+            <div>first / last index</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>這段程式回傳什麼？</h2>
+          <div class="deck-code">
+            <pre><code>ArrayList&lt;Integer&gt; nums = new ArrayList&lt;Integer&gt;();
+nums.add(4);
+nums.add(9);
+nums.add(4);
+
+int count = 0;
+for (int n : nums)
+{
+    if (n == 4)
+    {
+        count++;
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l20-r1">揭曉答案</button>
+          <div class="reveal-panel" id="l20-r1">
+            <p><code>count</code> 是 <code>2</code>。這是 read-only count algorithm。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Filter</p>
+          <h2>Filter Pattern 1：建立新的 List</h2>
+          <div class="deck-code">
+            <pre><code>ArrayList&lt;Integer&gt; result = new ArrayList&lt;Integer&gt;();
+
+for (int n : nums)
+{
+    if (n &gt;= 0)
+    {
+        result.add(n);
+    }
+}
+
+return result;</code></pre>
+          </div>
+          <p class="slide-note">這個 pattern 不會改原本 list，所以沒有 index shift 問題。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Prompt Reading</p>
+          <h2>看到 return new list，就不要破壞原 list</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Return new list</h3>
+              <p><code>getPassingScores</code>、<code>validReadings</code>、<code>wordsOfLength</code></p>
+              <p>建立 <code>result</code>，符合條件就 <code>add</code>。</p>
+            </div>
+            <div>
+              <h3>Modify original list</h3>
+              <p><code>removeLowScores</code>、<code>removeInvalid</code>、<code>deleteShortWords</code></p>
+              <p>直接對參數 list 做 <code>remove</code>。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Remove Bug</p>
+          <h2>最直覺的 forward remove 可能錯</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; nums.size(); i++)
+{
+    if (nums.get(i) &lt; 0)
+    {
+        nums.remove(i);
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">刪掉 index i 後，下一個元素會左移到 index i；for loop 又讓 i++。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Index Shift Trace</p>
+          <h2>為什麼會漏掉元素？</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Step</th><th>List</th><th><code>i</code></th><th>狀態</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>start</td><td><code>[4, -2, -5, 7]</code></td><td><code>1</code></td><td><code>-2</code> 要刪</td></tr>
+                <tr><td>remove</td><td><code>[4, -5, 7]</code></td><td><code>1</code></td><td><code>-5</code> 移到 index 1</td></tr>
+                <tr><td>update</td><td><code>[4, -5, 7]</code></td><td><code>2</code></td><td>下一輪檢查 <code>7</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="slide-note">連續符合刪除條件的元素，是 forward remove bug 最常出現的地方。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Quick Check</p>
+          <h2>以下程式最後 list 是什麼？</h2>
+          <div class="deck-code">
+            <pre><code>ArrayList&lt;Integer&gt; nums = new ArrayList&lt;Integer&gt;();
+nums.add(2);
+nums.add(2);
+nums.add(3);
+
+for (int i = 0; i &lt; nums.size(); i++)
+{
+    if (nums.get(i) == 2)
+    {
+        nums.remove(i);
+    }
+}</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l20-r2">揭曉答案</button>
+          <div class="reveal-panel" id="l20-r2">
+            <p><code>[2, 3]</code>。第一個 <code>2</code> 被刪後，第二個 <code>2</code> 左移到 index 0，但 <code>i++</code> 跳到 index 1。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Safe Forward</p>
+          <h2>Forward while：remove 後不要增加 <code>i</code></h2>
+          <div class="deck-code">
+            <pre><code>int i = 0;
+while (i &lt; nums.size())
+{
+    if (nums.get(i) &lt; 0)
+    {
+        nums.remove(i);
+    }
+    else
+    {
+        i++;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">remove 後，同一個 index 要再檢查一次，因為新元素剛移過來。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Backward Traversal</p>
+          <h2>Backward remove 是最穩定的 remove-all pattern</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = nums.size() - 1; i &gt;= 0; i--)
+{
+    if (nums.get(i) &lt; 0)
+    {
+        nums.remove(i);
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">從後面刪，左移只影響右側已經走過的位置。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Choose Pattern</p>
+          <h2>刪除題先問：我要刪掉所有符合條件的元素嗎？</h2>
+          <div class="exit-grid">
+            <div><strong>remove all</strong><br />backward traversal</div>
+            <div><strong>remove until one condition</strong><br />可能用 while / return</div>
+            <div><strong>return valid items</strong><br />filtered copy</div>
+            <div><strong>replace invalid values</strong><br /><code>set</code></div>
+          </div>
+          <p class="slide-note">不要只看到 filter 就立刻 remove，先讀 prompt。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Enhanced For Limits</p>
+          <h2>Enhanced for 不適合 add/remove/set by index</h2>
+          <div class="contrast-grid">
+            <div>
+              <h3>Not enough</h3>
+              <pre><code>for (int x : nums)
+{
+    x = 0;
+}</code></pre>
+              <p>只改變 loop variable。</p>
+            </div>
+            <div>
+              <h3>Use set</h3>
+              <pre><code>for (int i = 0; i &lt; nums.size(); i++)
+{
+    nums.set(i, 0);
+}</code></pre>
+              <p>真的修改 list 裡的位置。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Transform</p>
+          <h2><code>set</code> 是 replace，不是 remove</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; nums.size(); i++)
+{
+    if (nums.get(i) &lt; 0)
+    {
+        nums.set(i, 0);
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note"><code>set</code> 不會改 size，也不會造成 index shift。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Data Analysis</p>
+          <h2>Above-average count 常需要兩次 traversal</h2>
+          <div class="deck-code">
+            <pre><code>int total = 0;
+for (int score : scores)
+{
+    total += score;
+}
+
+double avg = (double) total / scores.size();
+
+int count = 0;
+for (int score : scores)
+{
+    if (score &gt; avg)
+    {
+        count++;
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">第一次算 average；第二次才知道誰大於 average。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">FRQ Reading</p>
+          <h2>FRQ 先圈動詞，再選 loop</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Prompt</th><th>Pattern</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>return a new list</td><td>filtered copy</td></tr>
+                <tr><td>remove all</td><td>backward traversal</td></tr>
+                <tr><td>replace / change every</td><td><code>set</code> with traditional for</td></tr>
+                <tr><td>count / sum / find</td><td>read-only traversal</td></tr>
+                <tr><td>first index / last index</td><td>traditional for / backward for</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">Insert While Looping</p>
+          <h2><code>add(index, value)</code> 也會造成 index shift</h2>
+          <div class="deck-code">
+            <pre><code>for (int i = 0; i &lt; words.size(); i++)
+{
+    if (words.get(i).equals("stop"))
+    {
+        words.add(i, "before");
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">插入會讓原本 index i 的元素右移；若不調整，可能重複處理或造成無限成長。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">AP-Style Trace</p>
+          <h2>以下程式印出什麼？</h2>
+          <div class="deck-code">
+            <pre><code>ArrayList&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
+list.add(1);
+list.add(4);
+list.add(4);
+list.add(2);
+
+for (int i = list.size() - 1; i &gt;= 0; i--)
+{
+    if (list.get(i) % 2 == 0)
+    {
+        list.remove(i);
+    }
+}
+System.out.println(list);</code></pre>
+          </div>
+          <button class="reveal-button" type="button" data-reveal="l20-r3">揭曉答案</button>
+          <div class="reveal-panel" id="l20-r3">
+            <p><code>[1]</code>。從後往前刪除所有 even values，兩個 <code>4</code> 和 <code>2</code> 都會被刪掉。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content">
+          <p class="slide-kicker">FRQ Template</p>
+          <h2>Remove-all 題可以先套這個骨架</h2>
+          <div class="deck-code">
+            <pre><code>public static void removeMatches(ArrayList&lt;String&gt; list, String target)
+{
+    for (int i = list.size() - 1; i &gt;= 0; i--)
+    {
+        if (list.get(i).equals(target))
+        {
+            list.remove(i);
+        }
+    }
+}</code></pre>
+          </div>
+          <p class="slide-note">String 比較內容要用 <code>.equals()</code>。</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <div class="slide-content title-slide">
+          <p class="slide-kicker">Exit Ticket</p>
+          <h2>離開前，確認你能回答這十二句</h2>
+          <div class="exit-grid">
+            <div>ArrayList traversal 用 <code>size()</code> 和 <code>get(i)</code>。</div>
+            <div>Read-only algorithm 可用 enhanced for。</div>
+            <div>需要 index 時用 traditional for。</div>
+            <div><code>set</code> 不改 size。</div>
+            <div><code>remove</code> 會讓後方左移。</div>
+            <div>Forward remove 可能跳過元素。</div>
+            <div>Remove all 推薦 backward traversal。</div>
+            <div>Forward while remove 後不要增加 <code>i</code>。</div>
+            <div>Enhanced for 不適合 structural modification。</div>
+            <div>Filter 可以 return new list。</div>
+            <div>Prompt 說 remove 就要改原 list。</div>
+            <div>每次 add/remove 後重新 trace list、index、size。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-footer" aria-label="簡報進度">
+      <div class="deck-progress">
+        <span data-slide-current>1</span>
+        <span>/</span>
+        <span data-slide-total>1</span>
+      </div>
+      <div class="deck-contact">網站資訊勘誤請洽 <a href="mailto:ktliu1995@gmail.com">ktliu1995@gmail.com</a></div>
+      <div class="deck-hint">可用鍵盤 ← → 切換投影片，按 R 重設目前所有揭曉內容。</div>
+    </footer>
+
+    <script src="site.js"></script>
+  </body>
+</html>

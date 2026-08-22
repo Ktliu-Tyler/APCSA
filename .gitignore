@@ -8,3 +8,5 @@ apcsa_teacher_resources/official_pdfs/*
 
 .DS_Store
 Thumbs.db
+__MACOSX/
+._*
